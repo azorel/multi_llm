@@ -1,0 +1,40 @@
+# Remove all the mess and random files
+*.log
+*.db
+*.db-journal
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.env
+.venv
+
+# Remove emergency fixes and random files
+emergency_*.py
+quick_*.py
+quick_*.html
+*backup*
+*test_*
+*TEST_*
+*COMPLETE*
+*_COMPLETE*
+unified_main_page.html
+emergency_web_server.py
+
+# Remove random generated files
+autonomous_generated/
+disler-repos/
+loguru-demo/
+
+# Keep only core system files
+!src/
+!templates/
+!static/
+!config/
+!requirements.txt
+!README.md
+!web_server.py
+!main.py
