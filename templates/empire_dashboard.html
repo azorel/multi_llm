@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Empire Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .empire-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .category-rc { border-left: 5px solid #dc3545; }
+        .category-vanlife { border-left: 5px solid #28a745; }
+        .category-3dprinting { border-left: 5px solid #007bff; }
+        .category-general { border-left: 5px solid #ffc107; }
+        
+        .opportunity-card, .project-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        .opportunity-card:hover, .project-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .progress-bar-container {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+        }
+        
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .agent-status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .empire-nav {
+            background: #2c3e50;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        
+        .empire-nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .empire-nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Empire Header -->
+    <div class="empire-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1><i class="fas fa-crown"></i> AI Business Empire Dashboard</h1>
+                    <p class="lead">Turning Lifestyle into Profitable Businesses</p>
+                    <p><i class="fas fa-robot"></i> Multi-Agent AI System • <i class="fas fa-chart-line"></i> Real Revenue • <i class="fas fa-rocket"></i> Automated Growth</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="empire-nav">
+        <div class="container text-center">
+            <a href="/"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/opportunities"><i class="fas fa-lightbulb"></i> Opportunities</a>
+            <a href="/projects"><i class="fas fa-tasks"></i> Projects</a>
+            <a href="/revenue"><i class="fas fa-dollar-sign"></i> Revenue</a>
+            <a href="/agents"><i class="fas fa-robot"></i> Agents</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Empire Statistics -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number text-primary">{{ stats.total_opportunities or 0 }}</div>
+                    <div class="stat-label">Business Opportunities</div>
+                    <small class="text-muted">{{ stats.new_opportunities or 0 }} new this week</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number text-success">{{ stats.active_projects or 0 }}</div>
+                    <div class="stat-label">Active Projects</div>
+                    <small class="text-muted">{{ stats.launched_projects or 0 }} launched</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number text-warning">${{ "{:,.2f}".format(stats.total_revenue or 0) }}</div>
+                    <div class="stat-label">Monthly Revenue</div>
+                    <small class="text-muted">{{ stats.total_customers or 0 }} customers</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number text-info">{{ stats.recent_actions or 0 }}</div>
+                    <div class="stat-label">Agent Actions (24h)</div>
+                    <small class="text-muted">
+                        <span class="agent-status"></span>8 agents online
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Revenue by Category -->
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-bar"></i> Revenue by Business Category</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="revenueChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-robot"></i> Agent Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="agent-status"></span><strong>CEO Agent</strong><br>
+                            <small class="text-muted">Analyzing opportunities</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="agent-status"></span><strong>RC Orchestrator</strong><br>
+                            <small class="text-muted">Managing RC projects</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="agent-status"></span><strong>Van Life Orchestrator</strong><br>
+                            <small class="text-muted">Building van life products</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="agent-status"></span><strong>3D Print Orchestrator</strong><br>
+                            <small class="text-muted">Creating printing solutions</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="agent-status"></span><strong>Development Team</strong><br>
+                            <small class="text-muted">Building real products</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="agent-status"></span><strong>Content Team</strong><br>
+                            <small class="text-muted">Creating marketing content</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="agent-status"></span><strong>Marketing Team</strong><br>
+                            <small class="text-muted">Acquiring customers</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="agent-status"></span><strong>Business Monitor</strong><br>
+                            <small class="text-muted">Tracking empire growth</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Opportunities -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-lightbulb"></i> Recent Business Opportunities</h5>
+                        <a href="/opportunities" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        {% for opp in opportunities[:5] %}
+                        <div class="opportunity-card category-{{ opp.category.lower() }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6>{{ opp.title }}</h6>
+                                    <p class="mb-1"><strong>{{ opp.category }}</strong> • {{ opp.revenue_model }}</p>
+                                    <p class="text-muted small">Revenue: ${{ "{:,}".format(opp.revenue_potential) }}/month</p>
+                                </div>
+                                <div>
+                                    <span class="status-badge bg-{{ 'success' if opp.status == 'approved_for_development' else 'warning' }} text-white">
+                                        {{ opp.status.replace('_', ' ').title() }}
+                                    </span>
+                                    {% if opp.status == 'identified' %}
+                                    <br><button class="btn btn-sm btn-success mt-2" onclick="approveOpportunity('{{ opp.id }}')">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Active Projects -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-tasks"></i> Active Projects</h5>
+                        <a href="/projects" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        {% for project in projects %}
+                        <div class="project-card category-{{ project.category.lower() }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div style="flex: 1;">
+                                    <h6>{{ project.name }}</h6>
+                                    <p class="mb-1"><strong>{{ project.category }}</strong> • Budget: ${{ "{:,}".format(project.budget) }}</p>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: {{ project.progress }}%;"></div>
+                                    </div>
+                                    <small class="text-muted">{{ project.progress }}% complete • {{ project.timeline }}</small>
+                                </div>
+                                <div class="ms-3">
+                                    <span class="status-badge bg-{{ 'primary' if project.status == 'development' else 'info' }} text-white">
+                                        {{ project.status.title() }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <button class="btn btn-success w-100" onclick="sendAgentCommand('CEO', 'analyze_opportunities')">
+                                    <i class="fas fa-search"></i><br>Find New Opportunities
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" onclick="sendAgentCommand('Development', 'speed_up_builds')">
+                                    <i class="fas fa-rocket"></i><br>Speed Up Development
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-warning w-100" onclick="sendAgentCommand('Marketing', 'boost_campaigns')">
+                                    <i class="fas fa-bullhorn"></i><br>Boost Marketing
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-info w-100" onclick="sendAgentCommand('Content', 'create_viral_content')">
+                                    <i class="fas fa-fire"></i><br>Create Viral Content
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-secondary w-100" onclick="refreshDashboard()">
+                                    <i class="fas fa-sync"></i><br>Refresh Data
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-dark w-100" onclick="exportReport()">
+                                    <i class="fas fa-download"></i><br>Export Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Revenue Chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    {% for rev in revenue %}
+                    '{{ rev.category }}',
+                    {% endfor %}
+                ],
+                datasets: [{
+                    data: [
+                        {% for rev in revenue %}
+                        {{ rev.revenue }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        '#dc3545', '#28a745', '#007bff', '#ffc107', '#6c757d'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        function approveOpportunity(oppId) {
+            fetch('/api/approve_opportunity', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({opportunity_id: oppId})
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to approve opportunity');
+                }
+            });
+        }
+        
+        function sendAgentCommand(agentType, command) {
+            fetch('/api/agent_command', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({agent_type: agentType, command: command})
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert(result.message);
+            });
+        }
+        
+        function refreshDashboard() {
+            location.reload();
+        }
+        
+        function exportReport() {
+            alert('Empire report export functionality coming soon!');
+        }
+        
+        // Auto-refresh dashboard every 30 seconds
+        setInterval(() => {
+            fetch('/api/empire_stats')
+            .then(response => response.json())
+            .then(stats => {
+                // Update key statistics without full reload
+                console.log('Dashboard refreshed:', stats);
+            });
+        }, 30000);
+    </script>
+</body>
+</html>

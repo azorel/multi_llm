@@ -1,0 +1,12 @@
+{
+  "environment": "quick_start",
+  "api_keys": {
+    "openai": "",
+    "anthropic": "",
+    "notion": ""
+  },
+  "features": {
+    "auto_healing": true,
+    "multi_agent": true
+  }
+}

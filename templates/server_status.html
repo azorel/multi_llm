@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Server Status - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🖥️ Server Status Dashboard</h1>
+    <p class="page-subtitle">
+        Real-time monitoring of all LifeOS system components and infrastructure health.
+        <span style="float: right; color: var(--notion-text-light); font-size: 12px;">
+            Last updated: {{ status.system.timestamp }}
+            <button onclick="location.reload()" style="margin-left: 8px; background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                🔄 Refresh
+            </button>
+        </span>
+    </p>
+</div>
+
+<!-- System Overview -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
+    <div class="notion-card">
+        <div class="card-title">💻 CPU Usage</div>
+        <div class="card-content">
+            <div style="font-size: 24px; font-weight: 600; color: {% if status.system.cpu_percent > 80 %}var(--notion-red){% elif status.system.cpu_percent > 60 %}var(--notion-orange){% else %}var(--notion-green){% endif %};">
+                {{ "%.1f"|format(status.system.cpu_percent) }}%
+            </div>
+            <div style="background: #f0f0f0; height: 6px; border-radius: 3px; margin-top: 8px;">
+                <div style="background: {% if status.system.cpu_percent > 80 %}var(--notion-red){% elif status.system.cpu_percent > 60 %}var(--notion-orange){% else %}var(--notion-green){% endif %}; height: 100%; width: {{ status.system.cpu_percent }}%; border-radius: 3px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🧠 Memory Usage</div>
+        <div class="card-content">
+            <div style="font-size: 24px; font-weight: 600; color: {% if status.system.memory_percent > 85 %}var(--notion-red){% elif status.system.memory_percent > 70 %}var(--notion-orange){% else %}var(--notion-green){% endif %};">
+                {{ "%.1f"|format(status.system.memory_percent) }}%
+            </div>
+            <div style="background: #f0f0f0; height: 6px; border-radius: 3px; margin-top: 8px;">
+                <div style="background: {% if status.system.memory_percent > 85 %}var(--notion-red){% elif status.system.memory_percent > 70 %}var(--notion-orange){% else %}var(--notion-green){% endif %}; height: 100%; width: {{ status.system.memory_percent }}%; border-radius: 3px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">💾 Disk Usage</div>
+        <div class="card-content">
+            <div style="font-size: 24px; font-weight: 600; color: {% if status.system.disk_percent > 90 %}var(--notion-red){% elif status.system.disk_percent > 80 %}var(--notion-orange){% else %}var(--notion-green){% endif %};">
+                {{ "%.1f"|format(status.system.disk_percent) }}%
+            </div>
+            <div style="background: #f0f0f0; height: 6px; border-radius: 3px; margin-top: 8px;">
+                <div style="background: {% if status.system.disk_percent > 90 %}var(--notion-red){% elif status.system.disk_percent > 80 %}var(--notion-orange){% else %}var(--notion-green){% endif %}; height: 100%; width: {{ status.system.disk_percent }}%; border-radius: 3px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">⏱️ System Uptime</div>
+        <div class="card-content">
+            {% set uptime_hours = (status.system.uptime / 3600) | int %}
+            {% set uptime_days = (uptime_hours / 24) | int %}
+            <div style="font-size: 18px; font-weight: 600; color: var(--notion-text);">
+                {% if uptime_days > 0 %}
+                    {{ uptime_days }} days, {{ uptime_hours % 24 }} hours
+                {% else %}
+                    {{ uptime_hours }} hours
+                {% endif %}
+            </div>
+            <div style="color: var(--notion-text-light); font-size: 12px; margin-top: 4px;">
+                System running stable
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Services Status -->
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">🚀 Services Status</span>
+        <button onclick="location.reload()" class="add-button">🔄 Refresh Status</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Service Name</th>
+                <th>Status</th>
+                <th>Process ID</th>
+                <th>Type</th>
+                <th>Health</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in status.services %}
+            <tr>
+                <td style="font-weight: 600;">{{ service.name }}</td>
+                <td>
+                    {% if service.status == 'running' %}
+                        <span class="status-pill status-active">🟢 Running</span>
+                    {% elif service.status == 'stopped' %}
+                        <span class="status-pill status-error">🔴 Stopped</span>
+                    {% elif service.status == 'checking' %}
+                        <span class="status-pill status-pending">🟡 Checking</span>
+                    {% else %}
+                        <span class="status-pill status-error">❓ Unknown</span>
+                    {% endif %}
+                </td>
+                <td style="font-family: monospace; color: var(--notion-text-light);">
+                    {{ service.pid if service.get('pid') else 'N/A' }}
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {% if service.get('port') %}
+                        Port {{ service.port }}
+                    {% elif service.get('process') %}
+                        Process
+                    {% else %}
+                        Service
+                    {% endif %}
+                </td>
+                <td>
+                    {% if service.status == 'running' %}
+                        ✅ Healthy
+                    {% else %}
+                        ⚠️ Needs attention
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Database Status -->
+<div class="database-container" style="margin-top: 32px;">
+    <div class="database-header">
+        <span class="database-title">🗄️ Database Status</span>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Database Name</th>
+                <th>Status</th>
+                <th>File Size</th>
+                <th>Last Modified</th>
+                <th>Health</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for db in status.databases %}
+            <tr>
+                <td style="font-weight: 600;">{{ db.name }}</td>
+                <td>
+                    {% if db.status == 'active' %}
+                        <span class="status-pill status-active">🟢 Active</span>
+                    {% else %}
+                        <span class="status-pill status-error">🔴 Missing</span>
+                    {% endif %}
+                </td>
+                <td style="font-family: monospace; color: var(--notion-text-light);">
+                    {% if db.size > 0 %}
+                        {{ "%.2f"|format(db.size / 1024 / 1024) }} MB
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ db.modified }}
+                </td>
+                <td>
+                    {% if db.status == 'active' %}
+                        ✅ Connected
+                    {% else %}
+                        ⚠️ Disconnected
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Recent Logs -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📋 Main Agent Logs (Recent)</div>
+        <div class="card-content" style="font-family: monospace; font-size: 11px; max-height: 300px; overflow-y: auto; background: #f8f8f8; padding: 12px; border-radius: 6px;">
+            {% if status.logs.main_agent %}
+                {% for line in status.logs.main_agent %}
+                    <div style="margin-bottom: 2px; {% if 'ERROR' in line %}color: var(--notion-red);{% elif 'WARNING' in line %}color: var(--notion-orange);{% elif 'INFO' in line %}color: var(--notion-blue);{% endif %}">
+                        {{ line }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="color: var(--notion-text-light);">No recent logs available</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🌐 Web Server Logs (Recent)</div>
+        <div class="card-content" style="font-family: monospace; font-size: 11px; max-height: 300px; overflow-y: auto; background: #f8f8f8; padding: 12px; border-radius: 6px;">
+            {% if status.logs.web_server %}
+                {% for line in status.logs.web_server %}
+                    <div style="margin-bottom: 2px; {% if '500' in line or 'ERROR' in line %}color: var(--notion-red);{% elif '404' in line %}color: var(--notion-orange);{% elif '200' in line %}color: var(--notion-green);{% endif %}">
+                        {{ line }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="color: var(--notion-text-light);">No recent logs available</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Error Summary -->
+{% if status.logs.errors %}
+<div class="notion-card" style="margin-top: 24px;">
+    <div class="card-title">⚠️ Recent Errors</div>
+    <div class="card-content" style="font-family: monospace; font-size: 11px; background: #ffeaea; padding: 12px; border-radius: 6px; border-left: 4px solid var(--notion-red);">
+        {% for error in status.logs.errors %}
+            <div style="margin-bottom: 4px; color: var(--notion-red);">
+                {{ error }}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="notion-card" style="margin-top: 24px;">
+    <div class="card-title">⚡ Quick Actions</div>
+    <div class="card-content">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button onclick="location.reload()" style="background: var(--notion-blue); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                🔄 Refresh All Status
+            </button>
+            <button onclick="window.open('/logs/', '_blank')" style="background: var(--notion-green); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                📄 View Full Logs
+            </button>
+            <button onclick="restartServices()" style="background: var(--notion-orange); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                🔧 Restart Services
+            </button>
+            <button onclick="clearLogs()" style="background: var(--notion-red); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                🗑️ Clear Logs
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh every 30 seconds
+setTimeout(function() {
+    location.reload();
+}, 30000);
+
+function restartServices() {
+    if (confirm('This will restart all LifeOS services. Continue?')) {
+        alert('Service restart would be implemented here in production.');
+    }
+}
+
+function clearLogs() {
+    if (confirm('This will clear all log files. Continue?')) {
+        alert('Log clearing would be implemented here in production.');
+    }
+}
+
+// Add visual indicators for status
+document.addEventListener('DOMContentLoaded', function() {
+    // Add blinking effect to checking status
+    const checkingElements = document.querySelectorAll('.status-pending');
+    checkingElements.forEach(element => {
+        element.style.animation = 'blink 1.5s infinite';
+    });
+});
+</script>
+
+<style>
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+</style>
+{% endblock %}

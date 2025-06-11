@@ -1,0 +1,112 @@
+{
+  "system_metrics": {
+    "total_agents": 4,
+    "active_agents": 2,
+    "queued_tasks": 0,
+    "completed_today": 5,
+    "success_rate": 100.0,
+    "avg_response_time": 1.8
+  },
+  "active_agents": [
+    {
+      "id": "youtube_proc_01",
+      "name": "YouTube Channel Processor",
+      "type": "Content Processor",
+      "status": "standby",
+      "current_task": "Monitor marked channels in database",
+      "capabilities": [
+        "content_analysis",
+        "data_management"
+      ],
+      "tokens_used": 0,
+      "cost": 0.0
+    },
+    {
+      "id": "github_proc_01",
+      "name": "GitHub Repository Processor",
+      "type": "Api Integrator",
+      "status": "active",
+      "current_task": "Processing user repositories from github_users table",
+      "capabilities": [
+        "web_search",
+        "data_management"
+      ],
+      "tokens_used": 1250,
+      "cost": 0.05
+    },
+    {
+      "id": "web_monitor_01",
+      "name": "Web Server Monitor",
+      "type": "System Analyst",
+      "status": "active",
+      "current_task": "Monitoring Flask endpoints and template health",
+      "capabilities": [
+        "system_monitoring",
+        "web_search"
+      ],
+      "tokens_used": 342,
+      "cost": 0.01
+    },
+    {
+      "id": "template_fix_01",
+      "name": "Template Fixer",
+      "type": "Template Fixer",
+      "status": "standby",
+      "current_task": null,
+      "capabilities": [
+        "task_scheduling",
+        "code_generation"
+      ],
+      "tokens_used": 0,
+      "cost": 0.0
+    }
+  ],
+  "agent_queue": [],
+  "completed_tasks": [
+    {
+      "agent": "Database Specialist",
+      "task": "Database Schema Analysis",
+      "completed_at": "08:58:40",
+      "duration": "15s",
+      "success": true,
+      "cost": 0.0,
+      "tokens": 0
+    },
+    {
+      "agent": "Database Specialist",
+      "task": "Database Schema Analysis",
+      "completed_at": "08:55:23",
+      "duration": "15s",
+      "success": true,
+      "cost": 0.0,
+      "tokens": 0
+    },
+    {
+      "agent": "YouTube Channel Processor",
+      "task": "Process marked YouTube channels",
+      "completed_at": "08:53:06",
+      "duration": "45s",
+      "success": true,
+      "cost": 0.02,
+      "tokens": 850
+    },
+    {
+      "agent": "GitHub Repository Processor",
+      "task": "Import GitHub repositories for disler user",
+      "completed_at": "08:53:06",
+      "duration": "2m 15s",
+      "success": true,
+      "cost": 0.05,
+      "tokens": 1250
+    },
+    {
+      "agent": "Web Server Monitor",
+      "task": "Fixed active-agents template UndefinedError",
+      "completed_at": "08:53:06",
+      "duration": "12s",
+      "success": true,
+      "cost": 0.01,
+      "tokens": 342
+    }
+  ]
+}

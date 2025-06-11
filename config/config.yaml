@@ -1,0 +1,441 @@
+# Autonomous Multi-LLM Agent Configuration
+# Main configuration file with comprehensive settings
+
+# Application Metadata
+app:
+  name: "autonomous-multi-llm-agent"
+  version: "1.0.0"
+  environment: "development"  # development, testing, production
+  debug: true
+  maintenance_mode: false
+
+# API Configuration
+api:
+  # OpenAI Configuration
+  openai:
+    base_url: "https://api.openai.com/v1"
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-4-turbo-preview"
+    max_tokens: 4096
+    temperature: 0.7
+    top_p: 0.9
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    timeout: 60
+    max_retries: 3
+    backoff_factor: 1.5
+
+  # Anthropic Claude Configuration
+  anthropic:
+    base_url: "https://api.anthropic.com"
+    api_key: "${ANTHROPIC_API_KEY}"
+    model: "claude-3-sonnet-20240229"
+    max_tokens: 4096
+    temperature: 0.7
+    top_p: 0.9
+    timeout: 60
+    max_retries: 3
+    backoff_factor: 1.5
+
+  # Google Gemini Configuration
+  google:
+    base_url: "https://generativelanguage.googleapis.com/v1beta"
+    api_key: "${GOOGLE_API_KEY}"
+    model: "gemini-1.5-pro"
+    max_tokens: 4096
+    temperature: 0.7
+    top_p: 0.9
+    timeout: 60
+    max_retries: 3
+    backoff_factor: 1.5
+
+  # External APIs
+  notion:
+    api_key: "${NOTION_API_KEY}"
+    version: "2022-06-28"
+    base_url: "https://api.notion.com/v1"
+    tasks_database_id: "${NOTION_TASKS_DB_ID}"
+    knowledge_database_id: "${NOTION_KNOWLEDGE_DB_ID}"
+    execution_logs_database_id: "${NOTION_LOGS_DB_ID}"
+    timeout: 30
+    max_retries: 3
+
+  github:
+    token: "${GITHUB_TOKEN}"
+    base_url: "https://api.github.com"
+    default_owner: "${GITHUB_OWNER}"
+    default_repo: "${GITHUB_REPO}"
+    timeout: 30
+    max_retries: 3
+
+# Model Parameters
+models:
+  primary_model: "gpt"  # gpt, claude, gemini
+  fallback_models: ["claude", "gemini"]
+  
+  # Model Selection Rules
+  selection_rules:
+    - condition: "task_type == 'code_generation'"
+      model: "gpt"
+      reason: "Best for code generation"
+    - condition: "task_type == 'analysis'"
+      model: "claude"
+      reason: "Best for detailed analysis"
+    - condition: "task_type == 'creative'"
+      model: "gemini"
+      reason: "Best for creative tasks"
+    - condition: "context_length > 100000"
+      model: "claude"
+      reason: "Longest context window"
+
+  # A/B Testing Configuration
+  ab_testing:
+    enabled: false
+    experiments:
+      - name: "temperature_test"
+        enabled: false
+        traffic_split: 0.5
+        variants:
+          control:
+            temperature: 0.7
+          treatment:
+            temperature: 0.9
+
+# Resource Limits
+resources:
+  # Memory Limits
+  memory:
+    max_memory_mb: 2048
+    warning_threshold_mb: 1536
+    cleanup_threshold_mb: 1792
+
+  # CPU Limits
+  cpu:
+    max_cpu_percent: 80
+    warning_threshold_percent: 60
+    max_concurrent_tasks: 4
+
+  # Rate Limits
+  rate_limits:
+    requests_per_minute: 60
+    requests_per_hour: 1000
+    requests_per_day: 10000
+    burst_allowance: 10
+
+  # Storage Limits
+  storage:
+    max_disk_usage_gb: 10
+    log_retention_days: 30
+    database_max_size_mb: 500
+    temp_file_cleanup_minutes: 60
+
+  # Network Limits
+  network:
+    connection_timeout: 30
+    read_timeout: 60
+    max_connections: 50
+    connection_pool_size: 20
+
+# Retry Policies
+retry:
+  # Global Retry Settings
+  global:
+    max_attempts: 3
+    base_delay: 1.0
+    max_delay: 60.0
+    exponential_base: 2.0
+    jitter: true
+
+  # Service-Specific Retries
+  services:
+    llm_apis:
+      max_attempts: 5
+      base_delay: 2.0
+      max_delay: 120.0
+      retry_on_status: [429, 500, 502, 503, 504]
+      
+    external_apis:
+      max_attempts: 3
+      base_delay: 1.0
+      max_delay: 30.0
+      retry_on_status: [429, 500, 502, 503, 504]
+      
+    database:
+      max_attempts: 2
+      base_delay: 0.5
+      max_delay: 5.0
+
+# Feature Flags
+features:
+  # Core Features
+  orchestration:
+    enabled: true
+    voting_system: true
+    consensus_threshold: 0.66
+    max_proposal_rounds: 3
+
+  self_healing:
+    enabled: true
+    auto_recovery: true
+    code_modification: true
+    rollback_enabled: true
+    learning_enabled: true
+
+  validation:
+    enabled: true
+    syntax_validation: true
+    logic_validation: true
+    security_validation: true
+    performance_validation: false
+
+  integrations:
+    notion_sync: true
+    github_integration: true
+    sequential_thinking: true
+    monitoring: true
+    analytics: true
+
+  # Experimental Features
+  experimental:
+    advanced_reasoning: false
+    multi_agent_collaboration: true
+    predictive_caching: false
+    auto_optimization: false
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "structured"  # simple, detailed, structured, json
+  
+  # Output Configuration
+  outputs:
+    console:
+      enabled: true
+      level: "INFO"
+      format: "detailed"
+      colorize: true
+    
+    file:
+      enabled: true
+      level: "DEBUG"
+      format: "structured"
+      file_path: "logs/app.log"
+      max_size_mb: 100
+      backup_count: 5
+      rotation: "time"  # size, time
+    
+    json_file:
+      enabled: true
+      level: "INFO"
+      format: "json"
+      file_path: "logs/app.json"
+      max_size_mb: 100
+      backup_count: 3
+
+  # Component-Specific Logging
+  components:
+    orchestrator:
+      level: "INFO"
+      include_proposals: true
+      include_voting: true
+    
+    agents:
+      level: "DEBUG"
+      include_prompts: false
+      include_responses: true
+    
+    self_healing:
+      level: "INFO"
+      include_recovery_steps: true
+      include_fixes: true
+    
+    validation:
+      level: "WARNING"
+      include_test_results: false
+
+# Security Configuration
+security:
+  # Authentication
+  authentication:
+    required: false
+    token_expiry_hours: 24
+    refresh_token_enabled: false
+
+  # API Security
+  api_security:
+    rate_limiting: true
+    cors_enabled: true
+    allowed_origins: ["http://localhost:3000"]
+    api_key_validation: true
+
+  # Data Protection
+  data_protection:
+    encrypt_sensitive_data: true
+    mask_api_keys_in_logs: true
+    secure_temp_files: true
+    auto_cleanup_secrets: true
+
+  # Validation Rules
+  validation:
+    validate_inputs: true
+    sanitize_outputs: true
+    check_malicious_patterns: true
+    max_input_size_kb: 1024
+
+# Performance Configuration
+performance:
+  # Caching
+  caching:
+    enabled: true
+    ttl_seconds: 3600
+    max_cache_size_mb: 256
+    cache_hit_target: 0.8
+
+  # Concurrency
+  concurrency:
+    max_concurrent_requests: 10
+    worker_threads: 4
+    async_enabled: true
+    batch_processing: true
+
+  # Optimization
+  optimization:
+    enable_profiling: false
+    memory_profiling: false
+    auto_gc: true
+    optimize_prompts: true
+
+# Database Configuration
+database:
+  # SQLite Configuration
+  sqlite:
+    shared_memory_db: "shared_memory.db"
+    orchestrator_db: "orchestrator.db"
+    agents_db: "agents.db"
+    learning_db: "learning_system.db"
+    recovery_db: "recovery_manager.db"
+    notion_sync_db: "notion_sync.db"
+    github_db: "github_integration.db"
+    
+    # Connection Settings
+    timeout: 30
+    check_same_thread: false
+    isolation_level: null
+    
+    # Performance Settings
+    page_size: 4096
+    cache_size: 2000
+    journal_mode: "WAL"
+    synchronous: "NORMAL"
+
+# Integration Configuration
+integrations:
+  # Notion Integration
+  notion:
+    enabled: true
+    priority: 8
+    timeout: 30.0
+    max_retries: 3
+    retry_policy: "exponential_backoff"
+    health_check_interval: 300.0
+    circuit_breaker_threshold: 5
+    circuit_breaker_timeout: 300.0
+    authentication:
+      api_key: "${NOTION_API_KEY}"
+    config:
+      version: "2022-06-28"
+      base_url: "https://api.notion.com/v1"
+      tasks_database_id: "${NOTION_TASKS_DB_ID}"
+      knowledge_database_id: "${NOTION_KNOWLEDGE_DB_ID}"
+      execution_logs_database_id: "${NOTION_LOGS_DB_ID}"
+
+  # GitHub Integration
+  github:
+    enabled: true
+    priority: 7
+    timeout: 30.0
+    max_retries: 3
+    retry_policy: "exponential_backoff"
+    health_check_interval: 300.0
+    circuit_breaker_threshold: 5
+    circuit_breaker_timeout: 300.0
+    authentication:
+      token: "${GITHUB_TOKEN}"
+    config:
+      base_url: "https://api.github.com"
+      default_owner: "${GITHUB_OWNER}"
+      default_repo: "${GITHUB_REPO}"
+
+  # Sequential Thinking Integration (MCP)
+  sequential_thinking:
+    enabled: true
+    priority: 9
+    timeout: 60.0
+    max_retries: 2
+    retry_policy: "linear_backoff"
+    health_check_interval: 600.0
+    circuit_breaker_threshold: 3
+    circuit_breaker_timeout: 180.0
+    authentication: {}
+    config:
+      server_path: null  # Will use default path
+      max_concurrent_sessions: 5
+      session_timeout_minutes: 30
+      auto_cleanup_completed_sessions: true
+
+# Monitoring and Analytics
+monitoring:
+  # Metrics Collection
+  metrics:
+    enabled: true
+    collection_interval: 60
+    retention_days: 7
+    
+    # Metric Types
+    performance_metrics: true
+    error_metrics: true
+    usage_metrics: true
+    resource_metrics: true
+
+  # Health Checks
+  health_checks:
+    enabled: true
+    interval_seconds: 30
+    timeout_seconds: 10
+    endpoints:
+      - name: "llm_apis"
+        check_type: "api_ping"
+      - name: "database"
+        check_type: "db_connection"
+      - name: "memory"
+        check_type: "resource_usage"
+
+  # Alerting
+  alerting:
+    enabled: false
+    webhook_url: "${ALERT_WEBHOOK_URL}"
+    error_threshold: 5
+    response_time_threshold_ms: 5000
+
+# Development Settings
+development:
+  # Debug Settings
+  debug:
+    verbose_logging: true
+    include_stack_traces: true
+    profile_execution: false
+    save_intermediate_results: true
+
+  # Testing
+  testing:
+    mock_external_apis: false
+    use_test_data: false
+    fast_mode: false
+    skip_validations: false
+
+  # Hot Reloading
+  hot_reload:
+    enabled: true
+    watch_config: true
+    watch_code: false
+    reload_delay_ms: 1000

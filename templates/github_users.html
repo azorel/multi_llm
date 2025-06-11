@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}GitHub Users - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🐙 GitHub Users</h1>
+    <p class="page-subtitle">
+        Process GitHub users and analyze their repositories. Check the box to automatically import and analyze repositories.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">GitHub Users ({{ users|length }} users)</span>
+        <button class="add-button" onclick="addNewUser()">+ Add User</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">⚙️</th>
+                <th>Username</th>
+                <th>GitHub URL</th>
+                <th>Repos Analyzed</th>
+                <th>Last Processed</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr class="{% if user.process_user %}auto-generated{% endif %}">
+                <td>
+                    <input type="checkbox" 
+                           class="notion-checkbox" 
+                           {% if user.process_user %}checked{% endif %}
+                           data-table="github_users" 
+                           data-id="{{ user.id }}" 
+                           data-field="process_user">
+                </td>
+                <td style="font-weight: 600;">{{ user.username }}</td>
+                <td>
+                    <a href="{{ user.github_url }}" target="_blank" style="color: var(--notion-blue);">
+                        {{ user.github_url }}
+                    </a>
+                </td>
+                <td>{{ user.repos_analyzed or 0 }}</td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ user.last_processed.split(' ')[0] if user.last_processed else 'Never' }}
+                </td>
+                <td>
+                    <span class="status-pill status-{{ user.status.lower() if user.status else 'active' }}">
+                        {{ user.status or 'Active' }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function addNewUser() {
+    const username = prompt('GitHub username:');
+    if (username) {
+        const githubUrl = `https://github.com/${username}`;
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'github_users',
+                data: {
+                    username: username,
+                    github_url: githubUrl,
+                    process_user: false,
+                    repos_analyzed: 0,
+                    status: 'Active'
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add user');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Real-Time Autonomous Teams - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🤖 Real-Time Autonomous Teams Monitor</h1>
+    <p class="page-subtitle">
+        Live monitoring of autonomous project managers and workers executing tasks independently.
+        <span style="float: right; color: var(--notion-text-light); font-size: 12px;">
+            🔄 Auto-updating every 5 seconds
+            <button onclick="toggleAutoRefresh()" id="autoRefreshBtn" style="margin-left: 8px; background: var(--notion-green); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                🔄 Auto-Refresh: ON
+            </button>
+        </span>
+    </p>
+</div>
+
+<!-- Live Team Status -->
+<div class="notion-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">⚡ Live Team Status</div>
+    <div class="card-content" style="color: white;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Active Managers</div>
+                <div style="font-size: 18px; font-weight: 600;" id="activeManagers">Loading...</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Working Teams</div>
+                <div style="font-size: 18px; font-weight: 600;" id="workingTeams">Loading...</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Tasks in Progress</div>
+                <div style="font-size: 18px; font-weight: 600;" id="tasksInProgress">Loading...</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Completed Today</div>
+                <div style="font-size: 18px; font-weight: 600;" id="completedToday">Loading...</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">System Status</div>
+                <div style="font-size: 18px; font-weight: 600;" id="systemStatus">
+                    ✅ AUTONOMOUS
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Real-Time Task Activity -->
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">🔄 Real-Time Task Activity</span>
+        <span style="color: var(--notion-text-light); font-size: 12px;" id="lastUpdate">Loading...</span>
+    </div>
+    
+    <div id="liveTaskFeed" style="max-height: 400px; overflow-y: auto;">
+        <div style="padding: 20px; text-align: center; color: var(--notion-text-light);">
+            🔄 Loading real-time task data...
+        </div>
+    </div>
+</div>
+
+<!-- Project Managers Dashboard -->
+<div class="database-container" style="margin-top: 32px;">
+    <div class="database-header">
+        <span class="database-title">👔 Project Managers Performance</span>
+        <button onclick="refreshManagers()" class="add-button">🔄 Refresh</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Manager</th>
+                <th>Specialization</th>
+                <th>Active Tasks</th>
+                <th>Completed</th>
+                <th>Team Members</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="managersTable">
+            <tr>
+                <td colspan="6" style="padding: 20px; text-align: center; color: var(--notion-text-light);">
+                    🔄 Loading manager data...
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Workers Performance -->
+<div class="database-container" style="margin-top: 32px;">
+    <div class="database-header">
+        <span class="database-title">🔧 Workers Performance</span>
+        <button onclick="refreshWorkers()" class="add-button">🔄 Refresh</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Worker</th>
+                <th>Current Task</th>
+                <th>Progress</th>
+                <th>Manager</th>
+                <th>Completed Tasks</th>
+                <th>Efficiency</th>
+            </tr>
+        </thead>
+        <tbody id="workersTable">
+            <tr>
+                <td colspan="6" style="padding: 20px; text-align: center; color: var(--notion-text-light);">
+                    🔄 Loading worker data...
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+let autoRefreshEnabled = true;
+let refreshInterval;
+
+function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    const btn = document.getElementById('autoRefreshBtn');
+    if (autoRefreshEnabled) {
+        btn.textContent = '🔄 Auto-Refresh: ON';
+        btn.style.background = 'var(--notion-green)';
+        startAutoRefresh();
+    } else {
+        btn.textContent = '🔄 Auto-Refresh: OFF';
+        btn.style.background = 'var(--notion-gray)';
+        stopAutoRefresh();
+    }
+}
+
+function startAutoRefresh() {
+    if (refreshInterval) clearInterval(refreshInterval);
+    refreshInterval = setInterval(() => {
+        if (autoRefreshEnabled) {
+            loadRealtimeData();
+        }
+    }, 5000); // Update every 5 seconds
+}
+
+function stopAutoRefresh() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+}
+
+function loadRealtimeData() {
+    // Load live team metrics
+    fetch('/api/realtime-teams')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateLiveMetrics(data);
+                updateTaskFeed(data.teams);
+                document.getElementById('lastUpdate').textContent = 
+                    'Updated: ' + new Date().toLocaleTimeString();
+            }
+        })
+        .catch(error => {
+            console.error('Failed to load real-time data:', error);
+        });
+
+    // Load manager data
+    fetch('/api/managers-status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateManagersTable(data.managers);
+            }
+        })
+        .catch(error => {
+            console.error('Failed to load managers data:', error);
+        });
+
+    // Load worker data
+    fetch('/api/workers-status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateWorkersTable(data.workers);
+            }
+        })
+        .catch(error => {
+            console.error('Failed to load workers data:', error);
+        });
+}
+
+function updateLiveMetrics(data) {
+    const teams = data.teams || [];
+    
+    // Count active managers (unique)
+    const activeManagers = [...new Set(teams.map(t => t.manager))].length;
+    document.getElementById('activeManagers').textContent = activeManagers;
+    
+    // Count working teams (tasks in progress)
+    const workingTeams = teams.filter(t => t.status === 'in_progress').length;
+    document.getElementById('workingTeams').textContent = workingTeams;
+    
+    // Count tasks in progress
+    const tasksInProgress = teams.filter(t => t.status === 'in_progress').length;
+    document.getElementById('tasksInProgress').textContent = tasksInProgress;
+    
+    // Count completed today
+    const completedToday = teams.filter(t => t.status === 'completed').length;
+    document.getElementById('completedToday').textContent = completedToday;
+}
+
+function updateTaskFeed(teams) {
+    const feed = document.getElementById('liveTaskFeed');
+    
+    if (!teams || teams.length === 0) {
+        feed.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--notion-text-light);">No active tasks</div>';
+        return;
+    }
+    
+    let html = '';
+    teams.slice(0, 10).forEach(team => {
+        const statusIcon = team.status === 'completed' ? '✅' : 
+                          team.status === 'in_progress' ? '⚡' : '📋';
+        const statusColor = team.status === 'completed' ? 'var(--notion-green)' : 
+                           team.status === 'in_progress' ? 'var(--notion-orange)' : 'var(--notion-gray)';
+        
+        html += `
+            <div style="padding: 12px; border-bottom: 1px solid var(--notion-border); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 600; color: var(--notion-text);">${statusIcon} ${team.worker}</div>
+                    <div style="font-size: 12px; color: var(--notion-text-light); margin-top: 2px;">${team.task.substring(0, 80)}...</div>
+                    <div style="font-size: 11px; color: var(--notion-text-light); margin-top: 2px;">Manager: ${team.manager}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="color: ${statusColor}; font-weight: 600; font-size: 12px;">${team.status.toUpperCase()}</div>
+                    <div style="font-size: 11px; color: var(--notion-text-light);">${team.progress}%</div>
+                    <div style="font-size: 11px; color: var(--notion-blue);">${team.priority}</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    feed.innerHTML = html;
+}
+
+function updateManagersTable(managers) {
+    const table = document.getElementById('managersTable');
+    
+    if (!managers || managers.length === 0) {
+        table.innerHTML = '<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--notion-text-light);">No manager data available</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    managers.forEach(manager => {
+        html += `
+            <tr>
+                <td style="font-weight: 600;">${manager.name}</td>
+                <td style="font-size: 12px;">${manager.specialization}</td>
+                <td style="text-align: center; color: var(--notion-orange);">${manager.active_tasks || 0}</td>
+                <td style="text-align: center; color: var(--notion-green);">${manager.completed_tasks || 0}</td>
+                <td style="text-align: center;">${manager.team_size || 0}</td>
+                <td><span class="status-pill status-active">Active</span></td>
+            </tr>
+        `;
+    });
+    
+    table.innerHTML = html;
+}
+
+function updateWorkersTable(workers) {
+    const table = document.getElementById('workersTable');
+    
+    if (!workers || workers.length === 0) {
+        table.innerHTML = '<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--notion-text-light);">No worker data available</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    workers.forEach(worker => {
+        const currentTask = worker.current_task ? worker.current_task.substring(0, 40) + '...' : 'Idle';
+        const efficiency = worker.efficiency_rating || 5.0;
+        
+        html += `
+            <tr>
+                <td style="font-weight: 600;">${worker.name}</td>
+                <td style="font-size: 12px;">${currentTask}</td>
+                <td style="text-align: center;">
+                    <div style="background: var(--notion-bg-light); border-radius: 10px; height: 8px; width: 60px; margin: 0 auto;">
+                        <div style="background: var(--notion-blue); height: 8px; border-radius: 10px; width: ${worker.progress || 0}%;"></div>
+                    </div>
+                    <div style="font-size: 10px; margin-top: 2px;">${worker.progress || 0}%</div>
+                </td>
+                <td style="font-size: 12px;">${worker.manager}</td>
+                <td style="text-align: center; color: var(--notion-green);">${worker.completed_tasks || 0}</td>
+                <td style="text-align: center; color: ${efficiency >= 4.5 ? 'var(--notion-green)' : 'var(--notion-orange)'};">${efficiency.toFixed(1)}/5.0</td>
+            </tr>
+        `;
+    });
+    
+    table.innerHTML = html;
+}
+
+function refreshManagers() {
+    loadRealtimeData();
+}
+
+function refreshWorkers() {
+    loadRealtimeData();
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    loadRealtimeData();
+    startAutoRefresh();
+});
+</script>
+{% endblock %}

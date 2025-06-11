@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - RC Trail Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            padding: 40px 0;
+        }
+        .register-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+        .brand-logo {
+            font-size: 2rem;
+            color: #2ecc71;
+            margin-bottom: 30px;
+        }
+        .feature-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .feature-item {
+            margin-bottom: 10px;
+        }
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+        .feature-icon {
+            color: #2ecc71;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="register-card">
+                        <div class="text-center">
+                            <div class="brand-logo">
+                                <i class="fas fa-map-marked-alt"></i>
+                                RC Trail Finder
+                            </div>
+                            <h2 class="mb-2">Join the Adventure</h2>
+                            <p class="text-muted mb-4">Create your free account and start discovering epic RC trails</p>
+                        </div>
+                        
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form method="POST">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-user"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="username" name="username" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-envelope"></i>
+                                            </span>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="password" class="form-label">Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-lock"></i>
+                                            </span>
+                                            <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                                        </div>
+                                        <small class="text-muted">Minimum 6 characters</small>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-success w-100 mb-3">
+                                        <i class="fas fa-user-plus"></i> Create Free Account
+                                    </button>
+                                </form>
+                                
+                                <div class="text-center">
+                                    <p class="mb-0">Already have an account? 
+                                        <a href="/login" class="text-decoration-none">Sign in here</a>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="feature-list">
+                                    <h5 class="mb-3">What you get for free:</h5>
+                                    
+                                    <div class="feature-item">
+                                        <i class="fas fa-map-marker-alt feature-icon"></i>
+                                        <strong>GPS Trail Database</strong><br>
+                                        <small class="text-muted">Access to verified RC trail coordinates</small>
+                                    </div>
+                                    
+                                    <div class="feature-item">
+                                        <i class="fas fa-users feature-icon"></i>
+                                        <strong>Community Reviews</strong><br>
+                                        <small class="text-muted">Real reviews from RC enthusiasts</small>
+                                    </div>
+                                    
+                                    <div class="feature-item">
+                                        <i class="fas fa-star feature-icon"></i>
+                                        <strong>Difficulty Ratings</strong><br>
+                                        <small class="text-muted">Know before you go with 1-10 scale</small>
+                                    </div>
+                                    
+                                    <div class="feature-item">
+                                        <i class="fas fa-mobile-alt feature-icon"></i>
+                                        <strong>Mobile-Friendly</strong><br>
+                                        <small class="text-muted">Access trails on your phone outdoors</small>
+                                    </div>
+                                    
+                                    <div class="feature-item">
+                                        <i class="fas fa-check-circle feature-icon"></i>
+                                        <strong>Trail Check-ins</strong><br>
+                                        <small class="text-muted">Log your adventures and share experiences</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <p class="small text-muted">
+                                        Want premium features? 
+                                        <a href="/subscribe" class="text-decoration-none">
+                                            <i class="fas fa-crown"></i> Upgrade later for $9.99/month
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <p class="mb-0">
+                                <a href="/" class="text-muted text-decoration-none">
+                                    <i class="fas fa-arrow-left"></i> Back to Home
+                                </a>
+                            </p>
+                            <p class="small text-muted mt-2 mb-0">
+                                By signing up, you agree to discover epic RC adventures responsibly
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long');
+            }
+        });
+        
+        // Track registration attempts
+        console.log('Registration page loaded');
+    </script>
+</body>
+</html>

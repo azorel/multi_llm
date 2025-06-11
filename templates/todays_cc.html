@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Today's CC - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📅 Today's CC</h1>
+    <div class="todays-cc-date">
+        <strong>{{ today }}</strong> - Command Center automatically updated daily
+    </div>
+    <p class="page-subtitle">
+        Your daily command center with automatic task management. Tasks reset daily, shopping list auto-updates, and new tasks are generated based on your patterns.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Today's Tasks ({{ tasks|length }} items)</span>
+        <button class="add-button" onclick="addNewTask()">+ Add Task</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">✓</th>
+                <th>Task Name</th>
+                <th>Type</th>
+                <th>Priority</th>
+                <th>Auto Generated</th>
+                <th>Time Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr class="task-row {% if task.completed %}completed{% endif %} {% if task.auto_generated %}auto-generated{% endif %}">
+                <td>
+                    <input type="checkbox" 
+                           class="notion-checkbox" 
+                           {% if task.completed %}checked{% endif %}
+                           data-table="todays_cc" 
+                           data-id="{{ task.id }}" 
+                           data-field="completed">
+                </td>
+                <td class="task-name">{{ task.task_name }}</td>
+                <td>
+                    <span class="status-pill status-{{ task.task_type.lower() }}">{{ task.task_type }}</span>
+                </td>
+                <td>
+                    <span class="priority-{{ 'high' if task.priority == 1 else 'medium' if task.priority == 2 else 'low' }}">
+                        {{ 'High' if task.priority == 1 else 'Medium' if task.priority == 2 else 'Low' }}
+                    </span>
+                </td>
+                <td>
+                    {% if task.auto_generated %}
+                        <span style="color: var(--notion-green);">🤖 Auto</span>
+                    {% else %}
+                        <span style="color: var(--notion-text-light);">Manual</span>
+                    {% endif %}
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ task.created_time.split(' ')[1][:5] if task.created_time else 'N/A' }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Quick Stats -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📊 Today's Progress</div>
+        <div class="card-content">
+            {% set completed_count = tasks | selectattr('completed', 'equalto', True) | list | length %}
+            {{ completed_count }} of {{ tasks|length }} tasks completed
+            <div style="margin-top: 8px; background: var(--notion-border); height: 6px; border-radius: 3px;">
+                <div style="background: var(--notion-green); height: 100%; width: {{ (completed_count / tasks|length * 100) if tasks|length > 0 else 0 }}%; border-radius: 3px; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🤖 Automation Status</div>
+        <div class="card-content">
+            {% set auto_tasks = tasks | selectattr('auto_generated', 'equalto', True) | list | length %}
+            {{ auto_tasks }} auto-generated tasks<br>
+            <span style="color: var(--notion-green);">✅ Daily reset active</span>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">⏰ Schedule</div>
+        <div class="card-content">
+            Morning routine tasks: {{ tasks | selectattr('task_type', 'equalto', 'Routine') | list | length }}<br>
+            High priority items: {{ tasks | selectattr('priority', 'equalto', 1) | list | length }}
+        </div>
+    </div>
+</div>
+
+<script>
+function addNewTask() {
+    const taskName = prompt('Task name:');
+    if (taskName) {
+        const taskType = prompt('Task type (Routine/Personal/Work/Hobby):', 'Personal');
+        const priority = parseInt(prompt('Priority (1=High, 2=Medium, 3=Low):', '2'));
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'todays_cc',
+                data: {
+                    task_name: taskName,
+                    task_type: taskType || 'Personal',
+                    priority: priority || 2,
+                    completed: false,
+                    auto_generated: false
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add task');
+            }
+        });
+    }
+}
+
+// Auto-refresh every 30 seconds to show updates
+setInterval(() => {
+    // Check if there are any pending updates
+    fetch('/todays-cc')
+        .then(response => {
+            if (response.ok) {
+                // Subtle indication that data is fresh
+                document.getElementById('liveIndicator').style.animation = 'pulse 0.5s ease';
+                setTimeout(() => {
+                    document.getElementById('liveIndicator').style.animation = 'pulse 2s infinite';
+                }, 500);
+            }
+        });
+}, 30000);
+</script>
+{% endblock %}

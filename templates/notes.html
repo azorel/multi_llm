@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Notes - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📝 Notes</h1>
+    <p class="page-subtitle">
+        Quick notes, ideas, and thoughts organized by category and tags.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Notes ({{ notes|length }} notes)</span>
+        <button class="add-button" onclick="addNewNote()">+ Add Note</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">📌</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Content Preview</th>
+                <th>Tags</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for note in notes %}
+            <tr>
+                <td>
+                    <input type="checkbox" 
+                           class="notion-checkbox" 
+                           {% if note.pinned %}checked{% endif %}
+                           data-table="notes" 
+                           data-id="{{ note.id }}" 
+                           data-field="pinned">
+                </td>
+                <td style="font-weight: 600;">{{ note.title }}</td>
+                <td>
+                    <span class="status-pill status-{{ note.category.lower().replace(' ', '-') if note.category else 'general' }}">
+                        {{ note.category or 'General' }}
+                    </span>
+                </td>
+                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--notion-text-light);">
+                    {{ (note.content[:100] + '...') if note.content and note.content|length > 100 else (note.content or 'No content') }}
+                </td>
+                <td style="font-size: 12px;">
+                    {% if note.tags %}
+                        {% for tag in note.tags.split(',') %}
+                            <span style="background: var(--notion-purple); color: white; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">{{ tag.strip() }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span style="color: var(--notion-text-light);">No tags</span>
+                    {% endif %}
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ note.created_date.split(' ')[0] if note.created_date else 'N/A' }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function addNewNote() {
+    const title = prompt('Note title:');
+    if (title) {
+        const content = prompt('Note content:');
+        const category = prompt('Category:', 'General');
+        const tags = prompt('Tags (comma-separated):');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'notes',
+                data: {
+                    title: title,
+                    content: content || '',
+                    category: category || 'General',
+                    tags: tags || '',
+                    pinned: false
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add note');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

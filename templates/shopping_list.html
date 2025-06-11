@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping List - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🛒 Shopping List</h1>
+    <p class="page-subtitle">
+        Automated shopping list with intelligent recommendations. Items are automatically added based on your patterns and priorities.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Shopping Items ({{ items|length }} items)</span>
+        <button class="add-button" onclick="addNewItem()">+ Add Item</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">✓</th>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Estimated Cost</th>
+                <th>Auto Added</th>
+                <th>Date Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr class="{% if item.purchased %}completed{% endif %} {% if item.auto_added %}auto-generated{% endif %}">
+                <td>
+                    <input type="checkbox" 
+                           class="notion-checkbox" 
+                           {% if item.purchased %}checked{% endif %}
+                           data-table="shopping_list" 
+                           data-id="{{ item.id }}" 
+                           data-field="purchased">
+                </td>
+                <td style="font-weight: 600;">{{ item.item_name }}</td>
+                <td>
+                    <span class="status-pill status-{{ item.category.lower().replace(' ', '-') if item.category else 'general' }}">
+                        {{ item.category or 'General' }}
+                    </span>
+                </td>
+                <td>
+                    <span class="priority-{{ item.priority.lower() if item.priority else 'medium' }}">
+                        {{ item.priority or 'Medium' }}
+                    </span>
+                </td>
+                <td>${{ "%.2f"|format(item.estimated_cost) if item.estimated_cost else '0.00' }}</td>
+                <td>
+                    {% if item.auto_added %}
+                        <span style="color: var(--notion-green);">🤖 Auto</span>
+                    {% else %}
+                        <span style="color: var(--notion-text-light);">Manual</span>
+                    {% endif %}
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ item.date_added.split(' ')[0] if item.date_added else 'N/A' }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function addNewItem() {
+    const itemName = prompt('Item name:');
+    if (itemName) {
+        const category = prompt('Category:', 'General');
+        const priority = prompt('Priority (High/Medium/Low):', 'Medium');
+        const cost = parseFloat(prompt('Estimated cost:', '0.00'));
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'shopping_list',
+                data: {
+                    item_name: itemName,
+                    category: category || 'General',
+                    priority: priority || 'Medium',
+                    estimated_cost: cost || 0.00,
+                    purchased: false,
+                    auto_added: false
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add item');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

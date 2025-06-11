@@ -1,0 +1,627 @@
+{% extends "sql_base.html" %}
+
+{% block title %}Multi-Agents Dashboard - SQL System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🤖 Multi-Agent SQL Dashboard</h1>
+    <p class="page-subtitle">
+        Real-time monitoring of the autonomous multi-agent system. SQL-based processing with concurrent agents.
+        <span style="float: right; color: var(--notion-text-light); font-size: 18px;">
+            System Status: <span id="systemStatus">{{ 'RUNNING' if sql_agents_running else 'STOPPED' }}</span>
+            <button onclick="toggleAutoRefresh()" id="autoRefreshBtn" style="margin-left: 8px; background: var(--notion-green); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 17px; cursor: pointer;">
+                🔄 Auto-Refresh: ON
+            </button>
+            <button onclick="location.reload()" style="margin-left: 4px; background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 17px; cursor: pointer;">
+                🔄 Manual Refresh
+            </button>
+        </span>
+    </p>
+</div>
+
+<!-- System Status Overview -->
+<div class="notion-card" style="margin-bottom: 24px; background: {% if sql_agents_running %}linear-gradient(135deg, #22c55e 0%, #16a34a 100%){% else %}linear-gradient(135deg, #ef4444 0%, #dc2626 100%){% endif %}; color: white;">
+    <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">🎯 System Status</div>
+    <div class="card-content" style="color: white;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Status</div>
+                <div style="font-size: 18px; font-weight: 600;">
+                    {% if sql_agents_running %}
+                        ✅ ACTIVE
+                    {% else %}
+                        ❌ STOPPED
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">System Type</div>
+                <div style="font-size: 18px; font-weight: 600;">SQL Multi-Agent</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Database</div>
+                <div style="font-size: 18px; font-weight: 600;">SQLite</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Total Videos</div>
+                <div style="font-size: 18px; font-weight: 600;">{{ stats.total_videos or 0 }}</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Processed</div>
+                <div style="font-size: 18px; font-weight: 600;">{{ stats.processed_videos or 0 }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Metrics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📺 YouTube Channels</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-blue);">{{ stats.total_channels or 0 }}</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Active channels</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">⚡ Processing Queue</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-orange);">{{ stats.pending_videos or 0 }}</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Videos pending</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">✅ Success Rate</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">
+                {% if stats.total_videos and stats.total_videos > 0 %}
+                    {{ "%.1f"|format((stats.processed_videos / stats.total_videos) * 100) }}%
+                {% else %}
+                    0%
+                {% endif %}
+            </div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Processing success</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🔄 System Uptime</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">
+                {% if sql_agents_running %}
+                    ONLINE
+                {% else %}
+                    OFFLINE
+                {% endif %}
+            </div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Agent system</div>
+        </div>
+    </div>
+</div>
+
+<!-- Agent Components -->
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">🧠 Multi-Agent Components</span>
+        <div class="filters">
+            {% if sql_agents_running %}
+                <button onclick="stopSystem()" style="background: var(--notion-red); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                    ⏸️ Stop System
+                </button>
+            {% else %}
+                <button onclick="startSystem()" style="background: var(--notion-green); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                    ▶️ Start System
+                </button>
+            {% endif %}
+        </div>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Agent Component</th>
+                <th>Function</th>
+                <th>Status</th>
+                <th>Current Task</th>
+                <th>Performance</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="{% if sql_agents_running %}agent-active{% else %}agent-stopped{% endif %}">
+                <td style="font-weight: 600;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if sql_agents_running %}var(--notion-green){% else %}var(--notion-red){% endif %};"></div>
+                        Flask Web Server
+                    </div>
+                </td>
+                <td>
+                    <span class="status-pill status-web">Web Interface</span>
+                </td>
+                <td>
+                    {% if sql_agents_running %}
+                        <span class="status-pill status-active">🔄 Running</span>
+                    {% else %}
+                        <span class="status-pill status-stopped">⏸️ Stopped</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="font-size: 12px; color: var(--notion-text);">
+                        {% if sql_agents_running %}
+                            Serving web dashboard on port 5000
+                        {% else %}
+                            Waiting to start
+                        {% endif %}
+                    </div>
+                </td>
+                <td style="font-size: 11px;">
+                    {% if sql_agents_running %}
+                        <div>Port: 5000</div>
+                        <div>Status: Healthy</div>
+                    {% else %}
+                        <div style="color: var(--notion-text-light);">Stopped</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <button onclick="viewLogs('web-server')" style="background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                        📊 Logs
+                    </button>
+                </td>
+            </tr>
+            
+            <tr class="{% if sql_agents_running %}agent-active{% else %}agent-stopped{% endif %}">
+                <td style="font-weight: 600;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if sql_agents_running %}var(--notion-green){% else %}var(--notion-red){% endif %};"></div>
+                        YouTube Processor
+                    </div>
+                </td>
+                <td>
+                    <span class="status-pill status-youtube">AI Analysis</span>
+                </td>
+                <td>
+                    {% if sql_agents_running %}
+                        <span class="status-pill status-active">🔄 Processing</span>
+                    {% else %}
+                        <span class="status-pill status-stopped">⏸️ Stopped</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="font-size: 12px; color: var(--notion-text);">
+                        {% if sql_agents_running %}
+                            Processing YouTube transcripts with AI
+                        {% else %}
+                            Waiting to start
+                        {% endif %}
+                    </div>
+                </td>
+                <td style="font-size: 11px;">
+                    {% if sql_agents_running %}
+                        <div>Queue: {{ stats.pending_videos or 0 }}</div>
+                        <div>Processed: {{ stats.processed_videos or 0 }}</div>
+                    {% else %}
+                        <div style="color: var(--notion-text-light);">Stopped</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <button onclick="viewLogs('youtube-processor')" style="background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                        📊 Logs
+                    </button>
+                </td>
+            </tr>
+            
+            <tr class="{% if sql_agents_running %}agent-active{% else %}agent-stopped{% endif %}">
+                <td style="font-weight: 600;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if sql_agents_running %}var(--notion-green){% else %}var(--notion-red){% endif %};"></div>
+                        Self-Healing Monitor
+                    </div>
+                </td>
+                <td>
+                    <span class="status-pill status-monitor">System Health</span>
+                </td>
+                <td>
+                    {% if sql_agents_running %}
+                        <span class="status-pill status-active">🔄 Monitoring</span>
+                    {% else %}
+                        <span class="status-pill status-stopped">⏸️ Stopped</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="font-size: 12px; color: var(--notion-text);">
+                        {% if sql_agents_running %}
+                            Monitoring system health and performance
+                        {% else %}
+                            Waiting to start
+                        {% endif %}
+                    </div>
+                </td>
+                <td style="font-size: 11px;">
+                    {% if sql_agents_running %}
+                        <div>Health: OK</div>
+                        <div>Alerts: 0</div>
+                    {% else %}
+                        <div style="color: var(--notion-text-light);">Stopped</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <button onclick="viewLogs('health-monitor')" style="background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                        📊 Logs
+                    </button>
+                </td>
+            </tr>
+            
+            <tr class="{% if sql_agents_running %}agent-active{% else %}agent-stopped{% endif %}">
+                <td style="font-weight: 600;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if sql_agents_running %}var(--notion-green){% else %}var(--notion-red){% endif %};"></div>
+                        Database Manager
+                    </div>
+                </td>
+                <td>
+                    <span class="status-pill status-database">SQLite Ops</span>
+                </td>
+                <td>
+                    {% if sql_agents_running %}
+                        <span class="status-pill status-active">🔄 Active</span>
+                    {% else %}
+                        <span class="status-pill status-stopped">⏸️ Stopped</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="font-size: 12px; color: var(--notion-text);">
+                        {% if sql_agents_running %}
+                            Managing SQLite database operations
+                        {% else %}
+                            Waiting to start
+                        {% endif %}
+                    </div>
+                </td>
+                <td style="font-size: 11px;">
+                    {% if sql_agents_running %}
+                        <div>Records: {{ stats.total_videos or 0 }}</div>
+                        <div>Size: {{ stats.db_size or 'N/A' }}</div>
+                    {% else %}
+                        <div style="color: var(--notion-text-light);">Stopped</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <button onclick="viewLogs('database-manager')" style="background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                        📊 Logs
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- System Architecture -->
+<div class="notion-card" style="margin-top: 32px;">
+    <div class="card-title">🏗️ System Architecture</div>
+    <div class="card-content">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div style="text-align: center; padding: 16px; background: var(--notion-blue-light); border-radius: 8px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🌐</div>
+                <div style="font-weight: 600; margin-bottom: 4px;">Web Interface</div>
+                <div style="font-size: 12px; color: var(--notion-text-light);">Flask server on port 5000</div>
+            </div>
+            
+            <div style="text-align: center; padding: 16px; background: var(--notion-green-light); border-radius: 8px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🤖</div>
+                <div style="font-weight: 600; margin-bottom: 4px;">AI Processing</div>
+                <div style="font-size: 12px; color: var(--notion-text-light);">YouTube content analysis</div>
+            </div>
+            
+            <div style="text-align: center; padding: 16px; background: var(--notion-purple-light); border-radius: 8px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🗄️</div>
+                <div style="font-weight: 600; margin-bottom: 4px;">SQLite Database</div>
+                <div style="font-size: 12px; color: var(--notion-text-light);">Data persistence layer</div>
+            </div>
+            
+            <div style="text-align: center; padding: 16px; background: var(--notion-orange-light); border-radius: 8px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🔧</div>
+                <div style="font-weight: 600; margin-bottom: 4px;">Self-Healing</div>
+                <div style="font-size: 12px; color: var(--notion-text-light);">Autonomous monitoring</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let autoRefreshEnabled = true;
+let refreshInterval;
+
+function startSystem() {
+    if (confirm('Start the multi-agent system? This will begin all agent processes.')) {
+        updateStatus('Starting system...', 'orange');
+        fetch('/api/start_system', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateStatus('RUNNING', 'green');
+                showNotification('✅ Multi-agent system started successfully!', 'success');
+                updateDashboard();
+            } else {
+                updateStatus('FAILED TO START', 'red');
+                showNotification('❌ Failed to start system: ' + (data.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(error => {
+            updateStatus('ERROR', 'red');
+            showNotification('❌ Error: ' + error.message, 'error');
+        });
+    }
+}
+
+function stopSystem() {
+    if (confirm('Stop the multi-agent system? This will halt all agent processes.')) {
+        updateStatus('Stopping system...', 'orange');
+        fetch('/api/stop_system', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateStatus('STOPPED', 'red');
+                showNotification('✅ Multi-agent system stopped successfully!', 'success');
+                updateDashboard();
+            } else {
+                updateStatus('FAILED TO STOP', 'red');
+                showNotification('❌ Failed to stop system: ' + (data.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(error => {
+            updateStatus('ERROR', 'red');
+            showNotification('❌ Error: ' + error.message, 'error');
+        });
+    }
+}
+
+function viewLogs(component) {
+    const logWindow = window.open('', '_blank', 'width=1000,height=700');
+    logWindow.document.write(`
+        <html>
+            <head>
+                <title>${component} Logs - Real-time</title>
+                <style>
+                    body { font-family: monospace; margin: 0; padding: 20px; background: #1e1e1e; color: #fff; }
+                    .header { background: #333; padding: 15px; margin: -20px -20px 20px -20px; }
+                    .logs { background: #000; color: #0f0; padding: 15px; border-radius: 5px; white-space: pre-wrap; height: 500px; overflow-y: auto; border: 1px solid #333; }
+                    .controls { margin-bottom: 15px; }
+                    button { background: #0078d4; color: white; border: none; padding: 8px 15px; margin-right: 10px; border-radius: 4px; cursor: pointer; }
+                    button:hover { background: #106ebe; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2>${component} Logs - Real-time Monitor</h2>
+                </div>
+                <div class="controls">
+                    <button onclick="refreshLogs()">🔄 Refresh</button>
+                    <button onclick="clearLogs()">🗑️ Clear</button>
+                    <button onclick="toggleAutoRefresh()">🔄 Auto-refresh: <span id="autoStatus">ON</span></button>
+                </div>
+                <div id="logs" class="logs">
+                    Loading logs for ${component}...
+                </div>
+                <script>
+                    let autoRefresh = true;
+                    let refreshTimer;
+                    
+                    function refreshLogs() {
+                        fetch('/api/logs/${component}')
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('logs').textContent = data.logs || 'No logs available';
+                                document.getElementById('logs').scrollTop = document.getElementById('logs').scrollHeight;
+                            })
+                            .catch(error => {
+                                document.getElementById('logs').textContent = 'Error loading logs: ' + error.message;
+                            });
+                    }
+                    
+                    function clearLogs() {
+                        document.getElementById('logs').textContent = '';
+                    }
+                    
+                    function toggleAutoRefresh() {
+                        autoRefresh = !autoRefresh;
+                        document.getElementById('autoStatus').textContent = autoRefresh ? 'ON' : 'OFF';
+                        
+                        if (autoRefresh) {
+                            refreshTimer = setInterval(refreshLogs, 3000);
+                            refreshLogs();
+                        } else {
+                            clearInterval(refreshTimer);
+                        }
+                    }
+                    
+                    // Initialize
+                    refreshLogs();
+                    refreshTimer = setInterval(refreshLogs, 3000);
+                </script>
+            </body>
+        </html>
+    `);
+}
+
+function updateStatus(status, color) {
+    const statusElement = document.getElementById('systemStatus');
+    statusElement.textContent = status;
+    statusElement.style.color = color === 'green' ? '#22c55e' : color === 'red' ? '#ef4444' : '#f59e0b';
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        background: ${type === 'success' ? '#22c55e' : '#ef4444'};
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+function updateDashboard() {
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            // Update metrics cards
+            document.querySelectorAll('.notion-card').forEach(card => {
+                const title = card.querySelector('.card-title').textContent;
+                const content = card.querySelector('.card-content');
+                
+                if (title.includes('YouTube Channels')) {
+                    content.querySelector('div').textContent = data.total_channels || 0;
+                } else if (title.includes('Processing Queue')) {
+                    content.querySelector('div').textContent = data.pending_videos || 0;
+                } else if (title.includes('Success Rate')) {
+                    const rate = data.total_videos > 0 ? ((data.processed_videos / data.total_videos) * 100).toFixed(1) : 0;
+                    content.querySelector('div').textContent = rate + '%';
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Failed to update dashboard:', error);
+        });
+}
+
+function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    const btn = document.getElementById('autoRefreshBtn');
+    
+    if (autoRefreshEnabled) {
+        btn.textContent = '🔄 Auto-Refresh: ON';
+        btn.style.background = 'var(--notion-green)';
+        startAutoRefresh();
+    } else {
+        btn.textContent = '🔄 Auto-Refresh: OFF';
+        btn.style.background = 'var(--notion-gray)';
+        stopAutoRefresh();
+    }
+}
+
+function startAutoRefresh() {
+    if (refreshInterval) clearInterval(refreshInterval);
+    
+    refreshInterval = setInterval(() => {
+        if (autoRefreshEnabled) {
+            updateDashboard();
+            
+            // Check system status
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    // Update status indicator based on recent activity
+                    const lastUpdate = new Date().toLocaleTimeString();
+                    document.querySelector('.page-subtitle span').innerHTML = `
+                        System Status: <span id="systemStatus" style="color: #22c55e;">RUNNING</span>
+                        <small style="margin-left: 8px; opacity: 0.7;">Last updated: ${lastUpdate}</small>
+                        <button onclick="toggleAutoRefresh()" id="autoRefreshBtn" style="margin-left: 8px; background: var(--notion-green); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                            🔄 Auto-Refresh: ON
+                        </button>
+                        <button onclick="location.reload()" style="margin-left: 4px; background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                            🔄 Manual Refresh
+                        </button>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Auto-refresh failed:', error);
+                });
+        }
+    }, 10000); // Update every 10 seconds
+}
+
+function stopAutoRefresh() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+}
+
+// Initialize auto-refresh on page load
+document.addEventListener('DOMContentLoaded', function() {
+    startAutoRefresh();
+    
+    // Show loading indicator
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--notion-blue);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        z-index: 1000;
+    `;
+    loadingIndicator.textContent = '🔄 Auto-refresh active';
+    loadingIndicator.id = 'autoRefreshIndicator';
+    document.body.appendChild(loadingIndicator);
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        loadingIndicator.style.opacity = '0.7';
+    }, 3000);
+});
+</script>
+
+<style>
+.agent-active {
+    background: rgba(34, 197, 94, 0.05);
+    border-left: 3px solid #22c55e;
+}
+
+.agent-stopped {
+    background: rgba(239, 68, 68, 0.05);
+    border-left: 3px solid #ef4444;
+}
+
+.status-web {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-youtube {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-monitor {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-database {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+.status-stopped {
+    background: #fef2f2;
+    color: #991b1b;
+}
+</style>
+{% endblock %}

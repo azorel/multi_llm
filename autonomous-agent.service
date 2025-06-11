@@ -1,0 +1,43 @@
+[Unit]
+Description=Autonomous Multi-LLM Agent System
+Documentation=https://github.com/user/autonomous-multi-llm-agent
+After=network.target postgresql.service redis.service
+Wants=postgresql.service redis.service
+
+[Service]
+Type=simple
+User=agent
+Group=agent
+WorkingDirectory=/opt/autonomous-agent
+Environment=PATH=/opt/autonomous-agent/venv/bin
+Environment=PYTHONPATH=/opt/autonomous-agent/src
+ExecStart=/opt/autonomous-agent/venv/bin/python start_system.py --env production
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -TERM $MAINPID
+Restart=always
+RestartSec=10
+StartLimitInterval=0
+
+# Security settings
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/autonomous-agent/logs /opt/autonomous-agent/data /opt/autonomous-agent/tmp
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryMax=2G
+CPUQuota=200%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=autonomous-agent
+
+[Install]
+WantedBy=multi-user.target

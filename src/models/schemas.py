@@ -1,0 +1,408 @@
+"""
+Pydantic models and schemas for the autonomous multi-LLM agent system.
+
+This module defines all the data models used throughout the system for
+type safety, validation, and serialization.
+"""
+
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Dict, List, Any, Optional, Union
+from uuid import UUID, uuid4
+from pydantic import BaseModel, Field, validator, root_validator, model_validator
+
+
+class AgentType(str, Enum):
+    """Types of agents in the system."""
+    GPT = "gpt"
+    CLAUDE = "claude" 
+    GEMINI = "gemini"
+    CUSTOM = "custom"
+
+
+class TaskType(str, Enum):
+    """Types of tasks that can be executed."""
+    TEXT_GENERATION = "text_generation"
+    CODE_GENERATION = "code_generation"
+    DATA_ANALYSIS = "data_analysis"
+    IMAGE_ANALYSIS = "image_analysis"
+    WORKFLOW_ORCHESTRATION = "workflow_orchestration"
+    DOCUMENT_PROCESSING = "document_processing"
+    TRANSLATION = "translation"
+    SUMMARIZATION = "summarization"
+    VALIDATION = "validation"
+    CUSTOM = "custom"
+
+
+class ActionType(str, Enum):
+    """Types of actions agents can perform."""
+    EXECUTE_TASK = "execute_task"
+    VALIDATE_RESULT = "validate_result"
+    GENERATE_PROPOSAL = "generate_proposal"
+    VOTE_ON_PROPOSAL = "vote_on_proposal"
+    REFLECT_ON_FAILURE = "reflect_on_failure"
+    OPTIMIZE_PERFORMANCE = "optimize_performance"
+    CUSTOM = "custom"
+
+
+class Priority(str, Enum):
+    """Task priority levels."""
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+    URGENT = "urgent"
+
+
+class ExecutionStatus(str, Enum):
+    """Execution status values."""
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+    TIMEOUT = "timeout"
+
+
+class VoteType(str, Enum):
+    """Types of votes in the consensus mechanism."""
+    APPROVE = "approve"
+    REJECT = "reject"
+    ABSTAIN = "abstain"
+    MODIFY = "modify"
+
+
+class BaseSchema(BaseModel):
+    """Base schema with common fields."""
+    
+    class Config:
+        use_enum_values = True
+        validate_assignment = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            timedelta: lambda v: v.total_seconds(),
+            UUID: lambda v: str(v)
+        }
+
+
+class TaskContext(BaseSchema):
+    """Context information for task execution."""
+    task_id: str = Field(default_factory=lambda: str(uuid4()))
+    task_type: TaskType
+    description: str = Field(min_length=1, max_length=10000)
+    input_data: Dict[str, Any] = Field(default_factory=dict)
+    parameters: Dict[str, Any] = Field(default_factory=dict)
+    constraints: Dict[str, Any] = Field(default_factory=dict)
+    priority: Priority = Priority.NORMAL
+    timeout: int = Field(default=300, ge=1, le=3600)  # 1 second to 1 hour
+    max_retries: int = Field(default=3, ge=0, le=10)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    deadline: Optional[datetime] = None
+    tags: List[str] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    @validator('deadline')
+    def deadline_must_be_future(cls, v, values):
+        if v and 'created_at' in values and v <= values['created_at']:
+            raise ValueError('Deadline must be in the future')
+        return v
+
+
+class AgentConfig(BaseSchema):
+    """Configuration for an agent."""
+    agent_id: str
+    agent_type: AgentType
+    model: str
+    api_key: str = Field(..., min_length=1)
+    max_tokens: int = Field(default=4096, ge=1, le=200000)
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    timeout: int = Field(default=60, ge=1, le=300)
+    rate_limit: int = Field(default=60, ge=1, le=1000)  # requests per minute
+    capabilities: List[str] = Field(default_factory=list)
+    specializations: List[TaskType] = Field(default_factory=list)
+    cost_per_token: float = Field(default=0.0, ge=0.0)
+    enabled: bool = True
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    @validator('api_key')
+    def api_key_not_empty(cls, v):
+        if not v or v.isspace():
+            raise ValueError('API key cannot be empty')
+        return v
+
+
+class AgentCapabilities(BaseSchema):
+    """Capabilities and constraints of an agent."""
+    agent_id: str
+    supported_tasks: List[TaskType] = Field(default_factory=list)
+    max_concurrent_tasks: int = Field(default=1, ge=1, le=10)
+    rate_limit_per_minute: int = Field(default=60, ge=1, le=1000)
+    max_tokens_per_request: int = Field(default=4096, ge=1, le=200000)
+    cost_per_1k_tokens: float = Field(default=0.0, ge=0.0)
+    average_response_time: float = Field(default=5.0, ge=0.1)
+    success_rate: float = Field(default=0.9, ge=0.0, le=1.0)
+    specializations: List[str] = Field(default_factory=list)
+    constraints: Dict[str, Any] = Field(default_factory=dict)
+    enabled: bool = True
+    last_updated: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Proposal(BaseSchema):
+    """Proposal generated by an agent for task execution."""
+    proposal_id: str = Field(default_factory=lambda: str(uuid4()))
+    agent_id: str
+    task_context: TaskContext
+    approach: str = Field(min_length=1, max_length=5000)
+    estimated_time: timedelta
+    estimated_cost: float = Field(ge=0.0)
+    confidence: float = Field(ge=0.0, le=1.0)
+    required_tools: List[str] = Field(default_factory=list)
+    dependencies: List[str] = Field(default_factory=list)
+    risks: List[str] = Field(default_factory=list)
+    mitigation_strategies: List[str] = Field(default_factory=list)
+    expected_output: Dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    @validator('estimated_time')
+    def estimated_time_positive(cls, v):
+        if v.total_seconds() <= 0:
+            raise ValueError('Estimated time must be positive')
+        return v
+
+
+class Vote(BaseSchema):
+    """Vote on a proposal from an agent."""
+    vote_id: str = Field(default_factory=lambda: str(uuid4()))
+    voter_agent_id: str
+    proposal_id: str
+    vote_type: VoteType
+    confidence: float = Field(ge=0.0, le=1.0)
+    reasoning: str = Field(min_length=1, max_length=2000)
+    suggested_modifications: List[str] = Field(default_factory=list)
+    risk_assessment: Dict[str, float] = Field(default_factory=dict)
+    estimated_success_probability: float = Field(ge=0.0, le=1.0)
+    voted_at: datetime = Field(default_factory=datetime.utcnow)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class Action(BaseSchema):
+    """Action to be performed by an agent."""
+    action_id: str = Field(default_factory=lambda: str(uuid4()))
+    action_type: ActionType
+    agent_id: str
+    task_context: TaskContext
+    parameters: Dict[str, Any] = Field(default_factory=dict)
+    tools_required: List[str] = Field(default_factory=list)
+    estimated_duration: timedelta
+    max_retries: int = Field(default=3, ge=0, le=10)
+    timeout: int = Field(default=300, ge=1, le=3600)
+    priority: Priority = Priority.NORMAL
+    dependencies: List[str] = Field(default_factory=list)
+    rollback_strategy: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: Optional[datetime] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ExecutionResult(BaseSchema):
+    """Result of action execution."""
+    result_id: str = Field(default_factory=lambda: str(uuid4()))
+    action_id: str
+    agent_id: str
+    status: ExecutionStatus
+    output: Dict[str, Any] = Field(default_factory=dict)
+    artifacts: List[str] = Field(default_factory=list)  # File paths or URLs
+    error_message: Optional[str] = None
+    error_code: Optional[str] = None
+    performance_metrics: Dict[str, float] = Field(default_factory=dict)
+    resource_usage: Dict[str, float] = Field(default_factory=dict)
+    execution_time: timedelta
+    tokens_used: int = Field(default=0, ge=0)
+    cost: float = Field(default=0.0, ge=0.0)
+    quality_score: Optional[float] = Field(None, ge=0.0, le=1.0)
+    confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    completed_at: Optional[datetime] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode='before')
+    @classmethod
+    def validate_execution_result(cls, values):
+        if isinstance(values, dict):
+            status = values.get('status')
+            error_message = values.get('error_message')
+            
+            if status == ExecutionStatus.FAILED and not error_message:
+                raise ValueError('Failed execution must include error message')
+            
+            if status == ExecutionStatus.COMPLETED and error_message:
+                raise ValueError('Completed execution should not have error message')
+        
+        return values
+
+
+class ValidationResult(BaseSchema):
+    """Result of validating an execution result."""
+    validation_id: str = Field(default_factory=lambda: str(uuid4()))
+    result_id: str
+    validator_agent_id: str
+    is_valid: bool
+    confidence: float = Field(ge=0.0, le=1.0)
+    quality_score: float = Field(ge=0.0, le=1.0)
+    validation_criteria: Dict[str, bool] = Field(default_factory=dict)
+    issues_found: List[str] = Field(default_factory=list)
+    suggestions: List[str] = Field(default_factory=list)
+    approval_status: str = Field(default="pending")  # pending, approved, rejected
+    reasoning: str = Field(min_length=1, max_length=2000)
+    validated_at: datetime = Field(default_factory=datetime.utcnow)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    @validator('approval_status')
+    def validate_approval_status(cls, v):
+        valid_statuses = ['pending', 'approved', 'rejected']
+        if v not in valid_statuses:
+            raise ValueError(f'Approval status must be one of: {valid_statuses}')
+        return v
+
+
+class SystemState(BaseSchema):
+    """Current state of the system."""
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    active_tasks: int = Field(ge=0)
+    pending_tasks: int = Field(ge=0)
+    completed_tasks: int = Field(ge=0)
+    failed_tasks: int = Field(ge=0)
+    active_agents: List[str] = Field(default_factory=list)
+    system_load: float = Field(ge=0.0, le=1.0)
+    memory_usage: float = Field(ge=0.0, le=1.0)
+    cpu_usage: float = Field(ge=0.0, le=1.0)
+    error_rate: float = Field(ge=0.0, le=1.0)
+    average_response_time: float = Field(ge=0.0)
+    health_score: float = Field(ge=0.0, le=1.0)
+    alerts_active: int = Field(ge=0)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class MemoryEntry(BaseSchema):
+    """Entry in the shared memory system."""
+    entry_id: str = Field(default_factory=lambda: str(uuid4()))
+    key: str
+    value: Dict[str, Any]
+    entry_type: str = Field(default="general")  # task, result, pattern, learning
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    accessed_at: datetime = Field(default_factory=datetime.utcnow)
+    access_count: int = Field(default=0, ge=0)
+    ttl_seconds: Optional[int] = Field(None, ge=1)
+    expires_at: Optional[datetime] = None
+    tags: List[str] = Field(default_factory=list)
+    size_bytes: int = Field(default=0, ge=0)
+    compression: bool = False
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode='before')
+    @classmethod
+    def set_expiration(cls, values):
+        if isinstance(values, dict):
+            ttl_seconds = values.get('ttl_seconds')
+            created_at = values.get('created_at')
+            
+            if ttl_seconds and created_at:
+                values['expires_at'] = created_at + timedelta(seconds=ttl_seconds)
+        
+        return values
+
+
+class ErrorEvent(BaseSchema):
+    """Error event for tracking and analysis."""
+    event_id: str = Field(default_factory=lambda: str(uuid4()))
+    error_type: str
+    component: str
+    message: str
+    severity: str = Field(default="medium")  # low, medium, high, critical
+    occurred_at: datetime = Field(default_factory=datetime.utcnow)
+    context: Dict[str, Any] = Field(default_factory=dict)
+    stack_trace: Optional[str] = None
+    resolved: bool = False
+    resolution_time: Optional[datetime] = None
+    recovery_actions: List[str] = Field(default_factory=list)
+    impact_assessment: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    @validator('severity')
+    def validate_severity(cls, v):
+        valid_severities = ['low', 'medium', 'high', 'critical']
+        if v not in valid_severities:
+            raise ValueError(f'Severity must be one of: {valid_severities}')
+        return v
+
+
+class PerformanceMetrics(BaseSchema):
+    """Performance metrics for monitoring."""
+    metric_id: str = Field(default_factory=lambda: str(uuid4()))
+    component: str
+    metric_name: str
+    value: float
+    unit: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    tags: Dict[str, str] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
+    threshold_warning: Optional[float] = None
+    threshold_critical: Optional[float] = None
+    is_anomaly: bool = False
+    trend: Optional[str] = None  # increasing, decreasing, stable
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class PlanStep(BaseSchema):
+    """Individual step in an execution plan."""
+    step_id: str = Field(default_factory=lambda: str(uuid4()))
+    sequence: int = Field(ge=1)
+    action: Action
+    dependencies: List[str] = Field(default_factory=list)
+    parallel_group: Optional[str] = None
+    conditional: bool = False
+    condition: Optional[str] = None
+    rollback_action: Optional[Action] = None
+    timeout: int = Field(default=300, ge=1, le=3600)
+    retry_policy: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ImprovementPlan(BaseSchema):
+    """Plan for improving system performance based on learnings."""
+    plan_id: str = Field(default_factory=lambda: str(uuid4()))
+    trigger_event: str
+    analysis_summary: str
+    steps: List[PlanStep]
+    expected_improvements: Dict[str, float] = Field(default_factory=dict)
+    risk_assessment: Dict[str, float] = Field(default_factory=dict)
+    implementation_priority: Priority = Priority.NORMAL
+    estimated_effort: timedelta
+    success_criteria: List[str] = Field(default_factory=list)
+    rollback_plan: Optional['ImprovementPlan'] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class WorkflowDefinition(BaseSchema):
+    """Definition of a workflow for complex task orchestration."""
+    workflow_id: str = Field(default_factory=lambda: str(uuid4()))
+    name: str = Field(min_length=1, max_length=255)
+    description: str = Field(max_length=2000)
+    version: str = Field(default="1.0.0")
+    steps: List[PlanStep]
+    input_schema: Dict[str, Any] = Field(default_factory=dict)
+    output_schema: Dict[str, Any] = Field(default_factory=dict)
+    timeout: int = Field(default=3600, ge=1, le=86400)  # 1 second to 1 day
+    max_retries: int = Field(default=3, ge=0, le=10)
+    parallel_execution: bool = False
+    error_handling: Dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_by: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+# Update forward references
+ImprovementPlan.model_rebuild()

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📋 Tasks</h1>
+    <p class="page-subtitle">
+        Manage all your tasks with priority levels, due dates, and completion tracking.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Tasks ({{ tasks|length }} tasks)</span>
+        <button class="add-button" onclick="addNewTask()">+ Add Task</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">✓</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+                <th>Description</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr class="{% if task.status == 'Completed' %}completed{% endif %}">
+                <td>
+                    <input type="checkbox" 
+                           class="notion-checkbox" 
+                           {% if task.status == 'Completed' %}checked{% endif %}
+                           onchange="toggleTaskCompletion({{ task.id }}, this)">
+                </td>
+                <td style="font-weight: 600;">{{ task.title }}</td>
+                <td>
+                    <span class="status-pill status-{{ task.status.lower().replace(' ', '-') if task.status else 'todo' }}">
+                        {{ task.status or 'Todo' }}
+                    </span>
+                </td>
+                <td>
+                    <span class="priority-{{ task.priority.lower() if task.priority else 'medium' }}">
+                        {{ task.priority or 'Medium' }}
+                    </span>
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ task.due_date if task.due_date else 'No due date' }}
+                </td>
+                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--notion-text-light);">
+                    {{ (task.description[:80] + '...') if task.description and task.description|length > 80 else (task.description or 'No description') }}
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ task.created_date.split(' ')[0] if task.created_date else 'N/A' }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function toggleTaskCompletion(taskId, checkbox) {
+    const newStatus = checkbox.checked ? 'Completed' : 'Todo';
+    
+    fetch('/update-checkbox', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'tasks',
+            id: taskId,
+            field: 'status',
+            value: newStatus
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the status pill
+            const row = checkbox.closest('tr');
+            const statusPill = row.querySelector('.status-pill');
+            statusPill.textContent = newStatus;
+            statusPill.className = `status-pill status-${newStatus.toLowerCase()}`;
+            
+            // Update row appearance
+            if (checkbox.checked) {
+                row.classList.add('completed');
+            } else {
+                row.classList.remove('completed');
+            }
+        }
+    });
+}
+
+function addNewTask() {
+    const title = prompt('Task title:');
+    if (title) {
+        const description = prompt('Description (optional):');
+        const priority = prompt('Priority (High/Medium/Low):', 'Medium');
+        const dueDate = prompt('Due date (YYYY-MM-DD, optional):');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'tasks',
+                data: {
+                    title: title,
+                    description: description || '',
+                    status: 'Todo',
+                    priority: priority || 'Medium',
+                    due_date: dueDate || null
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add task');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

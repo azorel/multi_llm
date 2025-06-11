@@ -1,0 +1,618 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Autonomous Multi-LLM Agent Configuration Schema",
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Application name"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version"
+        },
+        "environment": {
+          "type": "string",
+          "enum": ["development", "testing", "production"],
+          "description": "Deployment environment"
+        },
+        "debug": {
+          "type": "boolean",
+          "description": "Enable debug mode"
+        },
+        "maintenance_mode": {
+          "type": "boolean",
+          "description": "Enable maintenance mode"
+        }
+      },
+      "required": ["name", "version", "environment"],
+      "additionalProperties": false
+    },
+    "api": {
+      "type": "object",
+      "properties": {
+        "openai": {"$ref": "#/definitions/llm_api_config"},
+        "anthropic": {"$ref": "#/definitions/llm_api_config"},
+        "google": {"$ref": "#/definitions/llm_api_config"},
+        "notion": {"$ref": "#/definitions/external_api_config"},
+        "github": {"$ref": "#/definitions/external_api_config"}
+      },
+      "additionalProperties": false
+    },
+    "models": {
+      "type": "object",
+      "properties": {
+        "primary_model": {
+          "type": "string",
+          "enum": ["gpt", "claude", "gemini"],
+          "description": "Primary model to use"
+        },
+        "fallback_models": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["gpt", "claude", "gemini"]
+          },
+          "description": "Fallback models in order of preference"
+        },
+        "selection_rules": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/model_selection_rule"}
+        },
+        "ab_testing": {"$ref": "#/definitions/ab_testing_config"}
+      },
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "memory": {"$ref": "#/definitions/memory_config"},
+        "cpu": {"$ref": "#/definitions/cpu_config"},
+        "rate_limits": {"$ref": "#/definitions/rate_limits_config"},
+        "storage": {"$ref": "#/definitions/storage_config"},
+        "network": {"$ref": "#/definitions/network_config"}
+      },
+      "additionalProperties": false
+    },
+    "retry": {
+      "type": "object",
+      "properties": {
+        "global": {"$ref": "#/definitions/retry_config"},
+        "services": {
+          "type": "object",
+          "properties": {
+            "llm_apis": {"$ref": "#/definitions/retry_config"},
+            "external_apis": {"$ref": "#/definitions/retry_config"},
+            "database": {"$ref": "#/definitions/retry_config"}
+          },
+          "additionalProperties": {"$ref": "#/definitions/retry_config"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "orchestration": {"$ref": "#/definitions/orchestration_features"},
+        "self_healing": {"$ref": "#/definitions/self_healing_features"},
+        "validation": {"$ref": "#/definitions/validation_features"},
+        "integrations": {"$ref": "#/definitions/integration_features"},
+        "experimental": {"$ref": "#/definitions/experimental_features"}
+      },
+      "additionalProperties": false
+    },
+    "logging": {"$ref": "#/definitions/logging_config"},
+    "security": {"$ref": "#/definitions/security_config"},
+    "performance": {"$ref": "#/definitions/performance_config"},
+    "database": {"$ref": "#/definitions/database_config"},
+    "monitoring": {"$ref": "#/definitions/monitoring_config"},
+    "development": {"$ref": "#/definitions/development_config"}
+  },
+  "required": ["app"],
+  "additionalProperties": true,
+  "definitions": {
+    "llm_api_config": {
+      "type": "object",
+      "properties": {
+        "base_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "API base URL"
+        },
+        "api_key": {
+          "type": "string",
+          "description": "API key (can use environment variable syntax)"
+        },
+        "model": {
+          "type": "string",
+          "description": "Model identifier"
+        },
+        "max_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200000,
+          "description": "Maximum tokens per request"
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Sampling temperature"
+        },
+        "top_p": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Top-p sampling parameter"
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Frequency penalty"
+        },
+        "presence_penalty": {
+          "type": "number",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Presence penalty"
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600,
+          "description": "Request timeout in seconds"
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Maximum retry attempts"
+        },
+        "backoff_factor": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Exponential backoff factor"
+        }
+      },
+      "required": ["base_url", "api_key", "model"],
+      "additionalProperties": false
+    },
+    "external_api_config": {
+      "type": "object",
+      "properties": {
+        "api_key": {"type": "string"},
+        "base_url": {"type": "string", "format": "uri"},
+        "timeout": {"type": "integer", "minimum": 1},
+        "max_retries": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "model_selection_rule": {
+      "type": "object",
+      "properties": {
+        "condition": {"type": "string"},
+        "model": {"type": "string", "enum": ["gpt", "claude", "gemini"]},
+        "reason": {"type": "string"}
+      },
+      "required": ["condition", "model"],
+      "additionalProperties": false
+    },
+    "ab_testing_config": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "experiments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "enabled": {"type": "boolean"},
+              "traffic_split": {"type": "number", "minimum": 0, "maximum": 1},
+              "variants": {"type": "object"}
+            },
+            "required": ["name", "enabled", "traffic_split", "variants"]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "memory_config": {
+      "type": "object",
+      "properties": {
+        "max_memory_mb": {
+          "type": "integer",
+          "minimum": 128,
+          "description": "Maximum memory usage in MB"
+        },
+        "warning_threshold_mb": {
+          "type": "integer",
+          "minimum": 64,
+          "description": "Memory warning threshold in MB"
+        },
+        "cleanup_threshold_mb": {
+          "type": "integer",
+          "minimum": 96,
+          "description": "Memory cleanup threshold in MB"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cpu_config": {
+      "type": "object",
+      "properties": {
+        "max_cpu_percent": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Maximum CPU usage percentage"
+        },
+        "warning_threshold_percent": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "CPU warning threshold percentage"
+        },
+        "max_concurrent_tasks": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum concurrent tasks"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rate_limits_config": {
+      "type": "object",
+      "properties": {
+        "requests_per_minute": {"type": "integer", "minimum": 1},
+        "requests_per_hour": {"type": "integer", "minimum": 1},
+        "requests_per_day": {"type": "integer", "minimum": 1},
+        "burst_allowance": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "storage_config": {
+      "type": "object",
+      "properties": {
+        "max_disk_usage_gb": {"type": "integer", "minimum": 1},
+        "log_retention_days": {"type": "integer", "minimum": 1},
+        "database_max_size_mb": {"type": "integer", "minimum": 1},
+        "temp_file_cleanup_minutes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "network_config": {
+      "type": "object",
+      "properties": {
+        "connection_timeout": {"type": "integer", "minimum": 1},
+        "read_timeout": {"type": "integer", "minimum": 1},
+        "max_connections": {"type": "integer", "minimum": 1},
+        "connection_pool_size": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "retry_config": {
+      "type": "object",
+      "properties": {
+        "max_attempts": {"type": "integer", "minimum": 0, "maximum": 20},
+        "base_delay": {"type": "number", "minimum": 0},
+        "max_delay": {"type": "number", "minimum": 0},
+        "exponential_base": {"type": "number", "minimum": 1},
+        "jitter": {"type": "boolean"},
+        "retry_on_status": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 100, "maximum": 599}
+        }
+      },
+      "additionalProperties": false
+    },
+    "orchestration_features": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "voting_system": {"type": "boolean"},
+        "consensus_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "max_proposal_rounds": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "self_healing_features": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "auto_recovery": {"type": "boolean"},
+        "code_modification": {"type": "boolean"},
+        "rollback_enabled": {"type": "boolean"},
+        "learning_enabled": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "validation_features": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "syntax_validation": {"type": "boolean"},
+        "logic_validation": {"type": "boolean"},
+        "security_validation": {"type": "boolean"},
+        "performance_validation": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "integration_features": {
+      "type": "object",
+      "properties": {
+        "notion_sync": {"type": "boolean"},
+        "github_integration": {"type": "boolean"},
+        "monitoring": {"type": "boolean"},
+        "analytics": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "experimental_features": {
+      "type": "object",
+      "properties": {
+        "advanced_reasoning": {"type": "boolean"},
+        "multi_agent_collaboration": {"type": "boolean"},
+        "predictive_caching": {"type": "boolean"},
+        "auto_optimization": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "logging_config": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        },
+        "format": {
+          "type": "string",
+          "enum": ["simple", "detailed", "structured", "json"]
+        },
+        "outputs": {
+          "type": "object",
+          "properties": {
+            "console": {"$ref": "#/definitions/log_output_config"},
+            "file": {"$ref": "#/definitions/log_output_config"},
+            "json_file": {"$ref": "#/definitions/log_output_config"}
+          },
+          "additionalProperties": {"$ref": "#/definitions/log_output_config"}
+        },
+        "components": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/definitions/component_log_config"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "log_output_config": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "level": {"type": "string", "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]},
+        "format": {"type": "string", "enum": ["simple", "detailed", "structured", "json"]},
+        "file_path": {"type": "string"},
+        "max_size_mb": {"type": "integer", "minimum": 1},
+        "backup_count": {"type": "integer", "minimum": 0"},
+        "rotation": {"type": "string", "enum": ["size", "time"]},
+        "colorize": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "component_log_config": {
+      "type": "object",
+      "properties": {
+        "level": {"type": "string", "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]},
+        "include_proposals": {"type": "boolean"},
+        "include_voting": {"type": "boolean"},
+        "include_prompts": {"type": "boolean"},
+        "include_responses": {"type": "boolean"},
+        "include_recovery_steps": {"type": "boolean"},
+        "include_fixes": {"type": "boolean"},
+        "include_test_results": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "security_config": {
+      "type": "object",
+      "properties": {
+        "authentication": {
+          "type": "object",
+          "properties": {
+            "required": {"type": "boolean"},
+            "token_expiry_hours": {"type": "integer", "minimum": 1},
+            "refresh_token_enabled": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "api_security": {
+          "type": "object",
+          "properties": {
+            "rate_limiting": {"type": "boolean"},
+            "cors_enabled": {"type": "boolean"},
+            "allowed_origins": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "api_key_validation": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "data_protection": {
+          "type": "object",
+          "properties": {
+            "encrypt_sensitive_data": {"type": "boolean"},
+            "mask_api_keys_in_logs": {"type": "boolean"},
+            "secure_temp_files": {"type": "boolean"},
+            "auto_cleanup_secrets": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "validation": {
+          "type": "object",
+          "properties": {
+            "validate_inputs": {"type": "boolean"},
+            "sanitize_outputs": {"type": "boolean"},
+            "check_malicious_patterns": {"type": "boolean"},
+            "max_input_size_kb": {"type": "integer", "minimum": 1}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "performance_config": {
+      "type": "object",
+      "properties": {
+        "caching": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "ttl_seconds": {"type": "integer", "minimum": 1},
+            "max_cache_size_mb": {"type": "integer", "minimum": 1},
+            "cache_hit_target": {"type": "number", "minimum": 0, "maximum": 1}
+          },
+          "additionalProperties": false
+        },
+        "concurrency": {
+          "type": "object",
+          "properties": {
+            "max_concurrent_requests": {"type": "integer", "minimum": 1},
+            "worker_threads": {"type": "integer", "minimum": 1},
+            "async_enabled": {"type": "boolean"},
+            "batch_processing": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "optimization": {
+          "type": "object",
+          "properties": {
+            "enable_profiling": {"type": "boolean"},
+            "memory_profiling": {"type": "boolean"},
+            "auto_gc": {"type": "boolean"},
+            "optimize_prompts": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "database_config": {
+      "type": "object",
+      "properties": {
+        "sqlite": {
+          "type": "object",
+          "properties": {
+            "shared_memory_db": {"type": "string"},
+            "orchestrator_db": {"type": "string"},
+            "agents_db": {"type": "string"},
+            "learning_db": {"type": "string"},
+            "recovery_db": {"type": "string"},
+            "notion_sync_db": {"type": "string"},
+            "github_db": {"type": "string"},
+            "timeout": {"type": "integer", "minimum": 1},
+            "check_same_thread": {"type": "boolean"},
+            "isolation_level": {"type": ["string", "null"]},
+            "page_size": {"type": "integer", "minimum": 512},
+            "cache_size": {"type": "integer", "minimum": 100},
+            "journal_mode": {"type": "string", "enum": ["DELETE", "TRUNCATE", "PERSIST", "MEMORY", "WAL", "OFF"]},
+            "synchronous": {"type": "string", "enum": ["OFF", "NORMAL", "FULL", "EXTRA"]}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "monitoring_config": {
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "collection_interval": {"type": "integer", "minimum": 1},
+            "retention_days": {"type": "integer", "minimum": 1},
+            "performance_metrics": {"type": "boolean"},
+            "error_metrics": {"type": "boolean"},
+            "usage_metrics": {"type": "boolean"},
+            "resource_metrics": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "health_checks": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "interval_seconds": {"type": "integer", "minimum": 1},
+            "timeout_seconds": {"type": "integer", "minimum": 1},
+            "endpoints": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "check_type": {"type": "string"}
+                },
+                "required": ["name", "check_type"]
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "alerting": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "webhook_url": {"type": "string"},
+            "error_threshold": {"type": "integer", "minimum": 1},
+            "response_time_threshold_ms": {"type": "integer", "minimum": 1}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "development_config": {
+      "type": "object",
+      "properties": {
+        "debug": {
+          "type": "object",
+          "properties": {
+            "verbose_logging": {"type": "boolean"},
+            "include_stack_traces": {"type": "boolean"},
+            "profile_execution": {"type": "boolean"},
+            "save_intermediate_results": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "testing": {
+          "type": "object",
+          "properties": {
+            "mock_external_apis": {"type": "boolean"},
+            "use_test_data": {"type": "boolean"},
+            "fast_mode": {"type": "boolean"},
+            "skip_validations": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "hot_reload": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "watch_config": {"type": "boolean"},
+            "watch_code": {"type": "boolean"},
+            "reload_delay_ms": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

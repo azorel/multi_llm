@@ -1,0 +1,4470 @@
+[
+  {
+    "id": "20bec31c-9de2-814e-80db-d13d0c27d869",
+    "title": "Knowledge Hub - AI Enhanced",
+    "description": [],
+    "url": "https://www.notion.so/20bec31c9de2814e80dbd13d0c27d869",
+    "created_time": "2025-06-07T04:01:00.000Z",
+    "last_edited_time": "2025-06-08T08:07:00.000Z",
+    "properties": {
+      "AI Summary": {
+        "id": "CbHn",
+        "name": "AI Summary",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Date Added": {
+        "id": "KhSH",
+        "name": "Date Added",
+        "type": "created_time",
+        "created_time": {}
+      },
+      "Key Points": {
+        "id": "K~fX",
+        "name": "Key Points",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Last Updated": {
+        "id": "OCwB",
+        "name": "Last Updated",
+        "type": "last_edited_time",
+        "last_edited_time": {}
+      },
+      "Assistant Prompt": {
+        "id": "WamK",
+        "name": "Assistant Prompt",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Type": {
+        "id": "%5C%7DwX",
+        "name": "Type",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "65310d7d-ad86-481f-a04e-df5897ee0bf6",
+              "name": "YouTube",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "5d2002ae-2128-428b-83b2-cc1096351294",
+              "name": "Article",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "bd7d3feb-5ea7-4635-9ce7-2e50e07c0e02",
+              "name": "Book",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "08b7839e-e143-4f6b-a22d-f45f0aaccf3d",
+              "name": "Documentation",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "63a0a482-9a9a-4cb2-9bc8-1e6bc774c8eb",
+              "name": "Course",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "46b0bec6-11be-4e9c-b01d-2f9df62b3f92",
+              "name": "Podcast",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "6509d5bd-a3c2-4c67-a882-a38cba99574c",
+              "name": "Tool",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "3785242c-757a-4023-a1bd-90fa496aee02",
+              "name": "Research",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "e8e8e6fd-bd73-4130-a9ea-b9afa2123ae9",
+              "name": "Reference",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "12383a8f-370e-40de-91c4-f585c41dcca9",
+              "name": "Other",
+              "color": "default",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Status": {
+        "id": "eV_Q",
+        "name": "Status",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "6132534a-4df1-4d80-b409-6924bd92e9d0",
+              "name": "\ud83d\udccb To Review",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "788fe503-149a-4d73-afce-e8e425b38d82",
+              "name": "\ud83d\udc40 In Progress",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "fa17232e-8645-4a13-b07f-16eeecaeb330",
+              "name": "\u2705 Completed",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "44d076a5-0ced-42cc-9bb0-0f04caaaa237",
+              "name": "\u2b50 Favorite",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "4a63b3d9-e837-4dee-b618-4a146c3c4887",
+              "name": "\ud83d\udd17 Reference",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "de93f3a0-1cdf-43e8-a8ad-123ebb515cbf",
+              "name": "\ud83d\udd04 Processing",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "424c1efa-0aa5-4ba7-9885-94a9439c62a9",
+              "name": "To Review",
+              "color": "brown",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Decision Made": {
+        "id": "eX%5Eh",
+        "name": "Decision Made",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "Content Summary": {
+        "id": "h%3COS",
+        "name": "Content Summary",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Processing Status": {
+        "id": "jOK%7C",
+        "name": "Processing Status",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "8bc1bbac-3e7e-4e9f-9bfd-a05c1f6cbeb4",
+              "name": "Pending",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "7246f184-24ec-4d5a-9a44-4c09c7a175d0",
+              "name": "Completed",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "604ea89b-1f41-47e0-bdac-ce270fa24ea1",
+              "name": "Failed",
+              "color": "red",
+              "description": null
+            }
+          ]
+        }
+      },
+      "\ud83d\udcc1 Pass": {
+        "id": "onuJ",
+        "name": "\ud83d\udcc1 Pass",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "URL": {
+        "id": "oyoD",
+        "name": "URL",
+        "type": "url",
+        "url": {}
+      },
+      "Complexity Level": {
+        "id": "qs%3E_",
+        "name": "Complexity Level",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "346e35c9-59a0-46ff-87b4-b18c1b82b188",
+              "name": "Beginner",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "74eaa627-5974-456f-bc81-9d5678fe6d02",
+              "name": "Intermediate",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "98ed8096-440f-403f-ab30-ab1069c6fd43",
+              "name": "Advanced",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "7a8524cd-7c1d-4840-aaff-44b9a3eb5cdc",
+              "name": "Beginner/Intermediate",
+              "color": "purple",
+              "description": null
+            }
+          ]
+        }
+      },
+      "\ud83d\ude80 Yes": {
+        "id": "rUjE",
+        "name": "\ud83d\ude80 Yes",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "Priority": {
+        "id": "s%7Do~",
+        "name": "Priority",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "d6c7f860-74c0-45e4-b915-48ef2dbab7a9",
+              "name": "\ud83d\udd34 High",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "5f6664e7-fd4a-4335-8a2c-2ef51bcd66aa",
+              "name": "\ud83d\udfe1 Medium",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "2d60aa86-1857-4776-9fbf-76175281e487",
+              "name": "\ud83d\udfe2 Low",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "3830408e-d9e3-433e-9692-aa5ea3d94b9c",
+              "name": "Medium",
+              "color": "brown",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Notes": {
+        "id": "%7BYIo",
+        "name": "Notes",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Action Items": {
+        "id": "%7CdXM",
+        "name": "Action Items",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Hashtags": {
+        "id": "%7DNFl",
+        "name": "Hashtags",
+        "type": "multi_select",
+        "multi_select": {
+          "options": [
+            {
+              "id": "7173324a-030e-4871-a124-cf291efea90e",
+              "name": "#productivity",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "4b2a73a9-09a5-449a-8b7e-abd8cdfac003",
+              "name": "#technology",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "5d6a5433-654d-450c-aaa9-ca712230ebb5",
+              "name": "#business",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "bf3b200d-de0d-4342-bd67-176e370a9804",
+              "name": "#development",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "f11be1db-b38a-468b-a69f-ac05a1c44e5d",
+              "name": "#ai",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "0a955a20-7b81-42f2-9525-361017570bc2",
+              "name": "#lifeos",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "c8daa53c-47a8-432c-ac95-fa1c73f82c49",
+              "name": "#learning",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "d9018d66-35ae-48b9-ae58-330fb863fe8d",
+              "name": "#reference",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "2a60681e-7bbf-4c6f-a955-0bc71a2703ca",
+              "name": "#tutorial",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "52f5d26b-8229-4b6b-9d0e-dbd471734a92",
+              "name": "#inspiration",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "b6d1fa77-a352-44b7-bc0f-77d9d28c4cab",
+              "name": "#video-content",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "3cb92c7d-952a-46ea-ae1d-f79e8f0adbbc",
+              "name": "video-content",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "361f21ef-750b-4da3-9091-d37f6281e765",
+              "name": "tutorial",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "16708471-8571-4ef7-9944-584220fbe7ba",
+              "name": "tech",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "63787675-e725-4fef-80bd-cd6ad129baa1",
+              "name": "technology",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "9078a15c-8577-41a2-96d5-70501cc8083c",
+              "name": "ai",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "5c8d747a-9482-4261-a4e6-c5ce4b870633",
+              "name": "development",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "257a6928-f6eb-426a-b682-596ead755b01",
+              "name": "reference",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "f47e845f-4bfd-47c4-b7af-8d679ad96379",
+              "name": "productivity",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "50d20068-af4b-44e2-bd04-d21f2ecf1fe1",
+              "name": "learning",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "c53b4d8c-4655-4792-a012-05540a4c32dc",
+              "name": "AI/ML",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "bac67709-809e-4f9c-a4e9-0bf36c87740a",
+              "name": "Science",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "a8ffd17f-4413-4201-a8ea-fd29d9e387b1",
+              "name": "Auto-Imported",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "258920db-5fcd-4afd-8d03-4a2dc09f5a45",
+              "name": "TwoMinutePapers",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "9902de64-8af3-43ba-b308-05c048f7b8ad",
+              "name": "Education",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "4d8655d1-25a2-4754-81f7-be658e173501",
+              "name": "3Blue1Brown",
+              "color": "blue",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Content Type": {
+        "id": "%7D%60v%7B",
+        "name": "Content Type",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "53c20020-c263-4fac-9f16-b27912ece1fe",
+              "name": "Tutorial",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "2bcf5536-0853-442b-9f55-6dd217c0cfbf",
+              "name": "Educational",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "c0466839-ca19-49c7-adad-7e469893639d",
+              "name": "Review",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "bf121e6f-24cc-4b9c-85f2-04976e7ebc9b",
+              "name": "Discussion",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "232cfa63-8d95-4a2a-af57-da88b508b72f",
+              "name": "Entertainment",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "4be54147-3b73-45cf-86fc-be956e303d65",
+              "name": "Other",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "33d2a8a6-1468-4ddb-b903-96bf0f8a8b3b",
+              "name": "Tutorial/Educational/Discussion",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "199897b0-173e-4b78-b2d9-bebd7cadf0f1",
+              "name": "Tutorial/Educational",
+              "color": "red",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "1fdec31c-9de2-819d-89d2-d96b25fad90d"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "205ec31c-9de2-809b-8676-e5686fc02c52",
+    "title": "Things Bought",
+    "description": [],
+    "url": "https://www.notion.so/205ec31c9de2809b8676e5686fc02c52",
+    "created_time": "2025-06-01T21:48:00.000Z",
+    "last_edited_time": "2025-06-01T22:37:00.000Z",
+    "properties": {
+      "Yeld": {
+        "id": "%3DSZH",
+        "name": "Yeld",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Cost": {
+        "id": "%40fsV",
+        "name": "Cost",
+        "type": "number",
+        "number": {
+          "format": "canadian_dollar"
+        }
+      },
+      "Per Use": {
+        "id": "F%5E%3D%5C",
+        "name": "Per Use",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Par Level": {
+        "id": "Mnc%7D",
+        "name": "Par Level",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Lifelog": {
+        "id": "%5ENJp",
+        "name": "Lifelog",
+        "type": "relation",
+        "relation": {
+          "database_id": "203ec31c-9de2-800b-b980-f69359be6edf",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "Buy": {
+        "id": "fK%60a",
+        "name": "Buy",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "205ec31c-9de2-80b1-abab-d6dcecb801dd"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "205ec31c-9de2-8078-996f-f2c2a501b716",
+    "title": "Untitled",
+    "description": [],
+    "url": "https://www.notion.so/205ec31c9de28078996ff2c2a501b716",
+    "created_time": "2025-06-01T22:20:00.000Z",
+    "last_edited_time": "2025-06-01T22:31:00.000Z",
+    "properties": {
+      "Formula": {
+        "id": "vMTS",
+        "name": "Formula",
+        "type": "formula",
+        "formula": {
+          "expression": ""
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "205ec31c-9de2-802c-9104-d98fb18cc741"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "203ec31c-9de2-800b-b980-f69359be6edf",
+    "title": "Lifelog",
+    "description": [],
+    "url": "https://www.notion.so/203ec31c9de2800bb980f69359be6edf",
+    "created_time": "2025-05-30T00:07:00.000Z",
+    "last_edited_time": "2025-06-01T22:16:00.000Z",
+    "properties": {
+      "Things Bought": {
+        "id": "%5D%5D%7B%40",
+        "name": "Things Bought",
+        "type": "relation",
+        "relation": {
+          "database_id": "205ec31c-9de2-809b-8676-e5686fc02c52",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "Action": {
+        "id": "aYCx",
+        "name": "Action",
+        "type": "select",
+        "select": {
+          "options": []
+        }
+      },
+      "Date": {
+        "id": "b%3Bot",
+        "name": "Date",
+        "type": "date",
+        "date": {}
+      },
+      "Areas of Life": {
+        "id": "eAZg",
+        "name": "Areas of Life",
+        "type": "relation",
+        "relation": {
+          "database_id": "203ec31c-9de2-80ad-984f-e1f716f1b7ea",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "Things Used": {
+        "id": "%7BMSm",
+        "name": "Things Used",
+        "type": "relation",
+        "relation": {
+          "database_id": "205ec31c-9de2-809b-8676-e5686fc02c52",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "203ec31c-9de2-8018-8f5f-e07cb528bfff"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "203ec31c-9de2-80ad-984f-e1f716f1b7ea",
+    "title": "Areas of Life",
+    "description": [],
+    "url": "https://www.notion.so/203ec31c9de280ad984fe1f716f1b7ea",
+    "created_time": "2025-05-30T00:10:00.000Z",
+    "last_edited_time": "2025-06-01T22:12:00.000Z",
+    "properties": {
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "203ec31c-9de2-80a5-9c0d-f6a245ac345e"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "203ec31c-9de2-8079-ae4e-ed754d474888",
+    "title": "Youtube Channels",
+    "description": [],
+    "url": "https://www.notion.so/203ec31c9de28079ae4eed754d474888",
+    "created_time": "2025-05-30T15:12:00.000Z",
+    "last_edited_time": "2025-06-01T09:56:00.000Z",
+    "properties": {
+      "URL": {
+        "id": "Ibh%3B",
+        "name": "URL",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Channel": {
+        "id": "%5Ev%5E%3E",
+        "name": "Channel",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Hashtags": {
+        "id": "_TP_",
+        "name": "Hashtags",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "9261defe-a93f-4a5b-9f81-40ee5ad72c1e",
+              "name": "#FocusTriggers",
+              "color": "blue",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Transcode": {
+        "id": "%60CU%7B",
+        "name": "Transcode",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "203ec31c-9de2-8030-90a7-ea9528e58428"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "205ec31c-9de2-80a2-a34a-f8f263bedb73",
+    "title": " Video",
+    "description": [],
+    "url": "https://www.notion.so/205ec31c9de280a2a34af8f263bedb73",
+    "created_time": "2025-06-01T09:37:00.000Z",
+    "last_edited_time": "2025-06-01T09:46:00.000Z",
+    "properties": {
+      "URL": {
+        "id": "%7BFSz",
+        "name": "URL",
+        "type": "url",
+        "url": {}
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "205ec31c-9de2-8035-961b-ec401151f5ed"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "205ec31c-9de2-8057-bc2e-faeabf67fb36",
+    "title": "{page_id} Video",
+    "description": [],
+    "url": "https://www.notion.so/205ec31c9de28057bc2efaeabf67fb36",
+    "created_time": "2025-06-01T09:10:00.000Z",
+    "last_edited_time": "2025-06-01T09:37:00.000Z",
+    "properties": {
+      "URL": {
+        "id": "%7BFSz",
+        "name": "URL",
+        "type": "url",
+        "url": {}
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "205ec31c-9de2-80bc-b0ee-fd7bf314ca00"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "205ec31c-9de2-8039-9b34-e6a2fa43ee3a",
+    "title": "Video\u2019s",
+    "description": [],
+    "url": "https://www.notion.so/205ec31c9de280399b34e6a2fa43ee3a",
+    "created_time": "2025-06-01T09:23:00.000Z",
+    "last_edited_time": "2025-06-01T09:23:00.000Z",
+    "properties": {
+      "URL": {
+        "id": "%7BFSz",
+        "name": "URL",
+        "type": "url",
+        "url": {}
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "205ec31c-9de2-806e-8e47-c32ae06b78df"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "203ec31c-9de2-8117-a2d0-fe342ad051ff",
+    "title": "Fuel Log",
+    "description": [
+      {
+        "type": "text",
+        "text": {
+          "content": "Create a new refuel log when ever you refuel. Add a photo of the receipt to the page for logging if necessary as this will also be a good backup. Input name, cost for fuel only and litres you put in from pump as well as octane chosen (all from receipt). Put in the previous items odometer (untilI can automate that) and the current reading before leaving the pump. The number of km, L/100 economy and $/L will all be calculated automatically.",
+          "link": null
+        },
+        "annotations": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        },
+        "plain_text": "Create a new refuel log when ever you refuel. Add a photo of the receipt to the page for logging if necessary as this will also be a good backup. Input name, cost for fuel only and litres you put in from pump as well as octane chosen (all from receipt). Put in the previous items odometer (untilI can automate that) and the current reading before leaving the pump. The number of km, L/100 economy and $/L will all be calculated automatically.",
+        "href": null
+      }
+    ],
+    "url": "https://www.notion.so/203ec31c9de28117a2d0fe342ad051ff",
+    "created_time": "2025-05-30T03:52:00.000Z",
+    "last_edited_time": "2025-05-30T03:58:00.000Z",
+    "properties": {
+      "Date created": {
+        "id": "%3Cn%3EC",
+        "name": "Date created",
+        "type": "created_time",
+        "created_time": {}
+      },
+      "Date": {
+        "id": "AnYa",
+        "name": "Date",
+        "type": "date",
+        "date": {}
+      },
+      "Cost": {
+        "id": "D%3F~e",
+        "name": "Cost",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Litres": {
+        "id": "IEhN",
+        "name": "Litres",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Odo": {
+        "id": "L~%7B%40",
+        "name": "Odo",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Octane": {
+        "id": "%60%5Dx%7C",
+        "name": "Octane",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "eT:z",
+              "name": "Diesel",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "tkU?",
+              "name": "95",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "zhm=",
+              "name": "91",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "zP]_",
+              "name": "E10 94",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "a50322a6-f9c4-4278-b975-433ca936e5dd",
+              "name": "98",
+              "color": "red",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Receipt": {
+        "id": "adPB",
+        "name": "Receipt",
+        "type": "files",
+        "files": {}
+      },
+      "$/L": {
+        "id": "fnqZ",
+        "name": "$/L",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:D%3F~e:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}/{{notion:block_property:IEhN:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "Pre-Odo": {
+        "id": "oNEK",
+        "name": "Pre-Odo",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "L/100": {
+        "id": "t%5Cp%5C",
+        "name": "L/100",
+        "type": "formula",
+        "formula": {
+          "expression": "({{notion:block_property:IEhN:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} / {{notion:block_property:zaDF:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}) * 100"
+        }
+      },
+      "Km": {
+        "id": "zaDF",
+        "name": "Km",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:L~%7B%40:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}-{{notion:block_property:oNEK:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "ID": {
+        "id": "%7DGJT",
+        "name": "ID",
+        "type": "unique_id",
+        "unique_id": {
+          "prefix": null
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "203ec31c-9de2-81e4-8073-c947d53378b0"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/database_orange.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "203ec31c-9de2-81bf-82c4-c28a33635f9f",
+    "title": "Index",
+    "description": [],
+    "url": "https://www.notion.so/203ec31c9de281bf82c4c28a33635f9f",
+    "created_time": "2025-05-30T03:52:00.000Z",
+    "last_edited_time": "2025-05-30T03:52:00.000Z",
+    "properties": {
+      "Interval": {
+        "id": "Knl%7C",
+        "name": "Interval",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "203ec31c-9de2-81e4-8073-c947d53378b0"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/sliders-horizontal_orange.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "203ec31c-9de2-81f1-98e0-fd6ecaac16e3",
+    "title": "Odometer",
+    "description": [],
+    "url": "https://www.notion.so/203ec31c9de281f198e0fd6ecaac16e3",
+    "created_time": "2025-05-30T03:52:00.000Z",
+    "last_edited_time": "2025-05-30T03:52:00.000Z",
+    "properties": {
+      "Odometer": {
+        "id": "CUeo",
+        "name": "Odometer",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "203ec31c-9de2-81e4-8073-c947d53378b0"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/sliders-horizontal_orange.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "203ec31c-9de2-8176-a4b2-f02415f950da",
+    "title": "Maintenance Schedule",
+    "description": [],
+    "url": "https://www.notion.so/203ec31c9de28176a4b2f02415f950da",
+    "created_time": "2025-05-30T03:52:00.000Z",
+    "last_edited_time": "2025-05-30T03:52:00.000Z",
+    "properties": {
+      "Item": {
+        "id": "%40pJi",
+        "name": "Item",
+        "type": "multi_select",
+        "multi_select": {
+          "options": [
+            {
+              "id": ">el}",
+              "name": "Clutch Fluid",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "`jRa",
+              "name": "Transmission Fluid",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "BXP`",
+              "name": "Engine Coolant",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "j]AN",
+              "name": "Drive Belt",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "SSNG",
+              "name": "Spark Plugs",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "CEs{",
+              "name": "Water Pump",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "iNA~",
+              "name": "Timing Belt",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "b387a140-9ed7-461f-8bcb-8f88f91ffe27",
+              "name": "Trailing Arm",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "a7a8ce4c-eda6-4c9e-9ad0-f27e7b8b98e5",
+              "name": "Control Arms",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "140b04b9-d6c5-426b-adcc-951fade6fd62",
+              "name": "Tyre",
+              "color": "pink",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Odometer": {
+        "id": "LonR",
+        "name": "Odometer",
+        "type": "rollup",
+        "rollup": {
+          "rollup_property_name": "Odometer",
+          "relation_property_name": "OdometerRelation",
+          "rollup_property_id": "CUeo",
+          "relation_property_id": "zTbz",
+          "function": "sum"
+        }
+      },
+      "Date Completed": {
+        "id": "MKGx",
+        "name": "Date Completed",
+        "type": "date",
+        "date": {}
+      },
+      "Odometer Recorded": {
+        "id": "Mz~m",
+        "name": "Odometer Recorded",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Km to next": {
+        "id": "VP%5Bj",
+        "name": "Km to next",
+        "type": "formula",
+        "formula": {
+          "expression": "if(\n    {{notion:block_property:l_qA:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == false,\n    {{notion:block_property:WM%3E%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} - {{notion:block_property:LonR:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}},\n    \"\u2705\"\n)\n"
+        }
+      },
+      "Scheduled Odometer Reading": {
+        "id": "WM%3E%3C",
+        "name": "Scheduled Odometer Reading",
+        "type": "formula",
+        "formula": {
+          "expression": "toNumber({{notion:block_property:~gQN:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}})*{{notion:block_property:gwkd:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "Part": {
+        "id": "%60Z%7Bc",
+        "name": "Part",
+        "type": "relation",
+        "relation": {
+          "database_id": "203ec31c-9de2-81bf-82c4-c28a33635f9f",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "indexItem": {
+        "id": "gHhf",
+        "name": "indexItem",
+        "type": "rollup",
+        "rollup": {
+          "rollup_property_name": "Interval",
+          "relation_property_name": "Part",
+          "rollup_property_id": "Knl|",
+          "relation_property_id": "`Z{c",
+          "function": "show_original"
+        }
+      },
+      "IntervalMulti": {
+        "id": "gwkd",
+        "name": "IntervalMulti",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Cat": {
+        "id": "lWP%3B",
+        "name": "Cat",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "}?cO",
+              "name": "Scheduled",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": ";\\zy",
+              "name": "Repair",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "6a2b21ca-a86e-4f15-9de7-8f70c63bd2fa",
+              "name": "Uncheduled",
+              "color": "red",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Completed": {
+        "id": "l_qA",
+        "name": "Completed",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "Status": {
+        "id": "sbB%5B",
+        "name": "Status",
+        "type": "formula",
+        "formula": {
+          "expression": "if ({{notion:block_property:l_qA:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, \"\u2705 Completed\", \n    if (empty({{notion:block_property:WM%3E%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"\u25ab\ufe0f No Service Required\", \n        if ({{notion:block_property:LonR:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} - {{notion:block_property:WM%3E%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} >= {{notion:block_property:~gQN:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 0.5, \"\ud83d\udc80 Bad. >= 50% interval overdue.\",\n            if ({{notion:block_property:LonR:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} - {{notion:block_property:WM%3E%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} >= {{notion:block_property:~gQN:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 0.3, \"\u26a0\ufe0f Critical, 30% over Interval\", \n                if ({{notion:block_property:LonR:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} - {{notion:block_property:WM%3E%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} >= {{notion:block_property:~gQN:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 0.1, \"\u26a0\ufe0f Missed Maintenance\", \n                    if ({{notion:block_property:WM%3E%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} - {{notion:block_property:LonR:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} <= 10000, \"\u26ed Complete at next Service\", \n                        if ({{notion:block_property:WM%3E%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} - {{notion:block_property:LonR:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} <= 30000, \"\u23f2 Upcoming Maintenance\", \n                            \"\ud83d\udfe2 No Service Required Yet\")))))))\n"
+        }
+      },
+      "OdometerRelation": {
+        "id": "zTbz",
+        "name": "OdometerRelation",
+        "type": "relation",
+        "relation": {
+          "database_id": "203ec31c-9de2-81f1-98e0-fd6ecaac16e3",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "indexInterval": {
+        "id": "~gQN",
+        "name": "indexInterval",
+        "type": "rollup",
+        "rollup": {
+          "rollup_property_name": "Interval",
+          "relation_property_name": "Part",
+          "rollup_property_id": "Knl|",
+          "relation_property_id": "`Z{c",
+          "function": "sum"
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "203ec31c-9de2-81e4-8073-c947d53378b0"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/database_orange.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "203ec31c-9de2-81d4-90c6-ca4eea0106fc",
+    "title": "Spending Log",
+    "description": [
+      {
+        "type": "text",
+        "text": {
+          "content": "This log is to collect any cost associated with your car that is not fuel. A place to dump invoices, dates, mileage at time and to calculate actual costs after a period of time rather than theoretical.",
+          "link": null
+        },
+        "annotations": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        },
+        "plain_text": "This log is to collect any cost associated with your car that is not fuel. A place to dump invoices, dates, mileage at time and to calculate actual costs after a period of time rather than theoretical.",
+        "href": null
+      }
+    ],
+    "url": "https://www.notion.so/203ec31c9de281d490c6ca4eea0106fc",
+    "created_time": "2025-05-30T03:52:00.000Z",
+    "last_edited_time": "2025-05-30T03:52:00.000Z",
+    "properties": {
+      "Category": {
+        "id": "%3DyYQ",
+        "name": "Category",
+        "type": "multi_select",
+        "multi_select": {
+          "options": [
+            {
+              "id": "D]FA",
+              "name": "Service",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "[AZw",
+              "name": "Consumable",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "31518082-3771-400b-82b6-6201723d4dc8",
+              "name": "Repair",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "bf8ccbfe-2690-4308-8e77-72317be6c2c7",
+              "name": "Incidental",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "d62df8d8-fcd4-470c-a3a1-56f5e8d4cdce",
+              "name": "Extra",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "a3600f13-83de-42dc-923b-b04476312b22",
+              "name": "Parts",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "0d927b10-dd0d-44ef-8063-b01e4f185297",
+              "name": "Investigation",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "29435255-46f3-40d4-b170-d78572dbf057",
+              "name": "Rego",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "bcb50d51-182f-4cd6-8279-aa6789e724bd",
+              "name": "Insurance",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "2b44c054-56b2-44e4-a798-21a5dc43298f",
+              "name": "Surcharge",
+              "color": "brown",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Seller": {
+        "id": "%3Eica",
+        "name": "Seller",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Price": {
+        "id": "%5EGAw",
+        "name": "Price",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Odometer": {
+        "id": "el%3Cu",
+        "name": "Odometer",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Date": {
+        "id": "k%3EzX",
+        "name": "Date",
+        "type": "date",
+        "date": {}
+      },
+      "Records": {
+        "id": "nalX",
+        "name": "Records",
+        "type": "files",
+        "files": {}
+      },
+      "Notes": {
+        "id": "%7CCKu",
+        "name": "Notes",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Requirement": {
+        "id": "%7DB%5Es",
+        "name": "Requirement",
+        "type": "multi_select",
+        "multi_select": {
+          "options": [
+            {
+              "id": "b{yd",
+              "name": "Prudent",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "wxz=",
+              "name": "Optional",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "31518082-3771-400b-82b6-6201723d4dc8",
+              "name": "Repair",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "2639b2c2-af37-4a12-a566-a9d42999dab3",
+              "name": "Required",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "d62df8d8-fcd4-470c-a3a1-56f5e8d4cdce",
+              "name": "Extra",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "0d927b10-dd0d-44ef-8063-b01e4f185297",
+              "name": "Investigation",
+              "color": "blue",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "203ec31c-9de2-81e4-8073-c947d53378b0"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/database_orange.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8152-a34d-f7faa3f9aecc",
+    "title": "ingredients",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de28152a34df7faa3f9aecc",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-30T03:47:00.000Z",
+    "properties": {
+      "meals": {
+        "id": "JP%3E%5B",
+        "name": "meals",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-810a-8195-dce2c5bb51b5",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "ingredients",
+            "synced_property_id": "BzXu"
+          }
+        }
+      },
+      "Yeld": {
+        "id": "YKj%3E",
+        "name": "Yeld",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "in pantry?": {
+        "id": "dow%7D",
+        "name": "in pantry?",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "Bought @": {
+        "id": "f%5D%5DR",
+        "name": "Bought @",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Cost": {
+        "id": "mPx%40",
+        "name": "Cost",
+        "type": "number",
+        "number": {
+          "format": "canadian_dollar"
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-8121-b74a-da6b6013494c"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8126-bc1c-f8233192d910",
+    "title": "weekly",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de28126bc1cf8233192d910",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-30T03:45:00.000Z",
+    "properties": {
+      "amount": {
+        "id": "QUhZ",
+        "name": "amount",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "total": {
+        "id": "otlH",
+        "name": "total",
+        "type": "number",
+        "number": {
+          "format": "canadian_dollar"
+        }
+      },
+      "this week?": {
+        "id": "ro%7C%3B",
+        "name": "this week?",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "price": {
+        "id": "vxh%5D",
+        "name": "price",
+        "type": "number",
+        "number": {
+          "format": "canadian_dollar"
+        }
+      },
+      "item": {
+        "id": "title",
+        "name": "item",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81cb-a0af-d8b5972038ad"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-81a4-9413-c6ae516847c3",
+    "title": "books",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281a49413c6ae516847c3",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-29T19:22:00.000Z",
+    "properties": {
+      "format": {
+        "id": "%3Dd%3Ep",
+        "name": "format",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": ":S|p",
+              "name": "paperback",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "eHDV",
+              "name": "hardback",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "x^^e",
+              "name": "kindle",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "m|JV",
+              "name": "audiobook",
+              "color": "red",
+              "description": null
+            }
+          ]
+        }
+      },
+      "dnf": {
+        "id": "EEE%5D",
+        "name": "dnf",
+        "type": "button",
+        "button": {}
+      },
+      "genres": {
+        "id": "J%40OO",
+        "name": "genres",
+        "type": "multi_select",
+        "multi_select": {
+          "options": [
+            {
+              "id": "K^`H",
+              "name": "epic fantasy",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "gmQr",
+              "name": "fantasy",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "MPAN",
+              "name": "magic",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "f5c9b607-ff03-47a3-b814-ad4a3f7d6655",
+              "name": "romance",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "ae4e7e5d-d3a9-4cfa-8d7a-793a5c2f0fce",
+              "name": "humor",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "925eecc3-8c12-4957-a84f-0ffe9621c686",
+              "name": "adventure",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "187aafa4-8a43-432e-b6ce-a051ba757159",
+              "name": "mythology",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "ur=V",
+              "name": "adult",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "b7191e73-7adb-48c1-bf16-26f72d87bb6a",
+              "name": "young adult",
+              "color": "default",
+              "description": null
+            }
+          ]
+        }
+      },
+      "goodreads": {
+        "id": "ScJh",
+        "name": "goodreads",
+        "type": "url",
+        "url": {}
+      },
+      "finish": {
+        "id": "VMbX",
+        "name": "finish",
+        "type": "button",
+        "button": {}
+      },
+      "started": {
+        "id": "YZjM",
+        "name": "started",
+        "type": "date",
+        "date": {}
+      },
+      "journals started": {
+        "id": "%5Bens",
+        "name": "journals started",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "books started",
+            "synced_property_id": "ZK~p"
+          }
+        }
+      },
+      "author": {
+        "id": "%60Dzx",
+        "name": "author",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "pages": {
+        "id": "eo%5DR",
+        "name": "pages",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "dates read": {
+        "id": "f%7Cmi",
+        "name": "dates read",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-81e8-b50b-dcef00d01069",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "book",
+            "synced_property_id": "mg%5CJ"
+          }
+        }
+      },
+      "start": {
+        "id": "guhJ",
+        "name": "start",
+        "type": "button",
+        "button": {}
+      },
+      "journals finished": {
+        "id": "k%3ADG",
+        "name": "journals finished",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "books finished",
+            "synced_property_id": "Oppl"
+          }
+        }
+      },
+      "stars": {
+        "id": "oG%3BR",
+        "name": "stars",
+        "type": "formula",
+        "formula": {
+          "expression": "style(if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} > 0, if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == 1, \"\u2bea\", \"\u2605\"), \"\u2606\")+if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} > 2, if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == 3, \"\u2bea\", \"\u2605\"), \"\u2606\")+if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} > 4, if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == 5, \"\u2bea\", \"\u2605\"), \"\u2606\")+if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} > 6, if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == 7, \"\u2bea\", \"\u2605\"), \"\u2606\")+if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} > 8, if({{notion:block_property:o%7CED:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == 9, \"\u2bea\", \"\u2605\"), \"\u2606\"), \"yellow\")"
+        }
+      },
+      "rating / 10": {
+        "id": "o%7CED",
+        "name": "rating / 10",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "series": {
+        "id": "pXXM",
+        "name": "series",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "tbr": {
+        "id": "%7DmmF",
+        "name": "tbr",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "publisher": {
+        "id": "~kwl",
+        "name": "publisher",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "title": {
+        "id": "title",
+        "name": "title",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81ed-80fe-e0a58607a564"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+    "title": "journals",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de28191a702fbd24c8bc8f3",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-29T19:18:00.000Z",
+    "properties": {
+      "books started summary": {
+        "id": "%3A%5EEo",
+        "name": "books started summary",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:ZK~p:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 0, \"\", style(\"started \"+{{notion:block_property:ZK~p:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()+if({{notion:block_property:ZK~p:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 1, \" books\", \" book\"), \"b\", \"purple\"))"
+        }
+      },
+      "day": {
+        "id": "%3DrSb",
+        "name": "day",
+        "type": "formula",
+        "formula": {
+          "expression": "ifs({{notion:block_property:is~I:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.day() == 1, \"Monday\", {{notion:block_property:is~I:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.day() == 2, \"Tuesday\", {{notion:block_property:is~I:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.day() == 3, \"Wednesday\", {{notion:block_property:is~I:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.day() == 4, \"Thursday\", {{notion:block_property:is~I:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.day() == 5, \"Friday\", {{notion:block_property:is~I:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.day() == 6, \"Saturday\", {{notion:block_property:is~I:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.day() == 7, \"Sunday\")"
+        }
+      },
+      "notes": {
+        "id": "FXsV",
+        "name": "notes",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-814b-8231-e715f51bb81d",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "journals",
+            "synced_property_id": "~%5B%3Bt"
+          }
+        }
+      },
+      "books finished": {
+        "id": "Oppl",
+        "name": "books finished",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-81a4-9413-c6ae516847c3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "journals finished",
+            "synced_property_id": "k%3ADG"
+          }
+        }
+      },
+      "books finished summary": {
+        "id": "Sbbr",
+        "name": "books finished summary",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:Oppl:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 0, \"\", style(\"finished \"+{{notion:block_property:Oppl:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()+if({{notion:block_property:Oppl:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 1, \" books\", \" book\"), \"b\", \"purple\"))"
+        }
+      },
+      "notes summary": {
+        "id": "Tt%5BW",
+        "name": "notes summary",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:FXsV:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 0, \"\", style(\"wrote \"+{{notion:block_property:FXsV:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()+if({{notion:block_property:FXsV:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 1, \" note\", \" note\"), \"b\", \"blue\"))"
+        }
+      },
+      "books started": {
+        "id": "ZK~p",
+        "name": "books started",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-81a4-9413-c6ae516847c3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "journals started",
+            "synced_property_id": "%5Bens"
+          }
+        }
+      },
+      "habits": {
+        "id": "%5E%40qx",
+        "name": "habits",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8161-96e4-cbf394be6204",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "journals",
+            "synced_property_id": "cSS%3E"
+          }
+        }
+      },
+      "events summary": {
+        "id": "%5ETt_",
+        "name": "events summary",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:%7BJq%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 0, \"\", style(\"had \"+{{notion:block_property:%7BJq%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()+if({{notion:block_property:%7BJq%3C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 1, \" event\", \" events\"), \"b\", \"orange\"))"
+        }
+      },
+      "Status": {
+        "id": "hYO%40",
+        "name": "Status",
+        "type": "status",
+        "status": {
+          "options": [
+            {
+              "id": "fcd893c8-3d71-4a19-aafb-39683d079d8a",
+              "name": "Not started",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "befae641-66e9-4c1b-81a7-5d0f7943c375",
+              "name": "In progress",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "2574e64c-a745-45ed-9c6c-392b8de076de",
+              "name": "Done",
+              "color": "green",
+              "description": null
+            }
+          ],
+          "groups": [
+            {
+              "id": "f10f664a-4f7e-402c-aefd-4580106a3575",
+              "name": "To-do",
+              "color": "gray",
+              "option_ids": [
+                "fcd893c8-3d71-4a19-aafb-39683d079d8a"
+              ]
+            },
+            {
+              "id": "b9d2cb31-acb6-4d86-9a29-df0920668a31",
+              "name": "In progress",
+              "color": "blue",
+              "option_ids": [
+                "befae641-66e9-4c1b-81a7-5d0f7943c375"
+              ]
+            },
+            {
+              "id": "754bf4a2-4b23-4d47-b7a3-2edc766c36d7",
+              "name": "Complete",
+              "color": "green",
+              "option_ids": [
+                "2574e64c-a745-45ed-9c6c-392b8de076de"
+              ]
+            }
+          ]
+        }
+      },
+      "date": {
+        "id": "is~I",
+        "name": "date",
+        "type": "date",
+        "date": {}
+      },
+      "gifts summary": {
+        "id": "l%7DlF",
+        "name": "gifts summary",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:zvbJ:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 0, \"\", style(\"bought \"+{{notion:block_property:zvbJ:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()+if({{notion:block_property:zvbJ:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 1, \" gift\", \" gifts\"), \"b\", \"pink\"))"
+        }
+      },
+      "type": {
+        "id": "wz%5Ej",
+        "name": "type",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "e:~i",
+              "name": "Routine",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "?[?x",
+              "name": "One-time",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": ">\\}@",
+              "name": "Yearly",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "fT?A",
+              "name": "Monthly",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "gmNV",
+              "name": "Weekly",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "WblL",
+              "name": "Daily",
+              "color": "brown",
+              "description": null
+            }
+          ]
+        }
+      },
+      "chores summary": {
+        "id": "yGcb",
+        "name": "chores summary",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:z%3Cpr:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 0, \"\", style(\"completed \"+{{notion:block_property:z%3Cpr:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()+if({{notion:block_property:z%3Cpr:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 1, \" chore\", \" chores\"), \"b\", \"yellow\"))"
+        }
+      },
+      "chores": {
+        "id": "z%3Cpr",
+        "name": "chores",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-81dd-80d4-d07072888283",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "journals",
+            "synced_property_id": "%3Bo%3Eg"
+          }
+        }
+      },
+      "gifts": {
+        "id": "zvbJ",
+        "name": "gifts",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-81fc-8b7c-d85917d89653",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "journals",
+            "synced_property_id": "%3A%3FHR"
+          }
+        }
+      },
+      "events": {
+        "id": "%7BJq%3C",
+        "name": "events",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-81dd-813b-fdaaf622277d",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "journals",
+            "synced_property_id": "FIP%5E"
+          }
+        }
+      },
+      "habits summary": {
+        "id": "%7Dmdq",
+        "name": "habits summary",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:%5E%40qx:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 0, \"\", style(\"completed \"+{{notion:block_property:%5E%40qx:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()+if({{notion:block_property:%5E%40qx:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length() == 1, \" habit\", \" habits\"), \"b\", \"green\"))"
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-8181-a937-f9af3636f45a"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "200ec31c-9de2-80e2-817f-dfbc151b7946",
+    "title": "Food Onhand",
+    "description": [],
+    "url": "https://www.notion.so/200ec31c9de280e2817fdfbc151b7946",
+    "created_time": "2025-05-27T23:19:00.000Z",
+    "last_edited_time": "2025-05-28T17:37:00.000Z",
+    "properties": {
+      "Drinks": {
+        "id": "JLFJ",
+        "name": "Drinks",
+        "type": "relation",
+        "relation": {
+          "database_id": "200ec31c-9de2-803b-a9ab-d4bc2c3fe5cf",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Drank 1",
+            "synced_property_id": "%7CrOl"
+          }
+        }
+      },
+      "Restock": {
+        "id": "MCL%3A",
+        "name": "Restock",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Count": {
+        "id": "lWnv",
+        "name": "Count",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:JLFJ:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()"
+        }
+      },
+      "Coffee": {
+        "id": "title",
+        "name": "Coffee",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "200ec31c-9de2-8002-b340-c9e6902bacec"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "200ec31c-9de2-803b-a9ab-d4bc2c3fe5cf",
+    "title": "Drinks",
+    "description": [],
+    "url": "https://www.notion.so/200ec31c9de2803ba9abd4bc2c3fe5cf",
+    "created_time": "2025-05-27T23:20:00.000Z",
+    "last_edited_time": "2025-05-28T17:36:00.000Z",
+    "properties": {
+      "Date": {
+        "id": "Audp",
+        "name": "Date",
+        "type": "date",
+        "date": {}
+      },
+      "Drank 1": {
+        "id": "%7CrOl",
+        "name": "Drank 1",
+        "type": "relation",
+        "relation": {
+          "database_id": "200ec31c-9de2-80e2-817f-dfbc151b7946",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Drinks",
+            "synced_property_id": "JLFJ"
+          }
+        }
+      },
+      "Drank": {
+        "id": "title",
+        "name": "Drank",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "200ec31c-9de2-8002-b340-c9e6902bacec"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8185-9ae8-e4ca325d9163",
+    "title": "notebooks",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281859ae8e4ca325d9163",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-28T09:14:00.000Z",
+    "properties": {
+      "notes": {
+        "id": "%3CQdP",
+        "name": "notes",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-814b-8231-e715f51bb81d",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "notebook",
+            "synced_property_id": "%3E%3FGw"
+          }
+        }
+      },
+      "total notes summary": {
+        "id": "%3CujJ",
+        "name": "total notes summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"contains: \"+{{notion:block_property:pbky:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}+(if({{notion:block_property:pbky:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} > 1, \" notes\", \" note\"))"
+        }
+      },
+      "favourite?": {
+        "id": "WpGH",
+        "name": "favourite?",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "last update summary": {
+        "id": "_eWo",
+        "name": "last update summary",
+        "type": "formula",
+        "formula": {
+          "expression": "style(\"last update: \"+{{notion:block_property:%7Dc%7CU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.formatDate(\"DD MMMM, Y\"), \"b\", \"yellow\")"
+        }
+      },
+      "total notes": {
+        "id": "pbky",
+        "name": "total notes",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:%3CQdP:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.length()"
+        }
+      },
+      "add": {
+        "id": "%7BWS%7B",
+        "name": "add",
+        "type": "button",
+        "button": {}
+      },
+      "last update": {
+        "id": "%7Dc%7CU",
+        "name": "last update",
+        "type": "rollup",
+        "rollup": {
+          "rollup_property_name": "date",
+          "relation_property_name": "notes",
+          "rollup_property_id": "pLga",
+          "relation_property_id": "<QdP",
+          "function": "latest_date"
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-8190-9329-db63ad69574a"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "200ec31c-9de2-8096-9f58-e870135ca7e1",
+    "title": "Sani Dumps",
+    "description": [],
+    "url": "https://www.notion.so/200ec31c9de280969f58e870135ca7e1",
+    "created_time": "2025-05-27T07:35:00.000Z",
+    "last_edited_time": "2025-05-27T08:04:00.000Z",
+    "properties": {
+      "Location": {
+        "id": "JeRM",
+        "name": "Location",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Times Used": {
+        "id": "o%5BQG",
+        "name": "Times Used",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Dump Name": {
+        "id": "title",
+        "name": "Dump Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "200ec31c-9de2-809c-84e0-df88555aefc4"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1ffec31c-9de2-80a3-bc2a-cb035303664f",
+    "title": "Drivers and Trucks",
+    "description": [],
+    "url": "https://www.notion.so/1ffec31c9de280a3bc2acb035303664f",
+    "created_time": "2025-05-26T17:57:00.000Z",
+    "last_edited_time": "2025-05-26T18:35:00.000Z",
+    "properties": {
+      "Current Score": {
+        "id": "GF%3Ao",
+        "name": "Current Score",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Paid": {
+        "id": "IYP%3C",
+        "name": "Paid",
+        "type": "status",
+        "status": {
+          "options": [
+            {
+              "id": "fe560216-2237-446a-b4e4-922caafd53c8",
+              "name": "Not started",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "66c5b66a-d279-4550-80bf-9a15e4e8b456",
+              "name": "In progress",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "24252d55-7d4a-4c3c-90fc-7c35b1e32bf3",
+              "name": "Done",
+              "color": "green",
+              "description": null
+            }
+          ],
+          "groups": [
+            {
+              "id": "aeb1dbdb-21c4-4c6a-9506-0f68e006bf6e",
+              "name": "To-do",
+              "color": "gray",
+              "option_ids": [
+                "fe560216-2237-446a-b4e4-922caafd53c8"
+              ]
+            },
+            {
+              "id": "220fc961-10e7-4346-bc72-ff4e2d17d963",
+              "name": "In progress",
+              "color": "blue",
+              "option_ids": [
+                "66c5b66a-d279-4550-80bf-9a15e4e8b456"
+              ]
+            },
+            {
+              "id": "e6f20d3a-9f26-408d-9498-b6a2897a48ee",
+              "name": "Complete",
+              "color": "green",
+              "option_ids": [
+                "24252d55-7d4a-4c3c-90fc-7c35b1e32bf3"
+              ]
+            }
+          ]
+        }
+      },
+      "Driver Number": {
+        "id": "QugJ",
+        "name": "Driver Number",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "Truck Type": {
+        "id": "YTwf",
+        "name": "Truck Type",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "`tmx",
+              "name": "Run What you Brung",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "n^in",
+              "name": "Open",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "k=~z",
+              "name": "Class 3",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "NNRG",
+              "name": "Class 2",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "P]CT",
+              "name": "Class 1",
+              "color": "purple",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Date": {
+        "id": "pXyf",
+        "name": "Date",
+        "type": "date",
+        "date": {}
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "1feec31c-9de2-809e-ac23-f4b10a679905"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1feec31c-9de2-81aa-ae5f-c6a03e8fdf27",
+    "title": "Event Records",
+    "description": [],
+    "url": "https://www.notion.so/1feec31c9de281aaae5fc6a03e8fdf27",
+    "created_time": "2025-05-25T06:48:00.000Z",
+    "last_edited_time": "2025-05-26T18:32:00.000Z",
+    "properties": {
+      "Due Date": {
+        "id": "%3C%3B%7C%3C",
+        "name": "Due Date",
+        "type": "date",
+        "date": {}
+      },
+      "Status": {
+        "id": "%3FUn%7D",
+        "name": "Status",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "dc03dd82-bdb5-49c2-883d-55213f5d19c2",
+              "name": "Unpaid",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "89a93cb6-a897-41e7-a892-6805e467ec6a",
+              "name": "Paid",
+              "color": "green",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Date": {
+        "id": "WXr%7C",
+        "name": "Date",
+        "type": "date",
+        "date": {}
+      },
+      "Fine Amount": {
+        "id": "dhJ%5C",
+        "name": "Fine Amount",
+        "type": "number",
+        "number": {
+          "format": "dollar"
+        }
+      },
+      "Vehicle": {
+        "id": "gTi%5C",
+        "name": "Vehicle",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-8156-82ed-d5a045492ac9",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Ticket Records",
+            "synced_property_id": "KS~%5B"
+          }
+        }
+      },
+      "Event Type": {
+        "id": "nTZT",
+        "name": "Event Type",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "52af6b1c-fb58-4bce-af62-540555ef6a16",
+              "name": "Comp",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "3936f7c3-29e7-4eb2-813f-8f4d4f44a29f",
+              "name": "Scale Truck Hike",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "28d51716-e5b3-4fdd-9703-af400a728dac",
+              "name": "Class 1 Trail",
+              "color": "pink",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Notes": {
+        "id": "z%7Dsq",
+        "name": "Notes",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Location": {
+        "id": "title",
+        "name": "Location",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1feec31c-9de2-81f1-acdd-fc5e43a8cc33"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/ticket_purple.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1feec31c-9de2-8156-82ed-d5a045492ac9",
+    "title": "Home Garage",
+    "description": [],
+    "url": "https://www.notion.so/1feec31c9de2815682edd5a045492ac9",
+    "created_time": "2025-05-25T06:48:00.000Z",
+    "last_edited_time": "2025-05-26T18:31:00.000Z",
+    "properties": {
+      "Insurance Expire Date": {
+        "id": "A%3C%5BU",
+        "name": "Insurance Expire Date",
+        "type": "rollup",
+        "rollup": {
+          "rollup_property_name": "Expiry Date",
+          "relation_property_name": "Steering Servo",
+          "rollup_property_id": "`y:^",
+          "relation_property_id": "n:QK",
+          "function": "latest_date"
+        }
+      },
+      "Manufacture": {
+        "id": "G%5CdM",
+        "name": "Manufacture",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Purchase Price": {
+        "id": "JW%7DM",
+        "name": "Purchase Price",
+        "type": "number",
+        "number": {
+          "format": "dollar"
+        }
+      },
+      "Ticket Records": {
+        "id": "KS~%5B",
+        "name": "Ticket Records",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-81aa-ae5f-c6a03e8fdf27",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Vehicle",
+            "synced_property_id": "gTi%5C"
+          }
+        }
+      },
+      "Purchase Date": {
+        "id": "QaIx",
+        "name": "Purchase Date",
+        "type": "date",
+        "date": {}
+      },
+      "Vehicle Image": {
+        "id": "VL%3Bg",
+        "name": "Vehicle Image",
+        "type": "files",
+        "files": {}
+      },
+      "Alert & Info": {
+        "id": "%5BMKN",
+        "name": "Alert & Info",
+        "type": "formula",
+        "formula": {
+          "expression": "if (\n  dateBetween(\n    dateSubtract(dateSubtract({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, hour({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"hours\"), minute({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"minutes\"),\n    dateSubtract(dateSubtract(now(), hour(now()), \"hours\"), minute(now()), \"minutes\"),\n    \"days\"\n  ) >= 2,\n  \"Insurance expires in \" + dateBetween(\n    dateSubtract(dateSubtract({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, hour({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"hours\"), minute({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"minutes\"),\n    dateSubtract(dateSubtract(now(), hour(now()), \"hours\"), minute(now()), \"minutes\"),\n    \"days\"\n  ).style(\"c\",\"b\",\"purple\") + \" days.\",\n  if (\n    dateBetween(\n      dateSubtract(dateSubtract({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, hour({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"hours\"), minute({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"minutes\"),\n      dateSubtract(dateSubtract(now(), hour(now()), \"hours\"), minute(now()), \"minutes\"),\n      \"days\"\n    ) == 1,\n    \"Insurance expires in \" +  (\"1\").style(\"c\",\"b\",\"red\") +\" day.\",\n    if (\n      dateBetween(\n        dateSubtract(dateSubtract({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, hour({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"hours\"), minute({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"minutes\"),\n        dateSubtract(dateSubtract(now(), hour(now()), \"hours\"), minute(now()), \"minutes\"),\n        \"days\"\n      ) == 0,\n      \"Insurance expires \" + (\"TODAY\").style(\"c\",\"b\",\"red\") + \"!\",\n      if (\n        dateBetween(\n          dateSubtract(dateSubtract({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, hour({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"hours\"), minute({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"minutes\"),\n          dateSubtract(dateSubtract(now(), hour(now()), \"hours\"), minute(now()), \"minutes\"),\n          \"days\"\n        ) == -1,\n        \"Insurance \" + \"EXPIRED \".style(\"b\",\"i\",\"red\") +  (\"1\").style(\"c\",\"b\",\"red\") +\" day ago.\",\n        \"Insurance \" + \"EXPIRED \".style(\"b\",\"i\",\"red\") + abs(dateBetween(\n          dateSubtract(dateSubtract({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, hour({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"hours\"), minute({{notion:block_property:A%3C%5BU:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"minutes\"),\n          dateSubtract(dateSubtract(now(), hour(now()), \"hours\"), minute(now()), \"minutes\"),\n          \"days\"\n        )).style(\"c\",\"b\",\"red\") + \" days ago.\"\n      )\n    )\n  )\n)\n+\"\\n\"+\n\"Total maintenance cost: \" + \"$\".style(\"c\", \"b\", \"purple\") + format(replaceAll(format({{notion:block_property:o%60uX:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"(\\\\d)(?=(\\\\d{3})+(?!\\\\d))\", \"$1,\")).style(\"c\", \"b\", \"purple\")"
+        }
+      },
+      "Vehicle Maintenance Records": {
+        "id": "ksYU",
+        "name": "Vehicle Maintenance Records",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-81cb-9b31-e32055d36f69",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Vehicle",
+            "synced_property_id": "%3Biq%5B"
+          }
+        }
+      },
+      "Steering Servo": {
+        "id": "n%3AQK",
+        "name": "Steering Servo",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-81d2-a677-d57f3eb653dd",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "Total Maintenance Cost": {
+        "id": "o%60uX",
+        "name": "Total Maintenance Cost",
+        "type": "rollup",
+        "rollup": {
+          "rollup_property_name": "Cost",
+          "relation_property_name": "Vehicle Maintenance Records",
+          "rollup_property_id": "lMRr",
+          "relation_property_id": "ksYU",
+          "function": "sum"
+        }
+      },
+      "Type": {
+        "id": "z%5DnW",
+        "name": "Type",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Motor": {
+        "id": "~qhs",
+        "name": "Motor",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1feec31c-9de2-8165-9dfd-d1d3dcbbe129"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/car_purple.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-81dd-80d4-d07072888283",
+    "title": "chores",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281dd80d4d07072888283",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-26T18:26:00.000Z",
+    "properties": {
+      "summary": {
+        "id": "%3AIq~",
+        "name": "summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"Every \"+{{notion:block_property:dcw~:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}+\" \"+{{notion:block_property:qZ%5DK:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}+\"(s)\""
+        }
+      },
+      "todo?": {
+        "id": "%3B%5Cox",
+        "name": "todo?",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:f~G%3F:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} and if({{notion:block_property:D%3Cc%3D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.empty(), true, ifs({{notion:block_property:qZ%5DK:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"day\", today().day() - {{notion:block_property:dcw~:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} >= {{notion:block_property:D%3Cc%3D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.day(), {{notion:block_property:qZ%5DK:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"week\", today().week() - {{notion:block_property:dcw~:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} >= {{notion:block_property:D%3Cc%3D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.week(), {{notion:block_property:qZ%5DK:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"month\", today().month() - {{notion:block_property:dcw~:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} >= {{notion:block_property:D%3Cc%3D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.month(), {{notion:block_property:qZ%5DK:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"year\", today().year() - {{notion:block_property:dcw~:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} >= {{notion:block_property:D%3Cc%3D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.year()))"
+        }
+      },
+      "journals": {
+        "id": "%3Bo%3Eg",
+        "name": "journals",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "chores",
+            "synced_property_id": "z%3Cpr"
+          }
+        }
+      },
+      "start": {
+        "id": "%3BwQ%40",
+        "name": "start",
+        "type": "date",
+        "date": {}
+      },
+      "last": {
+        "id": "D%3Cc%3D",
+        "name": "last",
+        "type": "date",
+        "date": {}
+      },
+      "skip": {
+        "id": "QAFH",
+        "name": "skip",
+        "type": "button",
+        "button": {}
+      },
+      "amount": {
+        "id": "dcw~",
+        "name": "amount",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "started?": {
+        "id": "f~G%3F",
+        "name": "started?",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:%3BwQ%40:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.empty(), true, {{notion:block_property:%3BwQ%40:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} <= today())"
+        }
+      },
+      "repeat": {
+        "id": "qZ%5DK",
+        "name": "repeat",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "]oOP",
+              "name": "day",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "C~x>",
+              "name": "week",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "DHZh",
+              "name": "month",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "EoJk",
+              "name": "year",
+              "color": "red",
+              "description": null
+            }
+          ]
+        }
+      },
+      "done": {
+        "id": "zHq%3B",
+        "name": "done",
+        "type": "button",
+        "button": {}
+      },
+      "task": {
+        "id": "title",
+        "name": "task",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-8199-8d46-c084a3343626"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1feec31c-9de2-81d2-a677-d57f3eb653dd",
+    "title": "RC Manufactures",
+    "description": [],
+    "url": "https://www.notion.so/1feec31c9de281d2a677d57f3eb653dd",
+    "created_time": "2025-05-25T06:48:00.000Z",
+    "last_edited_time": "2025-05-25T07:02:00.000Z",
+    "properties": {
+      "Start Date": {
+        "id": "BqZX",
+        "name": "Start Date",
+        "type": "date",
+        "date": {}
+      },
+      "Type": {
+        "id": "GEwS",
+        "name": "Type",
+        "type": "multi_select",
+        "multi_select": {
+          "options": [
+            {
+              "id": "2f6723d4-519d-497e-b89a-1a5c08106998",
+              "name": "Comprehensive",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "e99a5245-a7ee-483b-92e5-fbcb8b3ae33d",
+              "name": "Third-party",
+              "color": "green",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Insured Vehicle": {
+        "id": "Y%5CBT",
+        "name": "Insured Vehicle",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-8156-82ed-d5a045492ac9",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "Expiry Date": {
+        "id": "%60y%3A%5E",
+        "name": "Expiry Date",
+        "type": "date",
+        "date": {}
+      },
+      "Cost": {
+        "id": "lMRr",
+        "name": "Cost",
+        "type": "number",
+        "number": {
+          "format": "dollar"
+        }
+      },
+      "Manufacture": {
+        "id": "title",
+        "name": "Manufacture",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1feec31c-9de2-81f1-acdd-fc5e43a8cc33"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/shield_purple.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1feec31c-9de2-8118-829f-f501a62a39e6",
+    "title": "Maintenance Type",
+    "description": [],
+    "url": "https://www.notion.so/1feec31c9de28118829ff501a62a39e6",
+    "created_time": "2025-05-25T06:48:00.000Z",
+    "last_edited_time": "2025-05-25T06:48:00.000Z",
+    "properties": {
+      "Cover": {
+        "id": "IjLT",
+        "name": "Cover",
+        "type": "files",
+        "files": {}
+      },
+      "Maintenance Records": {
+        "id": "L%5BKt",
+        "name": "Maintenance Records",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-81cb-9b31-e32055d36f69",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Service Type",
+            "synced_property_id": "K%5BKW"
+          }
+        }
+      },
+      "Total Cost": {
+        "id": "Mwwl",
+        "name": "Total Cost",
+        "type": "rollup",
+        "rollup": {
+          "rollup_property_name": "Cost",
+          "relation_property_name": "Maintenance Records",
+          "rollup_property_id": "lMRr",
+          "relation_property_id": "L[Kt",
+          "function": "sum"
+        }
+      },
+      "Cost Overview": {
+        "id": "%7B%3D%5Eh",
+        "name": "Cost Overview",
+        "type": "formula",
+        "formula": {
+          "expression": "\"Total cost: \" + \"$\".style(\"c\", \"b\", \"purple\") + format(replaceAll(format({{notion:block_property:Mwwl:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}), \"(\\\\d)(?=(\\\\d{3})+(?!\\\\d))\", \"$1,\")).style(\"c\", \"b\", \"purple\")"
+        }
+      },
+      "Vehicle Management To-Do List": {
+        "id": "%7D_SO",
+        "name": "Vehicle Management To-Do List",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-81bf-b92d-d18d2f5c3e8e",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Maintenance Type",
+            "synced_property_id": "%3Dn%7Cu"
+          }
+        }
+      },
+      "Description": {
+        "id": "title",
+        "name": "Description",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1feec31c-9de2-81f1-acdd-fc5e43a8cc33"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/categories_purple.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1feec31c-9de2-81cb-9b31-e32055d36f69",
+    "title": "Maintenance Records",
+    "description": [],
+    "url": "https://www.notion.so/1feec31c9de281cb9b31e32055d36f69",
+    "created_time": "2025-05-25T06:48:00.000Z",
+    "last_edited_time": "2025-05-25T06:48:00.000Z",
+    "properties": {
+      "Mileage Reading": {
+        "id": "%3B%3Dm%3D",
+        "name": "Mileage Reading",
+        "type": "number",
+        "number": {
+          "format": "number_with_commas"
+        }
+      },
+      "Vehicle": {
+        "id": "%3Biq%5B",
+        "name": "Vehicle",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-8156-82ed-d5a045492ac9",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Vehicle Maintenance Records",
+            "synced_property_id": "ksYU"
+          }
+        }
+      },
+      "Date": {
+        "id": "BqZX",
+        "name": "Date",
+        "type": "date",
+        "date": {}
+      },
+      "Service Type": {
+        "id": "K%5BKW",
+        "name": "Service Type",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-8118-829f-f501a62a39e6",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Maintenance Records",
+            "synced_property_id": "L%5BKt"
+          }
+        }
+      },
+      "Service Provider": {
+        "id": "NYXV",
+        "name": "Service Provider",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "1a70a63a-f8e7-40f9-ae46-200d6af6ba9f",
+              "name": "Tesla Service Center",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "fe52b906-21b2-40b7-98ed-b80f08611c67",
+              "name": "Quick Brake Service",
+              "color": "yellow",
+              "description": null
+            },
+            {
+              "id": "979fdfa6-fe2e-480c-b758-f028948bc43b",
+              "name": "Shiny Auto Detailing",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "ac69c87a-9793-4d88-9d5f-c66885dc1f4f",
+              "name": "Speedy Car Wash",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "884809f9-bf2e-416e-b08e-ed9b3f40b754",
+              "name": "Chevrolet Service Center",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "25ca52d5-a0af-46fb-a6c7-266f451b6b47",
+              "name": "Quick Auto Repair",
+              "color": "pink",
+              "description": null
+            },
+            {
+              "id": "6db2af97-a6cd-43dc-a1eb-fc3d2bd960b7",
+              "name": "Toyota Service Center",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "bc0c8697-2352-4638-a63a-acbf80f6b2e4",
+              "name": "Auto Repair Experts",
+              "color": "green",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Notes": {
+        "id": "SGiC",
+        "name": "Notes",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "Cost": {
+        "id": "lMRr",
+        "name": "Cost",
+        "type": "number",
+        "number": {
+          "format": "dollar"
+        }
+      },
+      "Description": {
+        "id": "title",
+        "name": "Description",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1feec31c-9de2-81f1-acdd-fc5e43a8cc33"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/pitcher_purple.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1feec31c-9de2-81bf-b92d-d18d2f5c3e8e",
+    "title": "Vehicle Management To-Do List",
+    "description": [],
+    "url": "https://www.notion.so/1feec31c9de281bfb92dd18d2f5c3e8e",
+    "created_time": "2025-05-25T06:48:00.000Z",
+    "last_edited_time": "2025-05-25T06:48:00.000Z",
+    "properties": {
+      "Maintenance Type": {
+        "id": "%3Dn%7Cu",
+        "name": "Maintenance Type",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-8118-829f-f501a62a39e6",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "Vehicle Management To-Do List",
+            "synced_property_id": "%7D_SO"
+          }
+        }
+      },
+      "Deadline": {
+        "id": "ApkE",
+        "name": "Deadline",
+        "type": "date",
+        "date": {}
+      },
+      "Archive": {
+        "id": "P%60tK",
+        "name": "Archive",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "Priority": {
+        "id": "n%60Hu",
+        "name": "Priority",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "05aa7cdb-8f67-4b16-8a90-8017fa992649",
+              "name": "High",
+              "color": "red",
+              "description": null
+            },
+            {
+              "id": "e376d7c6-06dc-4c27-aaf8-6790445cd9ef",
+              "name": "Medium",
+              "color": "gray",
+              "description": null
+            },
+            {
+              "id": "a55bd53c-caf4-4890-ba7c-ec3f6714bd0f",
+              "name": "Low",
+              "color": "green",
+              "description": null
+            }
+          ]
+        }
+      },
+      "Vehicle": {
+        "id": "rw_%3A",
+        "name": "Vehicle",
+        "type": "relation",
+        "relation": {
+          "database_id": "1feec31c-9de2-8156-82ed-d5a045492ac9",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "Task": {
+        "id": "title",
+        "name": "Task",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "page_id",
+      "page_id": "1feec31c-9de2-809e-ac23-f4b10a679905"
+    },
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/checklist_purple.svg"
+      }
+    },
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-810a-8195-dce2c5bb51b5",
+    "title": "meals",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de2810a8195dce2c5bb51b5",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "recipe": {
+        "id": "BhNH",
+        "name": "recipe",
+        "type": "rich_text",
+        "rich_text": {}
+      },
+      "ingredients": {
+        "id": "BzXu",
+        "name": "ingredients",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8152-a34d-f7faa3f9aecc",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "meals",
+            "synced_property_id": "JP%3E%5B"
+          }
+        }
+      },
+      "percentage": {
+        "id": "fU_Q",
+        "name": "percentage",
+        "type": "rollup",
+        "rollup": {
+          "rollup_property_name": "in pantry?",
+          "relation_property_name": "ingredients",
+          "rollup_property_id": "dow}",
+          "relation_property_id": "BzXu",
+          "function": "percent_checked"
+        }
+      },
+      "favourite": {
+        "id": "p%3Cs%3D",
+        "name": "favourite",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "available?": {
+        "id": "%7DEZ%7B",
+        "name": "available?",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:fU_Q:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == 1"
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-8121-b74a-da6b6013494c"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-814b-8231-e715f51bb81d",
+    "title": "notes",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de2814b8231e715f51bb81d",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "notebook": {
+        "id": "%3E%3FGw",
+        "name": "notebook",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8185-9ae8-e4ca325d9163",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "notes",
+            "synced_property_id": "%3CQdP"
+          }
+        }
+      },
+      "date": {
+        "id": "pLga",
+        "name": "date",
+        "type": "date",
+        "date": {}
+      },
+      "journals": {
+        "id": "~%5B%3Bt",
+        "name": "journals",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "notes",
+            "synced_property_id": "FXsV"
+          }
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-8190-9329-db63ad69574a"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8161-96e4-cbf394be6204",
+    "title": "habits",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de2816196e4cbf394be6204",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "THU": {
+        "id": "B%5BRu",
+        "name": "THU",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "SUN": {
+        "id": "E%3B%5Dx",
+        "name": "SUN",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "done": {
+        "id": "UEB%40",
+        "name": "done",
+        "type": "button",
+        "button": {}
+      },
+      "last": {
+        "id": "WRyO",
+        "name": "last",
+        "type": "date",
+        "date": {}
+      },
+      "MON": {
+        "id": "WgnP",
+        "name": "MON",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "WED": {
+        "id": "X%3Fac",
+        "name": "WED",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "FRI": {
+        "id": "YIFb",
+        "name": "FRI",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "SAT": {
+        "id": "ZJV%5D",
+        "name": "SAT",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "journals": {
+        "id": "cSS%3E",
+        "name": "journals",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "habits",
+            "synced_property_id": "%5E%40qx"
+          }
+        }
+      },
+      "TUE": {
+        "id": "rGnV",
+        "name": "TUE",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "todo?": {
+        "id": "rNd%40",
+        "name": "todo?",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:WRyO:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.empty(), true, {{notion:block_property:WRyO:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.unequal(today())) and ifs(today().day() == 1, {{notion:block_property:WgnP:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, today().day() == 2, {{notion:block_property:rGnV:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, today().day() == 3, {{notion:block_property:X%3Fac:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, today().day() == 4, {{notion:block_property:B%5BRu:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, today().day() == 5, {{notion:block_property:YIFb:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, today().day() == 6, {{notion:block_property:ZJV%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, today().day() == 7, {{notion:block_property:E%3B%5Dx:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}})"
+        }
+      },
+      "skip": {
+        "id": "tL%3AT",
+        "name": "skip",
+        "type": "button",
+        "button": {}
+      },
+      "habit": {
+        "id": "title",
+        "name": "habit",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-813b-8e84-ef4ae854a9d7"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8102-9edf-f24c409b8059",
+    "title": "goal records",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281029edff24c409b8059",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "amount": {
+        "id": "hHMo",
+        "name": "amount",
+        "type": "number",
+        "number": {
+          "format": "pound"
+        }
+      },
+      "date": {
+        "id": "%7DY%7Bd",
+        "name": "date",
+        "type": "date",
+        "date": {}
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81cd-b8b7-c9de056192bd"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8105-bd50-cb703be7ef65",
+    "title": "income",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de28105bd50cb703be7ef65",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "date": {
+        "id": "BY%40K",
+        "name": "date",
+        "type": "date",
+        "date": {}
+      },
+      "account": {
+        "id": "JREt",
+        "name": "account",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "income items",
+            "synced_property_id": "jEft"
+          }
+        }
+      },
+      "amount": {
+        "id": "WqqF",
+        "name": "amount",
+        "type": "number",
+        "number": {
+          "format": "pound"
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81cd-b8b7-c9de056192bd"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-815b-ab44-f416ead6bd65",
+    "title": "recurring",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de2815bab44f416ead6bd65",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "repeats": {
+        "id": "C%3D_r",
+        "name": "repeats",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "ca6791cb-8472-4fec-b3e7-f0b6e8cc23f0",
+              "name": "week",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "ae8a0046-e34b-46f3-9471-d26b8e23198d",
+              "name": "fortnight",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "9fe91c66-19eb-48ad-b5cd-caeb0d031c49",
+              "name": "month",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "c61bdf2a-4c75-417c-b6b0-ddd5b2e15058",
+              "name": "quarter",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "35f6eee4-02a9-4ebe-bbb5-7628eb7a19c2",
+              "name": "year",
+              "color": "default",
+              "description": null
+            }
+          ]
+        }
+      },
+      "amount": {
+        "id": "JOmL",
+        "name": "amount",
+        "type": "number",
+        "number": {
+          "format": "pound"
+        }
+      },
+      "monthly summary": {
+        "id": "JpQ%3A",
+        "name": "monthly summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"monthly: \u00a3\"+ifs({{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"week\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 4, {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"fortnight\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 2, {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"month\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 1, {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"quarter\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} / 3, {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"year\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} / 12)"
+        }
+      },
+      "next": {
+        "id": "MzGD",
+        "name": "next",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:i%3EBM:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.empty(), {{notion:block_property:%5B%3EL%7C:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, (ifs({{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"week\", {{notion:block_property:i%3EBM:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(1, \"week\"), {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"fortnight\", {{notion:block_property:i%3EBM:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(2, \"week\"), {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"month\", {{notion:block_property:i%3EBM:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(1, \"month\"), {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"quarter\", {{notion:block_property:i%3EBM:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(3, \"month\"), {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"year\", {{notion:block_property:i%3EBM:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(1, \"year\"))))"
+        }
+      },
+      "summary": {
+        "id": "WXsC",
+        "name": "summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"every \"+{{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}+\": \u00a3\"+{{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "start": {
+        "id": "%5B%3EL%7C",
+        "name": "start",
+        "type": "date",
+        "date": {}
+      },
+      "yearly summary": {
+        "id": "%5E%5E%5B%40",
+        "name": "yearly summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"annually: \u00a3\"+ifs({{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"week\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 52, {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"fortnight\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 26, {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"month\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 12, {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"quarter\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 4, {{notion:block_property:C%3D_r:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"year\", {{notion:block_property:JOmL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} * 1)"
+        }
+      },
+      "active": {
+        "id": "b%5BZ%3A",
+        "name": "active",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "next summary": {
+        "id": "hY%3Fw",
+        "name": "next summary",
+        "type": "formula",
+        "formula": {
+          "expression": "style(\"next: \"+{{notion:block_property:MzGD:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.formatDate(\"D MMM, Y\"), \"b\", \"yellow\")"
+        }
+      },
+      "last": {
+        "id": "i%3EBM",
+        "name": "last",
+        "type": "date",
+        "date": {}
+      },
+      "pay": {
+        "id": "p%60M%3D",
+        "name": "pay",
+        "type": "button",
+        "button": {}
+      },
+      "account": {
+        "id": "qMq%3D",
+        "name": "account",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81cd-b8b7-c9de056192bd"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+    "title": "accounts",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de28184a168fa38482ce0fd",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "bank": {
+        "id": "%3CGWX",
+        "name": "bank",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "fa167793-0cdc-483d-8ab5-658c2e516d8e",
+              "name": "barclays",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "df3d64e6-5d88-486b-b5bf-325f7bc588a5",
+              "name": "nationwide",
+              "color": "purple",
+              "description": null
+            }
+          ]
+        }
+      },
+      "income": {
+        "id": "%3DdtL",
+        "name": "income",
+        "type": "formula",
+        "formula": {
+          "expression": "sum({{notion:block_property:jEft:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(current.{{notion:block_property:WqqF:1fdec31c-9de2-8105-bd50-cb703be7ef65:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}))"
+        }
+      },
+      "total": {
+        "id": "AKv%3B",
+        "name": "total",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:%3DdtL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}-{{notion:block_property:l%3AeY:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "expenses summary": {
+        "id": "JT%3Cs",
+        "name": "expenses summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"expenses: \u00a3\"+{{notion:block_property:l%3AeY:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "expenses items": {
+        "id": "VXdG",
+        "name": "expenses items",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-81ae-bff1-ff4a2f3abecf",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "account",
+            "synced_property_id": "JREt"
+          }
+        }
+      },
+      "income summary": {
+        "id": "iLw%5E",
+        "name": "income summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"income: \u00a3\"+{{notion:block_property:%3DdtL:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "income items": {
+        "id": "jEft",
+        "name": "income items",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8105-bd50-cb703be7ef65",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "account",
+            "synced_property_id": "JREt"
+          }
+        }
+      },
+      "total summary": {
+        "id": "kr%60T",
+        "name": "total summary",
+        "type": "formula",
+        "formula": {
+          "expression": "style(\"balance: \u00a3\"+{{notion:block_property:AKv%3B:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, \"b\", if({{notion:block_property:AKv%3B:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} < 0, \"red\", \"green\"))"
+        }
+      },
+      "expenses": {
+        "id": "l%3AeY",
+        "name": "expenses",
+        "type": "formula",
+        "formula": {
+          "expression": "sum({{notion:block_property:VXdG:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(current.{{notion:block_property:WqqF:1fdec31c-9de2-81ae-bff1-ff4a2f3abecf:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}))"
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81cd-b8b7-c9de056192bd"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8187-8dbd-fffd30c4228f",
+    "title": "owed",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281878dbdfffd30c4228f",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "person": {
+        "id": "%3AAkQ",
+        "name": "person",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "b;I]",
+              "name": "Mum",
+              "color": "gray",
+              "description": null
+            }
+          ]
+        }
+      },
+      "pay": {
+        "id": "T%7B_B",
+        "name": "pay",
+        "type": "button",
+        "button": {}
+      },
+      "paid": {
+        "id": "%5CDct",
+        "name": "paid",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "amount": {
+        "id": "gwta",
+        "name": "amount",
+        "type": "number",
+        "number": {
+          "format": "pound"
+        }
+      },
+      "summary": {
+        "id": "qtA%3F",
+        "name": "summary",
+        "type": "formula",
+        "formula": {
+          "expression": "style(\"owed: \u00a3\"+{{notion:block_property:gwta:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, \"b\", \"yellow\")"
+        }
+      },
+      "account": {
+        "id": "%7Bd%3CQ",
+        "name": "account",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81cd-b8b7-c9de056192bd"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-81ae-bff1-ff4a2f3abecf",
+    "title": "expenses",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281aebff1ff4a2f3abecf",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "account": {
+        "id": "JREt",
+        "name": "account",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "expenses items",
+            "synced_property_id": "VXdG"
+          }
+        }
+      },
+      "amount": {
+        "id": "WqqF",
+        "name": "amount",
+        "type": "number",
+        "number": {
+          "format": "pound"
+        }
+      },
+      "date": {
+        "id": "aUvO",
+        "name": "date",
+        "type": "date",
+        "date": {}
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81cd-b8b7-c9de056192bd"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-81dd-813b-fdaaf622277d",
+    "title": "events",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281dd813bfdaaf622277d",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "amount": {
+        "id": "CMjV",
+        "name": "amount",
+        "type": "number",
+        "number": {
+          "format": "number"
+        }
+      },
+      "journals": {
+        "id": "FIP%5E",
+        "name": "journals",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "events",
+            "synced_property_id": "%7BJq%3C"
+          }
+        }
+      },
+      "next": {
+        "id": "Wix%7D",
+        "name": "next",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:cy%3D%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.empty(), {{notion:block_property:o%40E%3E:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, if({{notion:block_property:diAG:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.empty(), {{notion:block_property:o%40E%3E:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, ifs({{notion:block_property:cy%3D%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"day\", {{notion:block_property:diAG:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(1, \"day\"), {{notion:block_property:cy%3D%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"week\", {{notion:block_property:diAG:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(1, \"week\"), {{notion:block_property:cy%3D%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"month\", {{notion:block_property:diAG:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(1, \"month\"), {{notion:block_property:cy%3D%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == \"year\", {{notion:block_property:diAG:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.dateAdd(1, \"year\"))))"
+        }
+      },
+      "done": {
+        "id": "%5EyX%3D",
+        "name": "done",
+        "type": "button",
+        "button": {}
+      },
+      "type": {
+        "id": "aY%3Fu",
+        "name": "type",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "72c13602-9e25-41d2-b504-ce28bef7f325",
+              "name": "activity",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "0bf0af49-86ea-4a09-a5e3-a6eaeb0b5e71",
+              "name": "holiday",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "d1e025c3-2c31-4f8d-b87e-9eb054e07fdc",
+              "name": "event",
+              "color": "blue",
+              "description": null
+            },
+            {
+              "id": "8caaf8e3-4bcd-4ce0-9b6e-3c75e71a7d2d",
+              "name": "family",
+              "color": "purple",
+              "description": null
+            }
+          ]
+        }
+      },
+      "repeat": {
+        "id": "cy%3D%5D",
+        "name": "repeat",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "dv~t",
+              "name": "day",
+              "color": "orange",
+              "description": null
+            },
+            {
+              "id": "hjps",
+              "name": "week",
+              "color": "green",
+              "description": null
+            },
+            {
+              "id": "wUQ@",
+              "name": "month",
+              "color": "purple",
+              "description": null
+            },
+            {
+              "id": "HSpA",
+              "name": "year",
+              "color": "red",
+              "description": null
+            }
+          ]
+        }
+      },
+      "last": {
+        "id": "diAG",
+        "name": "last",
+        "type": "date",
+        "date": {}
+      },
+      "done?": {
+        "id": "fD%3Cg",
+        "name": "done?",
+        "type": "formula",
+        "formula": {
+          "expression": "if({{notion:block_property:cy%3D%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.empty(), if({{notion:block_property:Wix%7D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} == {{notion:block_property:diAG:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, true, false), false)"
+        }
+      },
+      "date": {
+        "id": "o%40E%3E",
+        "name": "date",
+        "type": "date",
+        "date": {}
+      },
+      "name": {
+        "id": "title",
+        "name": "name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81d8-8924-c32e6d362613"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-81e8-b50b-dcef00d01069",
+    "title": "books read",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281e8b50bdcef00d01069",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "book": {
+        "id": "mg%5CJ",
+        "name": "book",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-81a4-9413-c6ae516847c3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "dates read",
+            "synced_property_id": "f%7Cmi"
+          }
+        }
+      },
+      "dates": {
+        "id": "title",
+        "name": "dates",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81ed-80fe-e0a58607a564"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-81fc-8b7c-d85917d89653",
+    "title": "gifts",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281fc8b7cd85917d89653",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "journals": {
+        "id": "%3A%3FHR",
+        "name": "journals",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+          "type": "dual_property",
+          "dual_property": {
+            "synced_property_name": "gifts",
+            "synced_property_id": "zvbJ"
+          }
+        }
+      },
+      "location": {
+        "id": "AW_e",
+        "name": "location",
+        "type": "url",
+        "url": {}
+      },
+      "price": {
+        "id": "C~%7BK",
+        "name": "price",
+        "type": "number",
+        "number": {
+          "format": "pound"
+        }
+      },
+      "year": {
+        "id": "HT%5Ez",
+        "name": "year",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "WQ^W",
+              "name": "2026",
+              "color": "purple",
+              "description": null
+            }
+          ]
+        }
+      },
+      "purchased": {
+        "id": "RH%3E%40",
+        "name": "purchased",
+        "type": "checkbox",
+        "checkbox": {}
+      },
+      "person": {
+        "id": "_%3ESa",
+        "name": "person",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "157e01a1-2ef4-41a6-adca-802eeda34d74",
+              "name": "Me",
+              "color": "brown",
+              "description": null
+            },
+            {
+              "id": "eddf1495-9c6c-4c82-be49-c151a1a98ead",
+              "name": "Mum",
+              "color": "purple",
+              "description": null
+            }
+          ]
+        }
+      },
+      "purchase date": {
+        "id": "hbi%3D",
+        "name": "purchase date",
+        "type": "date",
+        "date": {}
+      },
+      "bought": {
+        "id": "pw%60H",
+        "name": "bought",
+        "type": "button",
+        "button": {}
+      },
+      "event": {
+        "id": "rY%3CQ",
+        "name": "event",
+        "type": "select",
+        "select": {
+          "options": [
+            {
+              "id": "<tc=",
+              "name": "birthday",
+              "color": "default",
+              "description": null
+            },
+            {
+              "id": "]nd\\",
+              "name": "christmas",
+              "color": "default",
+              "description": null
+            }
+          ]
+        }
+      },
+      "item": {
+        "id": "title",
+        "name": "item",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-81cb-a0af-d8b5972038ad"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-8180-b540-c25a5f5f5b26",
+    "title": "yearly",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de28180b540c25a5f5f5b26",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "income summary": {
+        "id": "E%3AJl",
+        "name": "income summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"income: \u00a3\"+{{notion:block_property:tlbk:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "expenses summary": {
+        "id": "JdHK",
+        "name": "expenses summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"expenses: \u00a3\"+{{notion:block_property:TgjQ:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "expenses": {
+        "id": "TgjQ",
+        "name": "expenses",
+        "type": "formula",
+        "formula": {
+          "expression": "sum({{notion:block_property:m%3ClO:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(sum(current.{{notion:block_property:VXdG:1fdec31c-9de2-8184-a168-fa38482ce0fd:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(if(current.{{notion:block_property:aUvO:1fdec31c-9de2-81ae-bff1-ff4a2f3abecf:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.year() == today().year(), current.{{notion:block_property:WqqF:1fdec31c-9de2-81ae-bff1-ff4a2f3abecf:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, 0)))))"
+        }
+      },
+      "balance": {
+        "id": "VJh%5D",
+        "name": "balance",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:tlbk:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}-{{notion:block_property:TgjQ:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "title": {
+        "id": "Yf%3FI",
+        "name": "title",
+        "type": "formula",
+        "formula": {
+          "expression": "style(today().formatDate(\"Y\"), \"u\")"
+        }
+      },
+      "accounts": {
+        "id": "m%3ClO",
+        "name": "accounts",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "balance summary": {
+        "id": "oJs%5D",
+        "name": "balance summary",
+        "type": "formula",
+        "formula": {
+          "expression": "style(\"balance: \u00a3\"+{{notion:block_property:VJh%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, \"b\", if({{notion:block_property:VJh%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} < 0, \"red\", \"green\"))"
+        }
+      },
+      "income": {
+        "id": "tlbk",
+        "name": "income",
+        "type": "formula",
+        "formula": {
+          "expression": "sum({{notion:block_property:m%3ClO:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(sum(current.{{notion:block_property:jEft:1fdec31c-9de2-8184-a168-fa38482ce0fd:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(if(current.{{notion:block_property:BY%40K:1fdec31c-9de2-8105-bd50-cb703be7ef65:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.year() == today().year(), current.{{notion:block_property:WqqF:1fdec31c-9de2-8105-bd50-cb703be7ef65:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, 0)))))"
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-810b-871f-f0f85fe95145"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  },
+  {
+    "id": "1fdec31c-9de2-81d8-ac04-d187ce5a899e",
+    "title": "monthly",
+    "description": [],
+    "url": "https://www.notion.so/1fdec31c9de281d8ac04d187ce5a899e",
+    "created_time": "2025-05-24T00:18:00.000Z",
+    "last_edited_time": "2025-05-24T00:18:00.000Z",
+    "properties": {
+      "income summary": {
+        "id": "E%3AJl",
+        "name": "income summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"income: \u00a3\"+{{notion:block_property:tlbk:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "expenses summary": {
+        "id": "JdHK",
+        "name": "expenses summary",
+        "type": "formula",
+        "formula": {
+          "expression": "\"expenses: \u00a3\"+{{notion:block_property:TgjQ:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "expenses": {
+        "id": "TgjQ",
+        "name": "expenses",
+        "type": "formula",
+        "formula": {
+          "expression": "sum({{notion:block_property:m%3ClO:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(sum(current.{{notion:block_property:VXdG:1fdec31c-9de2-8184-a168-fa38482ce0fd:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(if(current.{{notion:block_property:aUvO:1fdec31c-9de2-81ae-bff1-ff4a2f3abecf:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.month() == today().month(), current.{{notion:block_property:WqqF:1fdec31c-9de2-81ae-bff1-ff4a2f3abecf:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, 0)))))"
+        }
+      },
+      "balance": {
+        "id": "VJh%5D",
+        "name": "balance",
+        "type": "formula",
+        "formula": {
+          "expression": "{{notion:block_property:tlbk:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}-{{notion:block_property:TgjQ:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}"
+        }
+      },
+      "title": {
+        "id": "Yf%3FI",
+        "name": "title",
+        "type": "formula",
+        "formula": {
+          "expression": "style(today().formatDate(\"MMMM Y\"), \"u\")"
+        }
+      },
+      "accounts": {
+        "id": "m%3ClO",
+        "name": "accounts",
+        "type": "relation",
+        "relation": {
+          "database_id": "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+          "type": "single_property",
+          "single_property": {}
+        }
+      },
+      "balance summary": {
+        "id": "oJs%5D",
+        "name": "balance summary",
+        "type": "formula",
+        "formula": {
+          "expression": "style(\"balance: \u00a3\"+{{notion:block_property:VJh%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, \"b\", if({{notion:block_property:VJh%5D:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}} < 0, \"red\", \"green\"))"
+        }
+      },
+      "income": {
+        "id": "tlbk",
+        "name": "income",
+        "type": "formula",
+        "formula": {
+          "expression": "sum({{notion:block_property:m%3ClO:00000000-0000-0000-0000-000000000000:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(sum(current.{{notion:block_property:jEft:1fdec31c-9de2-8184-a168-fa38482ce0fd:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.map(if(current.{{notion:block_property:BY%40K:1fdec31c-9de2-8105-bd50-cb703be7ef65:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}.month() == today().month(), current.{{notion:block_property:WqqF:1fdec31c-9de2-8105-bd50-cb703be7ef65:a575c7c1-86a1-446e-906c-d0d8ece1af9f}}, 0)))))"
+        }
+      },
+      "Name": {
+        "id": "title",
+        "name": "Name",
+        "type": "title",
+        "title": {}
+      }
+    },
+    "parent": {
+      "type": "block_id",
+      "block_id": "1fdec31c-9de2-810b-871f-f0f85fe95145"
+    },
+    "icon": null,
+    "cover": null,
+    "archived": false
+  }
+]

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Cost Tracking - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">💰 Cost Tracking</h1>
+    <p class="page-subtitle">
+        Monitor AI API costs across different providers and models.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Cost Entries ({{ costs|length if costs else 0 }} entries)</span>
+        <button class="add-button" onclick="addNewCost()">+ Add Cost</button>
+    </div>
+    
+    {% if costs and costs|length > 0 %}
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Provider</th>
+                <th>Model</th>
+                <th>Tokens Used</th>
+                <th>Cost</th>
+                <th>Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cost in costs %}
+            <tr>
+                <td style="color: var(--notion-text-light); font-size: 14px;">{{ cost.date or today }}</td>
+                <td>
+                    <span class="status-pill status-{{ (cost.provider or 'unknown').lower() }}">
+                        {{ cost.provider or 'Unknown' }}
+                    </span>
+                </td>
+                <td style="font-weight: 600;">{{ cost.model or 'Unknown' }}</td>
+                <td style="color: var(--notion-blue);">{{ "{:,}".format(cost.tokens_used or 0) }}</td>
+                <td style="color: var(--notion-orange); font-weight: 600;">${{ "%.4f"|format(cost.cost or 0) }}</td>
+                <td style="color: var(--notion-text-light);">{{ cost.operation_type or 'General' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: var(--notion-text-light);">
+        <p>No cost data yet. Start tracking your AI usage!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Cost Analytics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📊 Total Costs</div>
+        <div class="card-content">
+            {% if costs and costs|length > 0 %}
+                {% set total_cost = costs | map(attribute='cost') | select | sum %}
+                {% set total_tokens = costs | map(attribute='tokens_used') | select | sum %}
+                Total: ${{ "%.4f"|format(total_cost) }}<br>
+                Tokens: {{ "{:,}".format(total_tokens) }}<br>
+                Avg Cost/Token: ${{ "%.6f"|format(total_cost / total_tokens if total_tokens > 0 else 0) }}
+            {% else %}
+                No data available
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🏪 By Provider</div>
+        <div class="card-content">
+            {% if costs and costs|length > 0 %}
+                {% set providers = costs | map(attribute='provider') | unique | list %}
+                {% for provider in providers[:3] %}
+                    {% set provider_costs = costs | selectattr('provider', 'equalto', provider) | list %}
+                    {% set provider_total = provider_costs | map(attribute='cost') | sum %}
+                    {{ provider }}: ${{ "%.4f"|format(provider_total) }}<br>
+                {% endfor %}
+            {% else %}
+                No data available
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">📈 This Month</div>
+        <div class="card-content">
+            {% if costs and costs|length > 0 %}
+                {% set this_month = now.strftime('%Y-%m') %}
+                {% set month_costs = costs | selectattr('date', 'match', this_month + '.*') | list %}
+                {% set month_total = month_costs | map(attribute='cost') | sum %}
+                This Month: ${{ "%.4f"|format(month_total) }}<br>
+                Entries: {{ month_costs|length }}<br>
+                Daily Avg: ${{ "%.4f"|format(month_total / now.day if now.day > 0 else 0) }}
+            {% else %}
+                No data available
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function addNewCost() {
+    const provider = prompt('Provider (OpenAI, Anthropic, Google, etc.):');
+    if (provider) {
+        const model = prompt('Model name:');
+        const tokens = prompt('Tokens used:', '1000');
+        const cost = prompt('Cost in USD:', '0.001');
+        const operation = prompt('Operation type (Chat, Completion, etc.):', 'Chat');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'cost_tracking',
+                data: {
+                    date: new Date().toISOString().split('T')[0],
+                    provider: provider,
+                    model: model || 'Unknown',
+                    tokens_used: parseInt(tokens) || 1000,
+                    cost: parseFloat(cost) || 0.001,
+                    operation_type: operation || 'Chat'
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add cost entry');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

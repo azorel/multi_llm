@@ -1,0 +1,269 @@
+{% extends "sql_base.html" %}
+
+{% block title %}YouTube Channels - SQL Multi-Agent System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📺 YouTube Channels</h1>
+    <p class="page-subtitle">
+        Manage YouTube channels for multi-agent processing. Mark channels to trigger automatic video processing.
+    </p>
+</div>
+
+<div style="margin-bottom: 24px; background: var(--notion-blue-light); padding: 20px; border-radius: 8px; border: 1px solid var(--notion-blue);">
+    <div style="font-weight: 600; margin-bottom: 8px; font-size: 20px;">🚀 Multi-Agent Processing:</div>
+    <div style="font-size: 18px; line-height: 1.6;">
+        When you mark a channel, the SQL-based multi-agent system will automatically:
+        <br>• Discover ALL videos from the channel
+        <br>• Extract transcripts using multiple methods
+        <br>• Process with multiple AI providers (OpenAI, Anthropic, Gemini)
+        <br>• Store everything in the SQL database
+    </div>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">YouTube Channels ({{ channels|length }})</span>
+        <button class="add-button" onclick="showAddChannelModal()">+ Add Channel</button>
+    </div>
+    
+    {% if channels %}
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Channel</th>
+                <th>Statistics</th>
+                <th>Auto Process</th>
+                <th>Mark for Processing</th>
+                <th>Last Processed</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for channel in channels %}
+            <tr>
+                <td>
+                    <div style="font-weight: 600; font-size: 20px;">{{ channel.name }}</div>
+                    <a href="{{ channel.url }}" target="_blank" style="color: var(--notion-blue); text-decoration: none; font-size: 18px;">{{ channel.url }}</a>
+                    {% if channel.notes %}
+                    <div style="color: var(--notion-text-light); font-size: 16px; margin-top: 4px;">{{ channel.notes }}</div>
+                    {% endif %}
+                </td>
+                <td style="font-size: 18px;">
+                    <div>📊 {{ "{:,}".format(channel.subscriber_count) }} subscribers</div>
+                    <div>📹 {{ "{:,}".format(channel.video_count) }} videos</div>
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: {% if channel.auto_process %}var(--notion-green){% else %}var(--notion-gray){% endif %};"></span>
+                        <input type="checkbox" {% if channel.auto_process %}checked{% endif %} disabled style="width: 20px; height: 20px;">
+                        <span style="font-size: 18px;">Auto</span>
+                    </div>
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: {% if channel.process_channel %}var(--notion-green){% else %}var(--notion-gray){% endif %};"></span>
+                        <input type="checkbox" {% if channel.process_channel %}checked{% endif %} 
+                               onchange="toggleProcessing({{ channel.id }}, this.checked)" style="width: 20px; height: 20px;">
+                        <span style="font-size: 18px;">Process Now</span>
+                    </div>
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 18px;">
+                    {% if channel.last_processed %}
+                        {{ channel.last_processed[:10] }}
+                    {% else %}
+                        Never
+                    {% endif %}
+                </td>
+                <td>
+                    <button onclick="markForProcessing({{ channel.id }})" style="background: var(--notion-blue); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 18px; cursor: pointer;">
+                        Mark for Processing
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: var(--notion-text-light);">
+        <h3 style="font-size: 28px; margin-bottom: 12px;">No YouTube channels found</h3>
+        <p style="font-size: 20px;">Click "Add Channel" to add your first YouTube channel.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Channel Modal -->
+<div id="addChannelModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 32px; border-radius: 12px; width: 500px; max-width: 90%;">
+        <h2 style="font-size: 32px; margin-bottom: 24px;">Add YouTube Channel</h2>
+        
+        <form id="addChannelForm" onsubmit="submitAddChannel(event)">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 20px;">Channel Name *</label>
+                <input type="text" id="channelName" required placeholder="e.g., Dan Martell" 
+                       style="width: 100%; padding: 12px; border: 1px solid var(--notion-border); border-radius: 6px; font-size: 20px;">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 20px;">Channel URL *</label>
+                <input type="url" id="channelUrl" required placeholder="https://www.youtube.com/@username" 
+                       style="width: 100%; padding: 12px; border: 1px solid var(--notion-border); border-radius: 6px; font-size: 20px;">
+                <div style="font-size: 16px; color: var(--notion-text-light); margin-top: 4px;">
+                    Supported formats: @username, /channel/ID, /c/channelname
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 20px;">Description (optional)</label>
+                <textarea id="channelDescription" placeholder="Notes about this channel..." 
+                          style="width: 100%; padding: 12px; border: 1px solid var(--notion-border); border-radius: 6px; font-size: 20px; height: 100px; resize: vertical;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" onclick="hideAddChannelModal()" 
+                        style="background: var(--notion-gray); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 20px; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        style="background: var(--notion-blue); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 20px; cursor: pointer;">
+                    Add Channel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showAddChannelModal() {
+    document.getElementById('addChannelModal').style.display = 'block';
+    document.getElementById('channelName').focus();
+}
+
+function hideAddChannelModal() {
+    document.getElementById('addChannelModal').style.display = 'none';
+    document.getElementById('addChannelForm').reset();
+}
+
+async function submitAddChannel(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('channelName').value.trim();
+    const url = document.getElementById('channelUrl').value.trim();
+    const description = document.getElementById('channelDescription').value.trim();
+    
+    // Disable submit button
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Adding...';
+    
+    try {
+        const response = await fetch('/api/add_channel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                url: url,
+                description: description
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('✅ ' + result.message, 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification('❌ ' + result.error, 'error');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Add Channel';
+        }
+    } catch (error) {
+        console.error('Error adding channel:', error);
+        showNotification('❌ Error adding channel: ' + error.message, 'error');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Add Channel';
+    }
+}
+
+async function markForProcessing(channelId) {
+    try {
+        const response = await fetch(`/api/mark_channel/${channelId}`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('✅ Channel marked for processing! The multi-agent system will start processing all videos shortly.', 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification('❌ Failed to mark channel for processing. Please try again.', 'error');
+        }
+    } catch (error) {
+        console.error('Error marking channel:', error);
+        showNotification('❌ Error marking channel for processing. Please try again.', 'error');
+    }
+}
+
+async function toggleProcessing(channelId, isChecked) {
+    if (isChecked) {
+        markForProcessing(channelId);
+    }
+}
+
+function showNotification(message, type) {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notif => notif.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 10001;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        font-size: 20px;
+        background: ${
+            type === 'success' ? '#22c55e' : 
+            type === 'error' ? '#ef4444' : 
+            type === 'info' ? '#3b82f6' : '#6b7280'
+        };
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('addChannelModal');
+    if (event.target === modal) {
+        hideAddChannelModal();
+    }
+}
+
+// Auto-refresh page every 60 seconds to show processing updates
+setInterval(() => {
+    window.location.reload();
+}, 60000);
+</script>
+{% endblock %}

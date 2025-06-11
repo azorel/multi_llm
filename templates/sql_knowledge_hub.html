@@ -1,0 +1,489 @@
+{% extends "sql_base.html" %}
+
+{% block title %}Knowledge Hub - SQL Multi-Agent Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🧠 Knowledge Hub</h1>
+    <p class="page-subtitle">
+        Central repository for all processed YouTube videos and knowledge. AI-powered content analysis and insights.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Knowledge Entries ({{ videos|length }} videos)</span>
+        <div class="filters" style="display: flex; gap: 12px; align-items: center;">
+            <input type="text" id="searchInput" placeholder="Search videos..." onkeyup="searchVideos()" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; width: 200px;">
+            <select onchange="filterByStatus(this.value)" style="padding: 8px;">
+                <option value="">All Status</option>
+                <option value="processed" {{ 'selected' if status_filter == 'processed' else '' }}>Processed</option>
+                <option value="pending" {{ 'selected' if status_filter == 'pending' else '' }}>Pending</option>
+                <option value="error" {{ 'selected' if status_filter == 'error' else '' }}>Error</option>
+            </select>
+            <select onchange="filterByChannel(this.value)" style="padding: 8px;">
+                <option value="">All Channels</option>
+                {% set channels = videos | map(attribute='channel_name') | select | unique | list %}
+                {% for channel in channels %}
+                <option value="{{ channel }}">{{ channel }}</option>
+                {% endfor %}
+            </select>
+            <select onchange="sortVideos(this.value)" style="padding: 8px;">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="title">Title A-Z</option>
+                <option value="channel">Channel A-Z</option>
+                <option value="duration">Duration</option>
+            </select>
+            <button onclick="toggleBulkMode()" style="padding: 8px 12px; background: var(--notion-blue); color: white; border: none; border-radius: 6px; cursor: pointer;">
+                📋 Bulk Actions
+            </button>
+        </div>
+    </div>
+    
+    <!-- Bulk Actions Panel (hidden by default) -->
+    <div id="bulkActionsPanel" style="display: none; background: var(--notion-blue-light); padding: 16px; margin-bottom: 16px; border-radius: 8px;">
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <span style="font-weight: 600;">Bulk Actions:</span>
+            <button onclick="selectAllVideos()" style="padding: 6px 12px; background: var(--notion-green); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Select All
+            </button>
+            <button onclick="clearSelection()" style="padding: 6px 12px; background: var(--notion-gray); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Clear All
+            </button>
+            <button onclick="bulkProcess()" style="padding: 6px 12px; background: var(--notion-blue); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                🤖 Process Selected
+            </button>
+            <button onclick="bulkDelete()" style="padding: 6px 12px; background: var(--notion-red); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                🗑️ Delete Selected
+            </button>
+            <button onclick="bulkReset()" style="padding: 6px 12px; background: var(--notion-orange); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                🔄 Reset Selected
+            </button>
+            <span id="selectedCount" style="margin-left: 16px; color: var(--notion-text-light);">0 selected</span>
+        </div>
+    </div>
+
+    <table class="database-table" id="videosTable">
+        <thead>
+            <tr>
+                <th id="bulkSelectHeader" style="display: none; width: 40px;">
+                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                </th>
+                <th onclick="sortByColumn('title')" style="cursor: pointer;">Video Title ↕️</th>
+                <th onclick="sortByColumn('channel')" style="cursor: pointer;">Channel ↕️</th>
+                <th onclick="sortByColumn('status')" style="cursor: pointer;">Status ↕️</th>
+                <th onclick="sortByColumn('duration')" style="cursor: pointer;">Duration ↕️</th>
+                <th onclick="sortByColumn('upload_date')" style="cursor: pointer;">Uploaded ↕️</th>
+                <th onclick="sortByColumn('processing_date')" style="cursor: pointer;">Processing Date ↕️</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="videosTableBody">
+            {% for video in videos %}
+            <tr class="video-row" data-video-id="{{ video.id }}" data-title="{{ video.title|lower }}" data-channel="{{ video.channel_name|lower }}" data-status="{{ video.processing_status|lower if video.processing_status else 'pending' }}">
+                <td class="bulk-select-cell" style="display: none;">
+                    <input type="checkbox" class="video-checkbox" value="{{ video.id }}" onchange="updateSelectedCount()">
+                </td>
+                <td style="font-weight: 600;">
+                    <a href="/video/{{ video.id }}" style="color: var(--notion-blue); text-decoration: none;">
+                        {{ video.title[:80] + '...' if video.title|length > 80 else video.title }}
+                    </a>
+                </td>
+                <td>
+                    <span class="status-pill status-channel">
+                        {{ video.channel_name }}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-pill status-{{ video.processing_status.lower() if video.processing_status else 'pending' }}">
+                        {{ video.processing_status or 'Pending' }}
+                    </span>
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 18px;">
+                    {{ video.duration or 'N/A' }}
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 18px;">
+                    {{ video.upload_date.split(' ')[0] if video.upload_date else 'N/A' }}
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 18px;">
+                    {{ video.processing_date.split(' ')[0] if video.processing_date else 'N/A' }}
+                </td>
+                <td>
+                    {% if video.processing_status != 'processed' %}
+                        <button onclick="processVideo('{{ video.id }}')" style="padding: 4px 8px; font-size: 17px;">Process</button>
+                    {% endif %}
+                    <button onclick="viewTranscript('{{ video.id }}')" style="padding: 4px 8px; font-size: 17px; margin-left: 4px;">View</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Knowledge Stats -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📊 Processing Stats</div>
+        <div class="card-content">
+            Total videos: {{ videos|length }}<br>
+            Processed: {{ videos | selectattr('processing_status', 'equalto', 'processed') | list | length }}<br>
+            Pending: {{ videos | selectattr('processing_status', 'equalto', 'pending') | list | length }}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">📺 Channel Breakdown</div>
+        <div class="card-content">
+            {% set channels = videos | map(attribute='channel_name') | select | list %}
+            {% set unique_channels = channels | unique | list %}
+            {% for channel in unique_channels[:3] %}
+                {{ channel }}: {{ channels | select('equalto', channel) | list | length }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🤖 AI Processing</div>
+        <div class="card-content">
+            <span style="color: var(--notion-green);">✅ Auto-transcript extraction</span><br>
+            <span style="color: var(--notion-green);">✅ AI content analysis</span><br>
+            <span style="color: var(--notion-blue);">📈 Multi-agent processing</span>
+        </div>
+    </div>
+</div>
+
+<script>
+let bulkMode = false;
+let currentSort = 'newest';
+
+function filterByStatus(status) {
+    const rows = document.querySelectorAll('.video-row');
+    rows.forEach(row => {
+        if (!status || row.dataset.status === status) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    updateVisibleCount();
+}
+
+function filterByChannel(channel) {
+    const rows = document.querySelectorAll('.video-row');
+    rows.forEach(row => {
+        if (!channel || row.dataset.channel === channel.toLowerCase()) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    updateVisibleCount();
+}
+
+function searchVideos() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('.video-row');
+    
+    rows.forEach(row => {
+        const title = row.dataset.title;
+        if (title.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    updateVisibleCount();
+}
+
+function sortVideos(sortBy) {
+    const tbody = document.getElementById('videosTableBody');
+    const rows = Array.from(tbody.querySelectorAll('.video-row'));
+    
+    rows.sort((a, b) => {
+        let aVal, bVal;
+        
+        switch(sortBy) {
+            case 'title':
+                aVal = a.dataset.title;
+                bVal = b.dataset.title;
+                break;
+            case 'channel':
+                aVal = a.dataset.channel;
+                bVal = b.dataset.channel;
+                break;
+            case 'status':
+                aVal = a.dataset.status;
+                bVal = b.dataset.status;
+                break;
+            case 'newest':
+                aVal = a.children[6].textContent; // Processing date
+                bVal = b.children[6].textContent;
+                return new Date(bVal) - new Date(aVal);
+            case 'oldest':
+                aVal = a.children[6].textContent;
+                bVal = b.children[6].textContent;
+                return new Date(aVal) - new Date(bVal);
+            default:
+                return 0;
+        }
+        
+        return aVal.localeCompare(bVal);
+    });
+    
+    rows.forEach(row => tbody.appendChild(row));
+    currentSort = sortBy;
+}
+
+function toggleBulkMode() {
+    bulkMode = !bulkMode;
+    const panel = document.getElementById('bulkActionsPanel');
+    const header = document.getElementById('bulkSelectHeader');
+    const cells = document.querySelectorAll('.bulk-select-cell');
+    
+    if (bulkMode) {
+        panel.style.display = 'block';
+        header.style.display = 'table-cell';
+        cells.forEach(cell => cell.style.display = 'table-cell');
+        document.querySelector('button[onclick="toggleBulkMode()"]').textContent = '❌ Exit Bulk Mode';
+        document.querySelector('button[onclick="toggleBulkMode()"]').style.background = 'var(--notion-red)';
+    } else {
+        panel.style.display = 'none';
+        header.style.display = 'none';
+        cells.forEach(cell => cell.style.display = 'none');
+        clearSelection();
+        document.querySelector('button[onclick="toggleBulkMode()"]').textContent = '📋 Bulk Actions';
+        document.querySelector('button[onclick="toggleBulkMode()"]').style.background = 'var(--notion-blue)';
+    }
+}
+
+function selectAllVideos() {
+    const checkboxes = document.querySelectorAll('.video-checkbox');
+    checkboxes.forEach(checkbox => {
+        if (checkbox.closest('.video-row').style.display !== 'none') {
+            checkbox.checked = true;
+        }
+    });
+    document.getElementById('selectAllCheckbox').checked = true;
+    updateSelectedCount();
+}
+
+function clearSelection() {
+    const checkboxes = document.querySelectorAll('.video-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+    document.getElementById('selectAllCheckbox').checked = false;
+    updateSelectedCount();
+}
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAllCheckbox').checked;
+    const checkboxes = document.querySelectorAll('.video-checkbox');
+    checkboxes.forEach(checkbox => {
+        if (checkbox.closest('.video-row').style.display !== 'none') {
+            checkbox.checked = selectAll;
+        }
+    });
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    const selected = document.querySelectorAll('.video-checkbox:checked').length;
+    document.getElementById('selectedCount').textContent = `${selected} selected`;
+}
+
+function updateVisibleCount() {
+    const visible = document.querySelectorAll('.video-row[style=""], .video-row:not([style])').length;
+    const total = document.querySelectorAll('.video-row').length;
+    document.querySelector('.database-title').textContent = `Knowledge Entries (${visible}/${total} videos)`;
+}
+
+function getSelectedVideoIds() {
+    const selected = [];
+    document.querySelectorAll('.video-checkbox:checked').forEach(checkbox => {
+        selected.push(parseInt(checkbox.value));
+    });
+    return selected;
+}
+
+function bulkProcess() {
+    const videoIds = getSelectedVideoIds();
+    if (videoIds.length === 0) {
+        showNotification('Please select videos to process', 'error');
+        return;
+    }
+    
+    if (videoIds.length > 100) {
+        showNotification('Cannot process more than 100 videos at once', 'error');
+        return;
+    }
+    
+    if (confirm(`Process ${videoIds.length} videos with AI?`)) {
+        showNotification(`Processing ${videoIds.length} videos...`, 'info');
+        
+        fetch('/api/bulk_process', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'process', video_ids: videoIds})
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showNotification(`✅ ${data.message}`, 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showNotification('❌ Failed: ' + (data.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(error => {
+            const errorMsg = error.error || error.message || 'Network error occurred';
+            showNotification('❌ Error: ' + errorMsg, 'error');
+        });
+    }
+}
+
+function bulkDelete() {
+    const videoIds = getSelectedVideoIds();
+    if (videoIds.length === 0) {
+        alert('Please select videos to delete');
+        return;
+    }
+    
+    if (confirm(`Mark ${videoIds.length} videos for deletion?`)) {
+        fetch('/api/bulk_process', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'delete', video_ids: videoIds})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Failed: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => alert('Error: ' + error.message));
+    }
+}
+
+function bulkReset() {
+    const videoIds = getSelectedVideoIds();
+    if (videoIds.length === 0) {
+        alert('Please select videos to reset');
+        return;
+    }
+    
+    if (confirm(`Reset ${videoIds.length} videos for reprocessing?`)) {
+        fetch('/api/bulk_process', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'reset', video_ids: videoIds})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Failed: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => alert('Error: ' + error.message));
+    }
+}
+
+function processVideo(videoId) {
+    if (!videoId || videoId <= 0) {
+        showNotification('Invalid video ID', 'error');
+        return;
+    }
+    
+    if (confirm('Process this video with AI?')) {
+        showNotification('Processing video...', 'info');
+        
+        fetch(`/api/process_video/${videoId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showNotification('✅ Video queued for processing', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showNotification('❌ Failed: ' + (data.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(error => {
+            const errorMsg = error.error || error.message || 'Network error occurred';
+            showNotification('❌ Error: ' + errorMsg, 'error');
+        });
+    }
+}
+
+function viewTranscript(videoId) {
+    window.open(`/video/${videoId}`, '_blank');
+}
+
+function showNotification(message, type) {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notif => notif.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        background: ${
+            type === 'success' ? '#22c55e' : 
+            type === 'error' ? '#ef4444' : 
+            type === 'info' ? '#3b82f6' : '#6b7280'
+        };
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateVisibleCount();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Voice Commands - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🎤 Voice Commands</h1>
+    <p class="page-subtitle">
+        Configure and manage voice commands for hands-free control of your LifeOS system.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Voice Commands ({{ commands|length if commands else 0 }} commands)</span>
+        <button class="add-button" onclick="addNewCommand()">+ Add Command</button>
+    </div>
+    
+    {% if commands and commands|length > 0 %}
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">🔊</th>
+                <th>Command Phrase</th>
+                <th>Action Type</th>
+                <th>Parameters</th>
+                <th>Usage Count</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for command in commands %}
+            <tr class="{% if not command.enabled %}completed{% endif %}">
+                <td>
+                    <input type="checkbox" 
+                           class="notion-checkbox" 
+                           {% if command.enabled %}checked{% endif %}
+                           data-table="voice_commands" 
+                           data-id="{{ command.id }}" 
+                           data-field="enabled">
+                </td>
+                <td style="font-weight: 600;">"{{ command.command_phrase or 'No phrase set' }}"</td>
+                <td>
+                    <span class="status-pill status-{{ (command.action_type or 'unknown').lower() }}">
+                        {{ command.action_type or 'Unknown' }}
+                    </span>
+                </td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">{{ (command.parameters or '')[:50] }}{% if command.parameters and command.parameters|length > 50 %}...{% endif %}</td>
+                <td style="color: var(--notion-blue); font-weight: 600;">{{ command.usage_count or 0 }}</td>
+                <td>
+                    {% if command.enabled %}
+                        <span class="status-pill status-active">🟢 Active</span>
+                    {% else %}
+                        <span class="status-pill status-error">⭕ Disabled</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: var(--notion-text-light);">
+        <p>No voice commands configured yet. Add commands like "Hey LifeOS, show me today's tasks"!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Voice Command Stats -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">🎯 Command Overview</div>
+        <div class="card-content">
+            {% if commands and commands|length > 0 %}
+                {% set active = commands | selectattr('enabled', 'equalto', True) | list %}
+                {% set total_usage = commands | map(attribute='usage_count') | select | sum %}
+                Total Commands: {{ commands|length }}<br>
+                Active: {{ active|length }}<br>
+                Total Usage: {{ total_usage }}
+            {% else %}
+                No commands configured
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🔥 Most Popular</div>
+        <div class="card-content">
+            {% if commands and commands|length > 0 %}
+                {% set most_used = commands | sort(attribute='usage_count', reverse=true) | first %}
+                {% if most_used and most_used.usage_count > 0 %}
+                    "{{ most_used.command_phrase[:30] }}"<br>
+                    Used: {{ most_used.usage_count }} times<br>
+                    Type: {{ most_used.action_type }}
+                {% else %}
+                    No commands used yet
+                {% endif %}
+            {% else %}
+                No usage data
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🤖 Quick Actions</div>
+        <div class="card-content">
+            {% if commands and commands|length > 0 %}
+                {% set quick_actions = commands | selectattr('action_type', 'equalto', 'quick') | list %}
+                Quick Actions: {{ quick_actions|length }}<br>
+                {% set nav_commands = commands | selectattr('action_type', 'equalto', 'navigation') | list %}
+                Navigation: {{ nav_commands|length }}<br>
+                {% set automation = commands | selectattr('action_type', 'equalto', 'automation') | list %}
+                Automation: {{ automation|length }}
+            {% else %}
+                No action types configured
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Voice Command Examples -->
+<div class="notion-card" style="margin-top: 32px;">
+    <div class="card-title">💡 Example Voice Commands</div>
+    <div class="card-content">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+            <div>
+                <strong>Navigation:</strong><br>
+                • "Show me today's tasks"<br>
+                • "Open knowledge hub"<br>
+                • "Go to habits page"<br><br>
+                <strong>Quick Actions:</strong><br>
+                • "Add new task"<br>
+                • "Mark habit complete"<br>
+                • "Start RC maintenance"
+            </div>
+            <div>
+                <strong>Information:</strong><br>
+                • "What's my success rate?"<br>
+                • "How many tasks today?"<br>
+                • "Show overdue items"<br><br>
+                <strong>Automation:</strong><br>
+                • "Run morning routine"<br>
+                • "Process YouTube videos"<br>
+                • "Generate today's CC"
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addNewCommand() {
+    const phrase = prompt('Voice command phrase (e.g., "show me today\'s tasks"):');
+    if (phrase) {
+        const actionType = prompt('Action type (navigation, quick, automation, information):', 'navigation');
+        const parameters = prompt('Parameters (JSON format, optional):');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'voice_commands',
+                data: {
+                    command_phrase: phrase,
+                    action_type: actionType || 'navigation',
+                    parameters: parameters || '',
+                    enabled: true,
+                    usage_count: 0
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add voice command');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

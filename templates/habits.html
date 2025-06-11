@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Habits - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🎯 Habits</h1>
+    <p class="page-subtitle">
+        Track your daily habits with streak counting and completion monitoring.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Habits ({{ habits|length }} habits)</span>
+        <button class="add-button" onclick="addNewHabit()">+ Add Habit</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">✓</th>
+                <th>Habit Name</th>
+                <th>Frequency</th>
+                <th>Current Streak</th>
+                <th>Longest Streak</th>
+                <th>Last Completed</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for habit in habits %}
+            <tr class="{% if not habit.enabled %}completed{% endif %}">
+                <td>
+                    <input type="checkbox" 
+                           class="notion-checkbox" 
+                           {% if habit.enabled %}checked{% endif %}
+                           data-table="habits" 
+                           data-id="{{ habit.id }}" 
+                           data-field="enabled">
+                </td>
+                <td style="font-weight: 600;">{{ habit.habit_name }}</td>
+                <td>
+                    <span class="status-pill status-{{ habit.frequency.lower() if habit.frequency else 'daily' }}">
+                        {{ habit.frequency or 'Daily' }}
+                    </span>
+                </td>
+                <td style="color: var(--notion-green); font-weight: 600;">{{ habit.current_streak or 0 }}</td>
+                <td style="color: var(--notion-blue); font-weight: 600;">{{ habit.longest_streak or 0 }}</td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ habit.last_completed if habit.last_completed else 'Never' }}
+                </td>
+                <td>
+                    {% if habit.enabled %}
+                        <button onclick="completeHabit({{ habit.id }})" style="background: var(--notion-green); color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                            Complete Today
+                        </button>
+                    {% else %}
+                        <span style="color: var(--notion-text-light);">Disabled</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Habit Stats -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📊 Habit Stats</div>
+        <div class="card-content">
+            Active habits: {{ habits | selectattr('enabled', 'equalto', True) | list | length }}<br>
+            Total habits: {{ habits|length }}<br>
+            {% set avg_streak = ((habits | map(attribute='current_streak') | select | sum) / habits|length) if habits|length > 0 else 0 %}
+            Avg current streak: {{ "%.1f"|format(avg_streak) }}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🔥 Best Streaks</div>
+        <div class="card-content">
+            {% set max_streak = habits | map(attribute='longest_streak') | select | max %}
+            Longest streak: {{ max_streak or 0 }}<br>
+            {% set active_streaks = habits | selectattr('current_streak', 'greaterthan', 0) | list | length %}
+            Active streaks: {{ active_streaks }}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">📅 Today's Progress</div>
+        <div class="card-content">
+            {% set today = today %}
+            {% set completed_today = habits | selectattr('last_completed', 'equalto', today) | list | length %}
+            Completed today: {{ completed_today }}<br>
+            Remaining: {{ (habits | selectattr('enabled', 'equalto', True) | list | length) - completed_today }}
+        </div>
+    </div>
+</div>
+
+<script>
+function completeHabit(habitId) {
+    const today = new Date().toISOString().split('T')[0];
+    
+    fetch('/update-checkbox', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'habits',
+            id: habitId,
+            field: 'last_completed',
+            value: today
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Also update current_streak
+            fetch('/update-checkbox', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    table: 'habits',
+                    id: habitId,
+                    field: 'current_streak',
+                    value: 'INCREMENT' // Special value to increment
+                })
+            })
+            .then(() => location.reload());
+        }
+    });
+}
+
+function addNewHabit() {
+    const habitName = prompt('Habit name:');
+    if (habitName) {
+        const frequency = prompt('Frequency (Daily/Weekly/Monthly):', 'Daily');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'habits',
+                data: {
+                    habit_name: habitName,
+                    frequency: frequency || 'Daily',
+                    current_streak: 0,
+                    longest_streak: 0,
+                    enabled: true
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add habit');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

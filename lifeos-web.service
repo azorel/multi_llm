@@ -1,0 +1,27 @@
+[Unit]
+Description=LifeOS Local Web Server - Notion Replacement
+After=network.target
+Wants=network.target
+
+[Service]
+Type=exec
+User=ikino
+Group=ikino
+WorkingDirectory=/home/ikino/dev/autonomous-multi-llm-agent
+Environment=PATH=/home/ikino/dev/autonomous-multi-llm-agent/venv/bin
+ExecStart=/home/ikino/dev/autonomous-multi-llm-agent/venv/bin/python web_server.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lifeos-web
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/ikino/dev/autonomous-multi-llm-agent
+
+[Install]
+WantedBy=multi-user.target

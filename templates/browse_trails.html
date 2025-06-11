@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse RC Trails - RC Trail Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .trail-card {
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+        .trail-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .difficulty-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .difficulty-easy { background: #28a745; color: white; }
+        .difficulty-medium { background: #ffc107; color: black; }
+        .difficulty-hard { background: #dc3545; color: white; }
+        .difficulty-extreme { background: #6f42c1; color: white; }
+        
+        .premium-badge {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .trail-image {
+            height: 150px;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        
+        .map-container {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .filter-chip {
+            display: inline-block;
+            padding: 5px 12px;
+            margin: 2px;
+            background: #e9ecef;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-chip.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .stats-bar {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-map-marked-alt text-primary"></i>
+                RC Trail Finder
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link active" href="/trails">Browse Trails</a>
+                <a class="nav-link" href="/subscribe">Premium</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4">Browse RC Trails</h2>
+                    
+                    <!-- Stats Bar -->
+                    <div class="stats-bar">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <h4 class="text-primary mb-0">{{ trails|length }}</h4>
+                                <small class="text-muted">Total Trails</small>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="text-success mb-0">{{ trails|selectattr('10', 'equalto', False)|list|length }}</h4>
+                                <small class="text-muted">Free Trails</small>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="text-warning mb-0">{{ trails|selectattr('10', 'equalto', True)|list|length }}</h4>
+                                <small class="text-muted">Premium Trails</small>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="text-info mb-0">{{ (trails|map(attribute='5')|sum / trails|length)|round(1) if trails else 0 }}</h4>
+                                <small class="text-muted">Avg Distance (km)</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter Controls -->
+                    <form method="GET" class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Minimum Difficulty</label>
+                            <select name="difficulty" class="form-select">
+                                <option value="">Any Difficulty</option>
+                                <option value="1" {% if current_filters.difficulty == '1' %}selected{% endif %}>1+ (Beginner)</option>
+                                <option value="3" {% if current_filters.difficulty == '3' %}selected{% endif %}>3+ (Easy)</option>
+                                <option value="5" {% if current_filters.difficulty == '5' %}selected{% endif %}>5+ (Intermediate)</option>
+                                <option value="7" {% if current_filters.difficulty == '7' %}selected{% endif %}>7+ (Advanced)</option>
+                                <option value="9" {% if current_filters.difficulty == '9' %}selected{% endif %}>9+ (Expert)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label class="form-label">Terrain Type</label>
+                            <select name="terrain" class="form-select">
+                                <option value="">Any Terrain</option>
+                                <option value="Desert" {% if current_filters.terrain == 'Desert' %}selected{% endif %}>Desert</option>
+                                <option value="Forest" {% if current_filters.terrain == 'Forest' %}selected{% endif %}>Forest</option>
+                                <option value="Mountain" {% if current_filters.terrain == 'Mountain' %}selected{% endif %}>Mountain</option>
+                                <option value="Rock" {% if current_filters.terrain == 'Rock' %}selected{% endif %}>Rock</option>
+                                <option value="Grassland" {% if current_filters.terrain == 'Grassland' %}selected{% endif %}>Grassland</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="premium" value="true" id="premiumOnly" {% if current_filters.premium %}checked{% endif %}>
+                                <label class="form-check-label" for="premiumOnly">
+                                    <i class="fas fa-crown text-warning"></i> Premium Trails Only
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i> Filter Trails
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <!-- Trail List -->
+            <div class="col-lg-8">
+                {% if not trails %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-search display-1 text-muted mb-3"></i>
+                        <h3>No trails found</h3>
+                        <p class="text-muted">Try adjusting your filters to find more trails.</p>
+                        <a href="/trails" class="btn btn-primary">Clear Filters</a>
+                    </div>
+                {% else %}
+                    {% for trail in trails %}
+                    <div class="trail-card card">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <div class="trail-image position-relative">
+                                    <i class="fas fa-mountain"></i>
+                                    {% set difficulty_class = 'difficulty-easy' if trail[3] <= 3 else 'difficulty-medium' if trail[3] <= 6 else 'difficulty-hard' if trail[3] <= 8 else 'difficulty-extreme' %}
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <span class="difficulty-badge {{ difficulty_class }}">{{ trail[3] }}/10</span>
+                                    </div>
+                                    {% if trail[8] %}
+                                        <div class="position-absolute bottom-0 start-0 m-2">
+                                            <span class="premium-badge">
+                                                <i class="fas fa-crown"></i> Premium
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">{{ trail[1] }}</h5>
+                                        {% if trail[9] > 0 %}
+                                            <span class="text-success fw-bold">${{ "%.2f"|format(trail[9]) }}</span>
+                                        {% else %}
+                                            <span class="text-success fw-bold">Free</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-map-marker-alt"></i> {{ trail[2] }}
+                                        <span class="ms-3">
+                                            <i class="fas fa-cogs"></i> {{ trail[4] }}
+                                        </span>
+                                    </p>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">
+                                                <i class="fas fa-route"></i> {{ "%.1f"|format(trail[5]) }} km
+                                            </small>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="rating">
+                                                {% for i in range(5) %}
+                                                    {% if i < (trail[6] or 0) %}
+                                                        <i class="fas fa-star text-warning"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star text-muted"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <span class="text-muted ms-1">({{ trail[7] or 0 }})</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <a href="/trail/{{ trail[0] }}" class="btn btn-primary">
+                                            <i class="fas fa-eye"></i> View Details
+                                        </a>
+                                        <button class="btn btn-outline-success" onclick="showOnMap({{ trail[10] }}, {{ trail[11] }}, '{{ trail[1] }}')">
+                                            <i class="fas fa-map"></i> Show on Map
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="getDirections({{ trail[10] }}, {{ trail[11] }})">
+                                            <i class="fas fa-directions"></i> Directions
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <!-- Load More Button -->
+                {% if trails|length >= 20 %}
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-primary" onclick="loadMoreTrails()">
+                        <i class="fas fa-plus"></i> Load More Trails
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Map Sidebar -->
+            <div class="col-lg-4">
+                <div class="sticky-top" style="top: 20px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-map"></i> Trail Map
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="map" class="map-container"></div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-outline-primary btn-sm w-100" onclick="findNearbyTrails()">
+                                <i class="fas fa-location-arrow"></i> Find Trails Near Me
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Stats -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">Quick Stats</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 border-end">
+                                    <h4 class="text-primary">{{ trails|selectattr('3', 'le', 5)|list|length }}</h4>
+                                    <small>Beginner Friendly</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-warning">{{ trails|selectattr('8', 'equalto', True)|list|length }}</h4>
+                                    <small>Premium Guides</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pro Tip -->
+                    <div class="card mt-3 border-warning">
+                        <div class="card-body text-center">
+                            <i class="fas fa-lightbulb text-warning fa-2x mb-2"></i>
+                            <h6>Pro Tip</h6>
+                            <p class="small mb-2">Premium members get detailed GPS routes, equipment recommendations, and exclusive trail access.</p>
+                            <a href="/subscribe" class="btn btn-warning btn-sm">
+                                <i class="fas fa-crown"></i> Go Premium
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">© 2024 RC Trail Finder - Discover Epic RC Adventures</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('map').setView([39.8283, -98.5795], 4); // Center of USA
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Add trail markers
+        const trails = {{ trails|tojson }};
+        trails.forEach(trail => {
+            const marker = L.marker([trail[10], trail[11]]).addTo(map);
+            marker.bindPopup(`
+                <strong>${trail[1]}</strong><br>
+                ${trail[2]}<br>
+                Difficulty: ${trail[3]}/10<br>
+                <a href="/trail/${trail[0]}" class="btn btn-sm btn-primary mt-1">View Details</a>
+            `);
+        });
+        
+        // Fit map to show all markers
+        if (trails.length > 0) {
+            const group = new L.featureGroup(map._layers);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+        
+        function showOnMap(lat, lon, name) {
+            map.setView([lat, lon], 12);
+            // Flash the marker
+            map.eachLayer(layer => {
+                if (layer.getLatLng && layer.getLatLng().lat === lat && layer.getLatLng().lng === lon) {
+                    layer.openPopup();
+                }
+            });
+        }
+        
+        function getDirections(lat, lon) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+                    const url = `https://www.google.com/maps/dir/${userLat},${userLon}/${lat},${lon}`;
+                    window.open(url, '_blank');
+                });
+            } else {
+                alert('Geolocation is not supported by this browser');
+            }
+        }
+        
+        function findNearbyTrails() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+                    
+                    // Find trails within 50km
+                    fetch(`/api/trails_nearby?lat=${userLat}&lon=${userLon}&radius=50`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.trails.length > 0) {
+                                const nearestTrail = data.trails[0];
+                                showOnMap(nearestTrail.latitude, nearestTrail.longitude, nearestTrail.name);
+                                alert(`Found ${data.trails.length} trails near you! Nearest: ${nearestTrail.name} (${nearestTrail.distance_km}km away)`);
+                            } else {
+                                alert('No trails found within 50km of your location');
+                            }
+                        });
+                });
+            } else {
+                alert('Geolocation is not supported by this browser');
+            }
+        }
+        
+        function loadMoreTrails() {
+            // In a real app, this would load more trails via AJAX
+            alert('Loading more trails... (Feature coming soon!)');
+        }
+    </script>
+</body>
+</html>

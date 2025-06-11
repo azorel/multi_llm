@@ -1,0 +1,2916 @@
+{
+  "discovery_summary": {
+    "total_objects_discovered": 189,
+    "databases_count": 44,
+    "pages_count": 145,
+    "categories_count": 12,
+    "hierarchy_relationships": 49,
+    "discovered_at": "2025-06-08T01:15:20.489824"
+  },
+  "databases": [
+    {
+      "id": "20bec31c-9de2-814e-80db-d13d0c27d869",
+      "title": "Knowledge Hub - AI Enhanced",
+      "url": "https://www.notion.so/20bec31c9de2814e80dbd13d0c27d869",
+      "created_time": "2025-06-07T04:01:00.000Z",
+      "last_edited_time": "2025-06-08T08:07:00.000Z",
+      "properties": [
+        "AI Summary",
+        "Date Added",
+        "Key Points",
+        "Last Updated",
+        "Assistant Prompt",
+        "Type",
+        "Status",
+        "Decision Made",
+        "Content Summary",
+        "Processing Status",
+        "\ud83d\udcc1 Pass",
+        "URL",
+        "Complexity Level",
+        "\ud83d\ude80 Yes",
+        "Priority",
+        "Notes",
+        "Action Items",
+        "Hashtags",
+        "Content Type",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-809b-8676-e5686fc02c52",
+      "title": "Things Bought",
+      "url": "https://www.notion.so/205ec31c9de2809b8676e5686fc02c52",
+      "created_time": "2025-06-01T21:48:00.000Z",
+      "last_edited_time": "2025-06-01T22:37:00.000Z",
+      "properties": [
+        "Yeld",
+        "Cost",
+        "Per Use",
+        "Par Level",
+        "Lifelog",
+        "Buy",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8078-996f-f2c2a501b716",
+      "title": "Untitled",
+      "url": "https://www.notion.so/205ec31c9de28078996ff2c2a501b716",
+      "created_time": "2025-06-01T22:20:00.000Z",
+      "last_edited_time": "2025-06-01T22:31:00.000Z",
+      "properties": [
+        "Formula",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-800b-b980-f69359be6edf",
+      "title": "Lifelog",
+      "url": "https://www.notion.so/203ec31c9de2800bb980f69359be6edf",
+      "created_time": "2025-05-30T00:07:00.000Z",
+      "last_edited_time": "2025-06-01T22:16:00.000Z",
+      "properties": [
+        "Things Bought",
+        "Action",
+        "Date",
+        "Areas of Life",
+        "Things Used",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-80ad-984f-e1f716f1b7ea",
+      "title": "Areas of Life",
+      "url": "https://www.notion.so/203ec31c9de280ad984fe1f716f1b7ea",
+      "created_time": "2025-05-30T00:10:00.000Z",
+      "last_edited_time": "2025-06-01T22:12:00.000Z",
+      "properties": [
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8079-ae4e-ed754d474888",
+      "title": "Youtube Channels",
+      "url": "https://www.notion.so/203ec31c9de28079ae4eed754d474888",
+      "created_time": "2025-05-30T15:12:00.000Z",
+      "last_edited_time": "2025-06-01T09:56:00.000Z",
+      "properties": [
+        "URL",
+        "Channel",
+        "Hashtags",
+        "Transcode",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-80a2-a34a-f8f263bedb73",
+      "title": " Video",
+      "url": "https://www.notion.so/205ec31c9de280a2a34af8f263bedb73",
+      "created_time": "2025-06-01T09:37:00.000Z",
+      "last_edited_time": "2025-06-01T09:46:00.000Z",
+      "properties": [
+        "URL",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8057-bc2e-faeabf67fb36",
+      "title": "{page_id} Video",
+      "url": "https://www.notion.so/205ec31c9de28057bc2efaeabf67fb36",
+      "created_time": "2025-06-01T09:10:00.000Z",
+      "last_edited_time": "2025-06-01T09:37:00.000Z",
+      "properties": [
+        "URL",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8039-9b34-e6a2fa43ee3a",
+      "title": "Video\u2019s",
+      "url": "https://www.notion.so/205ec31c9de280399b34e6a2fa43ee3a",
+      "created_time": "2025-06-01T09:23:00.000Z",
+      "last_edited_time": "2025-06-01T09:23:00.000Z",
+      "properties": [
+        "URL",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8117-a2d0-fe342ad051ff",
+      "title": "Fuel Log",
+      "url": "https://www.notion.so/203ec31c9de28117a2d0fe342ad051ff",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:58:00.000Z",
+      "properties": [
+        "Date created",
+        "Date",
+        "Cost",
+        "Litres",
+        "Odo",
+        "Octane",
+        "Receipt",
+        "$/L",
+        "Pre-Odo",
+        "L/100",
+        "Km",
+        "ID",
+        "Name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-81bf-82c4-c28a33635f9f",
+      "title": "Index",
+      "url": "https://www.notion.so/203ec31c9de281bf82c4c28a33635f9f",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "properties": [
+        "Interval",
+        "Name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-81f1-98e0-fd6ecaac16e3",
+      "title": "Odometer",
+      "url": "https://www.notion.so/203ec31c9de281f198e0fd6ecaac16e3",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "properties": [
+        "Odometer",
+        "Name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8176-a4b2-f02415f950da",
+      "title": "Maintenance Schedule",
+      "url": "https://www.notion.so/203ec31c9de28176a4b2f02415f950da",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "properties": [
+        "Item",
+        "Odometer",
+        "Date Completed",
+        "Odometer Recorded",
+        "Km to next",
+        "Scheduled Odometer Reading",
+        "Part",
+        "indexItem",
+        "IntervalMulti",
+        "Cat",
+        "Completed",
+        "Status",
+        "OdometerRelation",
+        "indexInterval",
+        "Name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-81d4-90c6-ca4eea0106fc",
+      "title": "Spending Log",
+      "url": "https://www.notion.so/203ec31c9de281d490c6ca4eea0106fc",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "properties": [
+        "Category",
+        "Seller",
+        "Price",
+        "Odometer",
+        "Date",
+        "Records",
+        "Notes",
+        "Requirement",
+        "Name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8152-a34d-f7faa3f9aecc",
+      "title": "ingredients",
+      "url": "https://www.notion.so/1fdec31c9de28152a34df7faa3f9aecc",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-30T03:47:00.000Z",
+      "properties": [
+        "meals",
+        "Yeld",
+        "in pantry?",
+        "Bought @",
+        "Cost",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8126-bc1c-f8233192d910",
+      "title": "weekly",
+      "url": "https://www.notion.so/1fdec31c9de28126bc1cf8233192d910",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-30T03:45:00.000Z",
+      "properties": [
+        "amount",
+        "total",
+        "this week?",
+        "price",
+        "item"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81a4-9413-c6ae516847c3",
+      "title": "books",
+      "url": "https://www.notion.so/1fdec31c9de281a49413c6ae516847c3",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-29T19:22:00.000Z",
+      "properties": [
+        "format",
+        "dnf",
+        "genres",
+        "goodreads",
+        "finish",
+        "started",
+        "journals started",
+        "author",
+        "pages",
+        "dates read",
+        "start",
+        "journals finished",
+        "stars",
+        "rating / 10",
+        "series",
+        "tbr",
+        "publisher",
+        "title"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+      "title": "journals",
+      "url": "https://www.notion.so/1fdec31c9de28191a702fbd24c8bc8f3",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-29T19:18:00.000Z",
+      "properties": [
+        "books started summary",
+        "day",
+        "notes",
+        "books finished",
+        "books finished summary",
+        "notes summary",
+        "books started",
+        "habits",
+        "events summary",
+        "Status",
+        "date",
+        "gifts summary",
+        "type",
+        "chores summary",
+        "chores",
+        "gifts",
+        "events",
+        "habits summary",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-80e2-817f-dfbc151b7946",
+      "title": "Food Onhand",
+      "url": "https://www.notion.so/200ec31c9de280e2817fdfbc151b7946",
+      "created_time": "2025-05-27T23:19:00.000Z",
+      "last_edited_time": "2025-05-28T17:37:00.000Z",
+      "properties": [
+        "Drinks",
+        "Restock",
+        "Count",
+        "Coffee"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-803b-a9ab-d4bc2c3fe5cf",
+      "title": "Drinks",
+      "url": "https://www.notion.so/200ec31c9de2803ba9abd4bc2c3fe5cf",
+      "created_time": "2025-05-27T23:20:00.000Z",
+      "last_edited_time": "2025-05-28T17:36:00.000Z",
+      "properties": [
+        "Date",
+        "Drank 1",
+        "Drank"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8185-9ae8-e4ca325d9163",
+      "title": "notebooks",
+      "url": "https://www.notion.so/1fdec31c9de281859ae8e4ca325d9163",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-28T09:14:00.000Z",
+      "properties": [
+        "notes",
+        "total notes summary",
+        "favourite?",
+        "last update summary",
+        "total notes",
+        "add",
+        "last update",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-8096-9f58-e870135ca7e1",
+      "title": "Sani Dumps",
+      "url": "https://www.notion.so/200ec31c9de280969f58e870135ca7e1",
+      "created_time": "2025-05-27T07:35:00.000Z",
+      "last_edited_time": "2025-05-27T08:04:00.000Z",
+      "properties": [
+        "Location",
+        "Times Used",
+        "Dump Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-80a3-bc2a-cb035303664f",
+      "title": "Drivers and Trucks",
+      "url": "https://www.notion.so/1ffec31c9de280a3bc2acb035303664f",
+      "created_time": "2025-05-26T17:57:00.000Z",
+      "last_edited_time": "2025-05-26T18:35:00.000Z",
+      "properties": [
+        "Current Score",
+        "Paid",
+        "Driver Number",
+        "Truck Type",
+        "Date",
+        "Name"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81aa-ae5f-c6a03e8fdf27",
+      "title": "Event Records",
+      "url": "https://www.notion.so/1feec31c9de281aaae5fc6a03e8fdf27",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-26T18:32:00.000Z",
+      "properties": [
+        "Due Date",
+        "Status",
+        "Date",
+        "Fine Amount",
+        "Vehicle",
+        "Event Type",
+        "Notes",
+        "Location"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8156-82ed-d5a045492ac9",
+      "title": "Home Garage",
+      "url": "https://www.notion.so/1feec31c9de2815682edd5a045492ac9",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-26T18:31:00.000Z",
+      "properties": [
+        "Insurance Expire Date",
+        "Manufacture",
+        "Purchase Price",
+        "Ticket Records",
+        "Purchase Date",
+        "Vehicle Image",
+        "Alert & Info",
+        "Vehicle Maintenance Records",
+        "Steering Servo",
+        "Total Maintenance Cost",
+        "Type",
+        "Motor",
+        "Name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81dd-80d4-d07072888283",
+      "title": "chores",
+      "url": "https://www.notion.so/1fdec31c9de281dd80d4d07072888283",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-26T18:26:00.000Z",
+      "properties": [
+        "summary",
+        "todo?",
+        "journals",
+        "start",
+        "last",
+        "skip",
+        "amount",
+        "started?",
+        "repeat",
+        "done",
+        "task"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81d2-a677-d57f3eb653dd",
+      "title": "RC Manufactures",
+      "url": "https://www.notion.so/1feec31c9de281d2a677d57f3eb653dd",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T07:02:00.000Z",
+      "properties": [
+        "Start Date",
+        "Type",
+        "Insured Vehicle",
+        "Expiry Date",
+        "Cost",
+        "Manufacture"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8118-829f-f501a62a39e6",
+      "title": "Maintenance Type",
+      "url": "https://www.notion.so/1feec31c9de28118829ff501a62a39e6",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "properties": [
+        "Cover",
+        "Maintenance Records",
+        "Total Cost",
+        "Cost Overview",
+        "Vehicle Management To-Do List",
+        "Description"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81cb-9b31-e32055d36f69",
+      "title": "Maintenance Records",
+      "url": "https://www.notion.so/1feec31c9de281cb9b31e32055d36f69",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "properties": [
+        "Mileage Reading",
+        "Vehicle",
+        "Date",
+        "Service Type",
+        "Service Provider",
+        "Notes",
+        "Cost",
+        "Description"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81bf-b92d-d18d2f5c3e8e",
+      "title": "Vehicle Management To-Do List",
+      "url": "https://www.notion.so/1feec31c9de281bfb92dd18d2f5c3e8e",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "properties": [
+        "Maintenance Type",
+        "Deadline",
+        "Archive",
+        "Priority",
+        "Vehicle",
+        "Task"
+      ],
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-810a-8195-dce2c5bb51b5",
+      "title": "meals",
+      "url": "https://www.notion.so/1fdec31c9de2810a8195dce2c5bb51b5",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "recipe",
+        "ingredients",
+        "percentage",
+        "favourite",
+        "available?",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-814b-8231-e715f51bb81d",
+      "title": "notes",
+      "url": "https://www.notion.so/1fdec31c9de2814b8231e715f51bb81d",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "notebook",
+        "date",
+        "journals",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8161-96e4-cbf394be6204",
+      "title": "habits",
+      "url": "https://www.notion.so/1fdec31c9de2816196e4cbf394be6204",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "THU",
+        "SUN",
+        "done",
+        "last",
+        "MON",
+        "WED",
+        "FRI",
+        "SAT",
+        "journals",
+        "TUE",
+        "todo?",
+        "skip",
+        "habit"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8102-9edf-f24c409b8059",
+      "title": "goal records",
+      "url": "https://www.notion.so/1fdec31c9de281029edff24c409b8059",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "amount",
+        "date",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8105-bd50-cb703be7ef65",
+      "title": "income",
+      "url": "https://www.notion.so/1fdec31c9de28105bd50cb703be7ef65",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "date",
+        "account",
+        "amount",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-815b-ab44-f416ead6bd65",
+      "title": "recurring",
+      "url": "https://www.notion.so/1fdec31c9de2815bab44f416ead6bd65",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "repeats",
+        "amount",
+        "monthly summary",
+        "next",
+        "summary",
+        "start",
+        "yearly summary",
+        "active",
+        "next summary",
+        "last",
+        "pay",
+        "account",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+      "title": "accounts",
+      "url": "https://www.notion.so/1fdec31c9de28184a168fa38482ce0fd",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "bank",
+        "income",
+        "total",
+        "expenses summary",
+        "expenses items",
+        "income summary",
+        "income items",
+        "total summary",
+        "expenses",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8187-8dbd-fffd30c4228f",
+      "title": "owed",
+      "url": "https://www.notion.so/1fdec31c9de281878dbdfffd30c4228f",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "person",
+        "pay",
+        "paid",
+        "amount",
+        "summary",
+        "account",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81ae-bff1-ff4a2f3abecf",
+      "title": "expenses",
+      "url": "https://www.notion.so/1fdec31c9de281aebff1ff4a2f3abecf",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "account",
+        "amount",
+        "date",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81dd-813b-fdaaf622277d",
+      "title": "events",
+      "url": "https://www.notion.so/1fdec31c9de281dd813bfdaaf622277d",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "amount",
+        "journals",
+        "next",
+        "done",
+        "type",
+        "repeat",
+        "last",
+        "done?",
+        "date",
+        "name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81e8-b50b-dcef00d01069",
+      "title": "books read",
+      "url": "https://www.notion.so/1fdec31c9de281e8b50bdcef00d01069",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "book",
+        "dates"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81fc-8b7c-d85917d89653",
+      "title": "gifts",
+      "url": "https://www.notion.so/1fdec31c9de281fc8b7cd85917d89653",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "journals",
+        "location",
+        "price",
+        "year",
+        "purchased",
+        "person",
+        "purchase date",
+        "bought",
+        "event",
+        "item"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8180-b540-c25a5f5f5b26",
+      "title": "yearly",
+      "url": "https://www.notion.so/1fdec31c9de28180b540c25a5f5f5b26",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "income summary",
+        "expenses summary",
+        "expenses",
+        "balance",
+        "title",
+        "accounts",
+        "balance summary",
+        "income",
+        "Name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81d8-ac04-d187ce5a899e",
+      "title": "monthly",
+      "url": "https://www.notion.so/1fdec31c9de281d8ac04d187ce5a899e",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "properties": [
+        "income summary",
+        "expenses summary",
+        "expenses",
+        "balance",
+        "title",
+        "accounts",
+        "balance summary",
+        "income",
+        "Name"
+      ],
+      "parent_type": "block_id",
+      "archived": false
+    }
+  ],
+  "pages": [
+    {
+      "id": "203ec31c-9de2-8030-90a7-ea9528e58428",
+      "title": "Youtube ",
+      "url": "https://www.notion.so/Youtube-203ec31c9de2803090a7ea9528e58428",
+      "created_time": "2025-05-30T15:12:00.000Z",
+      "last_edited_time": "2025-06-08T08:08:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8008-9fca-ca5c3dbb5fc0",
+      "title": "Mike\u2019s LifeOS",
+      "url": "https://www.notion.so/Mike-s-LifeOS-1fdec31c9de280089fcaca5c3dbb5fc0",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-06-08T08:07:00.000Z",
+      "parent_type": "workspace",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-819d-89d2-d96b25fad90d",
+      "title": "Knowledge",
+      "url": "https://www.notion.so/Knowledge-1fdec31c9de2819d89d2d96b25fad90d",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-06-08T08:07:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-806e-8e47-c32ae06b78df",
+      "title": "IndyDan",
+      "url": "https://www.notion.so/IndyDan-205ec31c9de2806e8e47c32ae06b78df",
+      "created_time": "2025-06-01T09:23:00.000Z",
+      "last_edited_time": "2025-06-08T08:00:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-80ef-852f-e6f618dc621d",
+      "title": "One Simple Rule That Changed my Life Forever",
+      "url": "https://www.notion.so/One-Simple-Rule-That-Changed-my-Life-Forever-20bec31c9de280ef852fe6f618dc621d",
+      "created_time": "2025-06-07T09:35:00.000Z",
+      "last_edited_time": "2025-06-08T07:54:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-8040-82a0-d8168c8f36cc",
+      "title": "This AI Upgraded an Entire App to Post-Quantum Crypto in 7 Hours",
+      "url": "https://www.notion.so/This-AI-Upgraded-an-Entire-App-to-Post-Quantum-Crypto-in-7-Hours-20bec31c9de2804082a0d8168c8f36cc",
+      "created_time": "2025-06-07T10:09:00.000Z",
+      "last_edited_time": "2025-06-08T07:51:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-80a9-88eb-e7d8288f3b3c",
+      "title": "MCP + Notion: The Ultimate PM Workflow Tutorial (Kanban & Gantt)",
+      "url": "https://www.notion.so/MCP-Notion-The-Ultimate-PM-Workflow-Tutorial-Kanban-Gantt-20bec31c9de280a988ebe7d8288f3b3c",
+      "created_time": "2025-06-07T22:42:00.000Z",
+      "last_edited_time": "2025-06-08T07:51:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-8080-a79a-e461e111f0ad",
+      "title": "Sequential Thinking MCP Server Makes Claude Even More Powerful than Perplexity!",
+      "url": "https://www.notion.so/Sequential-Thinking-MCP-Server-Makes-Claude-Even-More-Powerful-than-Perplexity-20bec31c9de28080a79ae461e111f0ad",
+      "created_time": "2025-06-07T23:33:00.000Z",
+      "last_edited_time": "2025-06-08T07:51:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20cec31c-9de2-801f-86b4-f8342d7f4da0",
+      "title": "7 Prompting Strategies from Claude 4's \"System Prompt\" Leak",
+      "url": "https://www.notion.so/7-Prompting-Strategies-from-Claude-4-s-System-Prompt-Leak-20cec31c9de2801f86b4f8342d7f4da0",
+      "created_time": "2025-06-08T05:40:00.000Z",
+      "last_edited_time": "2025-06-08T07:44:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20cec31c-9de2-8162-b4e4-e2cc594ac634",
+      "title": " ",
+      "url": "https://www.notion.so/20cec31c9de28162b4e4e2cc594ac634",
+      "created_time": "2025-06-08T07:05:00.000Z",
+      "last_edited_time": "2025-06-08T07:05:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-80cc-8d6f-e39503697872",
+      "title": "One Simple Rule That Changed my Life Forever",
+      "url": "https://www.notion.so/One-Simple-Rule-That-Changed-my-Life-Forever-20bec31c9de280cc8d6fe39503697872",
+      "created_time": "2025-06-07T05:10:00.000Z",
+      "last_edited_time": "2025-06-07T22:46:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-81e5-be1d-f555c06b3acb",
+      "title": "Notion API Best Practices",
+      "url": "https://www.notion.so/Notion-API-Best-Practices-20bec31c9de281e5be1df555c06b3acb",
+      "created_time": "2025-06-07T04:01:00.000Z",
+      "last_edited_time": "2025-06-07T10:16:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-81bc-8d71-e5c3ad4113a7",
+      "title": "Building a Second Brain - Tiago Forte",
+      "url": "https://www.notion.so/Building-a-Second-Brain-Tiago-Forte-20bec31c9de281bc8d71e5c3ad4113a7",
+      "created_time": "2025-06-07T04:01:00.000Z",
+      "last_edited_time": "2025-06-07T10:16:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-8106-804c-dbd93df7cb55",
+      "title": "Claude AI Tutorial - Advanced Productivity Automation",
+      "url": "https://www.notion.so/Claude-AI-Tutorial-Advanced-Productivity-Automation-20bec31c9de28106804cdbd93df7cb55",
+      "created_time": "2025-06-07T04:04:00.000Z",
+      "last_edited_time": "2025-06-07T10:16:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-814e-b202-edda96cd924d",
+      "title": " ",
+      "url": "https://www.notion.so/20bec31c9de2814eb202edda96cd924d",
+      "created_time": "2025-06-07T07:00:00.000Z",
+      "last_edited_time": "2025-06-07T07:00:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20bec31c-9de2-8174-a86f-cb5764493e93",
+      "title": "Autonomous Agent System - Setup & Configuration",
+      "url": "https://www.notion.so/Autonomous-Agent-System-Setup-Configuration-20bec31c9de28174a86fcb5764493e93",
+      "created_time": "2025-06-07T04:01:00.000Z",
+      "last_edited_time": "2025-06-07T04:04:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "20aec31c-9de2-81ef-a0a2-edbd11ea44a6",
+      "title": " ",
+      "url": "https://www.notion.so/20aec31c9de281efa0a2edbd11ea44a6",
+      "created_time": "2025-06-06T07:03:00.000Z",
+      "last_edited_time": "2025-06-06T07:03:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "209ec31c-9de2-8134-b384-d522ee2e559f",
+      "title": " ",
+      "url": "https://www.notion.so/209ec31c9de28134b384d522ee2e559f",
+      "created_time": "2025-06-05T07:06:00.000Z",
+      "last_edited_time": "2025-06-05T07:06:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "208ec31c-9de2-810e-8708-d38294b3b4e9",
+      "title": " ",
+      "url": "https://www.notion.so/208ec31c9de2810e8708d38294b3b4e9",
+      "created_time": "2025-06-04T07:06:00.000Z",
+      "last_edited_time": "2025-06-04T07:06:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "207ec31c-9de2-819a-97a0-ebf5cdca05a6",
+      "title": " ",
+      "url": "https://www.notion.so/207ec31c9de2819a97a0ebf5cdca05a6",
+      "created_time": "2025-06-03T07:00:00.000Z",
+      "last_edited_time": "2025-06-03T07:00:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "207ec31c-9de2-80e7-b5af-f53d19992bdb",
+      "title": "projects",
+      "url": "https://www.notion.so/projects-207ec31c9de280e7b5aff53d19992bdb",
+      "created_time": "2025-06-03T00:56:00.000Z",
+      "last_edited_time": "2025-06-03T00:57:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "206ec31c-9de2-8165-8066-e4598d5006df",
+      "title": " ",
+      "url": "https://www.notion.so/206ec31c9de281658066e4598d5006df",
+      "created_time": "2025-06-02T07:03:00.000Z",
+      "last_edited_time": "2025-06-02T07:03:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-806a-9d62-fc6a37e6e5f6",
+      "title": "Drank Coffee",
+      "url": "https://www.notion.so/Drank-Coffee-205ec31c9de2806a9d62fc6a37e6e5f6",
+      "created_time": "2025-06-01T22:37:00.000Z",
+      "last_edited_time": "2025-06-01T22:37:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-802c-9104-d98fb18cc741",
+      "title": "Coffee",
+      "url": "https://www.notion.so/Coffee-205ec31c9de2802c9104d98fb18cc741",
+      "created_time": "2025-06-01T22:05:00.000Z",
+      "last_edited_time": "2025-06-01T22:37:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-80b4-ae75-de7453fba12b",
+      "title": "Untitled",
+      "url": "https://www.notion.so/205ec31c9de280b4ae75de7453fba12b",
+      "created_time": "2025-06-01T22:31:00.000Z",
+      "last_edited_time": "2025-06-01T22:31:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8014-8217-e4732e3f45b3",
+      "title": "Coffee",
+      "url": "https://www.notion.so/Coffee-205ec31c9de280148217e4732e3f45b3",
+      "created_time": "2025-06-01T22:25:00.000Z",
+      "last_edited_time": "2025-06-01T22:25:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8018-8f5f-e07cb528bfff",
+      "title": "Lifelog",
+      "url": "https://www.notion.so/Lifelog-203ec31c9de280188f5fe07cb528bfff",
+      "created_time": "2025-05-30T00:05:00.000Z",
+      "last_edited_time": "2025-06-01T22:17:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8009-ba78-c0230c14309d",
+      "title": "Drank Coffee",
+      "url": "https://www.notion.so/Drank-Coffee-205ec31c9de28009ba78c0230c14309d",
+      "created_time": "2025-06-01T22:16:00.000Z",
+      "last_edited_time": "2025-06-01T22:17:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-80a5-9c0d-f6a245ac345e",
+      "title": "Areas",
+      "url": "https://www.notion.so/Areas-203ec31c9de280a59c0df6a245ac345e",
+      "created_time": "2025-05-30T00:10:00.000Z",
+      "last_edited_time": "2025-06-01T22:12:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-80b1-abab-d6dcecb801dd",
+      "title": "Things Bought",
+      "url": "https://www.notion.so/Things-Bought-205ec31c9de280b1ababd6dcecb801dd",
+      "created_time": "2025-06-01T21:47:00.000Z",
+      "last_edited_time": "2025-06-01T21:58:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-800e-a69d-cb515dcb7556",
+      "title": "Eggs",
+      "url": "https://www.notion.so/Eggs-205ec31c9de2800ea69dcb515dcb7556",
+      "created_time": "2025-06-01T21:51:00.000Z",
+      "last_edited_time": "2025-06-01T21:51:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-805f-8645-c50b2a9f0fbe",
+      "title": "Tim\u2019s Coffee Triple Triple",
+      "url": "https://www.notion.so/Tim-s-Coffee-Triple-Triple-205ec31c9de2805f8645c50b2a9f0fbe",
+      "created_time": "2025-06-01T21:50:00.000Z",
+      "last_edited_time": "2025-06-01T21:50:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8165-bdf0-dc8c3bd0e963",
+      "title": "shopping",
+      "url": "https://www.notion.so/shopping-1fdec31c9de28165bdf0dc8c3bd0e963",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-06-01T21:47:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81b0-8624-eb08b5f62007",
+      "title": "meals",
+      "url": "https://www.notion.so/meals-1fdec31c9de281b08624eb08b5f62007",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-06-01T21:47:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-8002-b340-c9e6902bacec",
+      "title": "Food Stock",
+      "url": "https://www.notion.so/Food-Stock-200ec31c9de28002b340c9e6902bacec",
+      "created_time": "2025-05-27T23:18:00.000Z",
+      "last_edited_time": "2025-06-01T21:47:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8035-961b-ec401151f5ed",
+      "title": "Kyle Morris",
+      "url": "https://www.notion.so/Kyle-Morris-205ec31c9de28035961bec401151f5ed",
+      "created_time": "2025-06-01T09:37:00.000Z",
+      "last_edited_time": "2025-06-01T15:39:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8040-b106-c78dafb8398c",
+      "title": "Dan Martell",
+      "url": "https://www.notion.so/Dan-Martell-205ec31c9de28040b106c78dafb8398c",
+      "created_time": "2025-06-01T08:39:00.000Z",
+      "last_edited_time": "2025-06-01T09:57:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-803a-8fb2-c218b72b4c9c",
+      "title": "Untitled",
+      "url": "https://www.notion.so/205ec31c9de2803a8fb2c218b72b4c9c",
+      "created_time": "2025-06-01T09:46:00.000Z",
+      "last_edited_time": "2025-06-01T09:46:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-801b-bfc8-c87ae2f95af2",
+      "title": "garyvee",
+      "url": "https://www.notion.so/garyvee-203ec31c9de2801bbfc8c87ae2f95af2",
+      "created_time": "2025-05-30T15:16:00.000Z",
+      "last_edited_time": "2025-06-01T09:24:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-80bc-b0ee-fd7bf314ca00",
+      "title": "Untitled",
+      "url": "https://www.notion.so/205ec31c9de280bcb0eefd7bf314ca00",
+      "created_time": "2025-06-01T09:10:00.000Z",
+      "last_edited_time": "2025-06-01T09:10:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8186-88b8-e22770ed5666",
+      "title": " ",
+      "url": "https://www.notion.so/205ec31c9de2818688b8e22770ed5666",
+      "created_time": "2025-06-01T07:06:00.000Z",
+      "last_edited_time": "2025-06-01T07:06:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "205ec31c-9de2-8093-a6f4-d8db4064c899",
+      "title": "Fuel",
+      "url": "https://www.notion.so/Fuel-205ec31c9de28093a6f4d8db4064c899",
+      "created_time": "2025-06-01T02:02:00.000Z",
+      "last_edited_time": "2025-06-01T02:03:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "204ec31c-9de2-80c6-8b3c-f1cf79078bda",
+      "title": "Fuel",
+      "url": "https://www.notion.so/Fuel-204ec31c9de280c68b3cf1cf79078bda",
+      "created_time": "2025-05-31T23:29:00.000Z",
+      "last_edited_time": "2025-05-31T23:29:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "204ec31c-9de2-8013-bfa9-c0f3098b0a9c",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Coffee-204ec31c9de28013bfa9c0f3098b0a9c",
+      "created_time": "2025-05-31T23:29:00.000Z",
+      "last_edited_time": "2025-05-31T23:29:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "204ec31c-9de2-8172-96b2-c28a8eb766c2",
+      "title": " ",
+      "url": "https://www.notion.so/204ec31c9de2817296b2c28a8eb766c2",
+      "created_time": "2025-05-31T07:05:00.000Z",
+      "last_edited_time": "2025-05-31T07:05:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-813d-bb01-c5dff656b7dd",
+      "title": " ",
+      "url": "https://www.notion.so/203ec31c9de2813dbb01c5dff656b7dd",
+      "created_time": "2025-05-30T07:04:00.000Z",
+      "last_edited_time": "2025-05-30T07:04:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8023-a399-f634214378e8",
+      "title": "Vehicle",
+      "url": "https://www.notion.so/Vehicle-203ec31c9de28023a399f634214378e8",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T04:02:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-813f-ac80-dd3c697fa05d",
+      "title": "Odometer",
+      "url": "https://www.notion.so/Odometer-203ec31c9de2813fac80dd3c697fa05d",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T04:00:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8189-8133-d2abf494935a",
+      "title": "Item",
+      "url": "https://www.notion.so/Item-203ec31c9de281898133d2abf494935a",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8101-96e8-f154b80564a7",
+      "title": "Water Pump",
+      "url": "https://www.notion.so/Water-Pump-203ec31c9de2810196e8f154b80564a7",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8149-b3c2-ddf6a94cd3b9",
+      "title": "Timing Belt",
+      "url": "https://www.notion.so/Timing-Belt-203ec31c9de28149b3c2ddf6a94cd3b9",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8174-af1d-e15d66e52d48",
+      "title": "Drive Belt",
+      "url": "https://www.notion.so/Drive-Belt-203ec31c9de28174af1de15d66e52d48",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-81e6-a694-caad39f2580e",
+      "title": "Other",
+      "url": "https://www.notion.so/Other-203ec31c9de281e6a694caad39f2580e",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-81ed-850c-e3d8731d071b",
+      "title": "Spark Plugs",
+      "url": "https://www.notion.so/Spark-Plugs-203ec31c9de281ed850ce3d8731d071b",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-813e-be90-efbf772cadc3",
+      "title": "Maintenance",
+      "url": "https://www.notion.so/Maintenance-203ec31c9de2813ebe90efbf772cadc3",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-815f-b15f-c7fe104acd4d",
+      "title": "Fuel",
+      "url": "https://www.notion.so/Fuel-203ec31c9de2815fb15fc7fe104acd4d",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-819b-babe-d4b2bab6219e",
+      "title": "Spending",
+      "url": "https://www.notion.so/Spending-203ec31c9de2819bbabed4b2bab6219e",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-81b9-a618-d4e065cca044",
+      "title": "Tracker Settings",
+      "url": "https://www.notion.so/Tracker-Settings-203ec31c9de281b9a618d4e065cca044",
+      "created_time": "2025-05-30T03:52:00.000Z",
+      "last_edited_time": "2025-05-30T03:52:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8084-8c2d-f9680c16c075",
+      "title": "Oreo Cookies",
+      "url": "https://www.notion.so/Oreo-Cookies-203ec31c9de280848c2df9680c16c075",
+      "created_time": "2025-05-30T03:41:00.000Z",
+      "last_edited_time": "2025-05-30T03:47:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8104-8465-e83ff4307906",
+      "title": "Plain Flour",
+      "url": "https://www.notion.so/Plain-Flour-1fdec31c9de281048465e83ff4307906",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-30T03:46:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8150-ab2c-c5a574ac2db2",
+      "title": "Egg",
+      "url": "https://www.notion.so/Egg-1fdec31c9de28150ab2cc5a574ac2db2",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-30T03:46:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8182-b227-c9f7835be485",
+      "title": "Milk",
+      "url": "https://www.notion.so/Milk-1fdec31c9de28182b227c9f7835be485",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-30T03:46:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8087-ad87-de5ac56d7268",
+      "title": "Nescafe Coffee",
+      "url": "https://www.notion.so/Nescafe-Coffee-203ec31c9de28087ad87de5ac56d7268",
+      "created_time": "2025-05-30T03:39:00.000Z",
+      "last_edited_time": "2025-05-30T03:46:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-80c5-9fca-ca0bca37ca7b",
+      "title": "Cookies and Milk",
+      "url": "https://www.notion.so/Cookies-and-Milk-203ec31c9de280c59fcaca0bca37ca7b",
+      "created_time": "2025-05-30T03:42:00.000Z",
+      "last_edited_time": "2025-05-30T03:43:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-80e8-99c6-f383f4288e74",
+      "title": "Coffee",
+      "url": "https://www.notion.so/Coffee-203ec31c9de280e899c6f383f4288e74",
+      "created_time": "2025-05-30T03:40:00.000Z",
+      "last_edited_time": "2025-05-30T03:40:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-809e-ac23-f4b10a679905",
+      "title": "Scale Truck",
+      "url": "https://www.notion.so/Scale-Truck-1feec31c9de2809eac23f4b10a679905",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-30T03:37:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81e0-b667-da6b60ca6906",
+      "title": "notes",
+      "url": "https://www.notion.so/notes-1fdec31c9de281e0b667da6b60ca6906",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-30T03:31:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-800a-80bb-d7082fabd310",
+      "title": "Social Media",
+      "url": "https://www.notion.so/Social-Media-203ec31c9de2800a80bbd7082fabd310",
+      "created_time": "2025-05-30T00:11:00.000Z",
+      "last_edited_time": "2025-05-30T00:12:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-8077-aa4f-fff98a6bfd6f",
+      "title": "Projects",
+      "url": "https://www.notion.so/Projects-203ec31c9de28077aa4ffff98a6bfd6f",
+      "created_time": "2025-05-30T00:11:00.000Z",
+      "last_edited_time": "2025-05-30T00:11:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-80dc-92ae-e65099b65ead",
+      "title": "Tasks",
+      "url": "https://www.notion.so/Tasks-203ec31c9de280dc92aee65099b65ead",
+      "created_time": "2025-05-30T00:11:00.000Z",
+      "last_edited_time": "2025-05-30T00:11:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-801f-8276-ef9f3217673a",
+      "title": "Work",
+      "url": "https://www.notion.so/Work-203ec31c9de2801f8276ef9f3217673a",
+      "created_time": "2025-05-30T00:11:00.000Z",
+      "last_edited_time": "2025-05-30T00:11:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "203ec31c-9de2-80f8-b597-e70e21fe3d87",
+      "title": "Personal",
+      "url": "https://www.notion.so/Personal-203ec31c9de280f8b597e70e21fe3d87",
+      "created_time": "2025-05-30T00:11:00.000Z",
+      "last_edited_time": "2025-05-30T00:11:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8126-aa4f-f87c2fd029ad",
+      "title": "journal",
+      "url": "https://www.notion.so/journal-1fdec31c9de28126aa4ff87c2fd029ad",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-30T00:05:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "202ec31c-9de2-805e-92ef-e2dc36c9aed3",
+      "title": "May 29, 2025",
+      "url": "https://www.notion.so/May-29-2025-202ec31c9de2805e92efe2dc36c9aed3",
+      "created_time": "2025-05-29T19:12:00.000Z",
+      "last_edited_time": "2025-05-29T19:13:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "202ec31c-9de2-80a9-a3b4-e9618e04abd2",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Coffee-202ec31c9de280a9a3b4e9618e04abd2",
+      "created_time": "2025-05-29T02:47:00.000Z",
+      "last_edited_time": "2025-05-29T02:47:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "201ec31c-9de2-80c3-8121-d121efba28bc",
+      "title": "May 28, 2025",
+      "url": "https://www.notion.so/May-28-2025-201ec31c9de280c38121d121efba28bc",
+      "created_time": "2025-05-28T18:03:00.000Z",
+      "last_edited_time": "2025-05-28T18:10:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "201ec31c-9de2-802c-9105-f87f04a1f1dc",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Coffee-201ec31c9de2802c9105f87f04a1f1dc",
+      "created_time": "2025-05-28T17:40:00.000Z",
+      "last_edited_time": "2025-05-28T18:06:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "201ec31c-9de2-80ca-ac2f-c2a54b422515",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Coffee-201ec31c9de280caac2fc2a54b422515",
+      "created_time": "2025-05-28T17:37:00.000Z",
+      "last_edited_time": "2025-05-28T18:06:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "201ec31c-9de2-801e-8b1b-c13d08d403eb",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Coffee-201ec31c9de2801e8b1bc13d08d403eb",
+      "created_time": "2025-05-28T17:43:00.000Z",
+      "last_edited_time": "2025-05-28T17:43:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "201ec31c-9de2-80c0-a3d8-e7a1ae59a408",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Coffee-201ec31c9de280c0a3d8e7a1ae59a408",
+      "created_time": "2025-05-28T17:43:00.000Z",
+      "last_edited_time": "2025-05-28T17:43:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "201ec31c-9de2-805e-8739-c8050b9fc2e1",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Coffee-201ec31c9de2805e8739c8050b9fc2e1",
+      "created_time": "2025-05-28T17:42:00.000Z",
+      "last_edited_time": "2025-05-28T17:42:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-800b-afd2-f0b87eb9f415",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Coffee-200ec31c9de2800bafd2f0b87eb9f415",
+      "created_time": "2025-05-27T23:19:00.000Z",
+      "last_edited_time": "2025-05-28T17:35:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "201ec31c-9de2-8089-8c22-f60e0f7d9d1f",
+      "title": "Untitled",
+      "url": "https://www.notion.so/201ec31c9de280898c22f60e0f7d9d1f",
+      "created_time": "2025-05-28T09:14:00.000Z",
+      "last_edited_time": "2025-05-28T09:14:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-8041-85dc-cf180d7a72a9",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Fuel-Van-1ffec31c9de2804185dccf180d7a72a9",
+      "created_time": "2025-05-26T18:26:00.000Z",
+      "last_edited_time": "2025-05-28T02:20:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-800a-a783-f86337e47dd5",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Sani-dump-kamloops-1ffec31c9de2800aa783f86337e47dd5",
+      "created_time": "2025-05-26T20:09:00.000Z",
+      "last_edited_time": "2025-05-28T02:20:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81a0-9e85-c9a9fcc9706f",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Drink-Water-1fdec31c9de281a09e85c9a9fcc9706f",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-28T02:14:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-802d-b269-cec42c238919",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Kamloops-Mission-Flats-Rd-200ec31c9de2802db269cec42c238919",
+      "created_time": "2025-05-27T07:35:00.000Z",
+      "last_edited_time": "2025-05-27T08:02:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-809c-84e0-df88555aefc4",
+      "title": "Sani Dump",
+      "url": "https://www.notion.so/Sani-Dump-200ec31c9de2809c84e0df88555aefc4",
+      "created_time": "2025-05-27T07:34:00.000Z",
+      "last_edited_time": "2025-05-27T07:50:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-8044-a4c1-d0f996f4ba14",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Kamloops-Halston-Rd-200ec31c9de28044a4c1d0f996f4ba14",
+      "created_time": "2025-05-27T07:35:00.000Z",
+      "last_edited_time": "2025-05-27T07:39:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "200ec31c-9de2-80cb-9542-cce061e2cf46",
+      "title": "Untitled",
+      "url": "https://www.notion.so/200ec31c9de280cb9542cce061e2cf46",
+      "created_time": "2025-05-27T07:35:00.000Z",
+      "last_edited_time": "2025-05-27T07:35:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81b1-bc92-c6c63853b2cb",
+      "title": "chores",
+      "url": "https://www.notion.so/chores-1fdec31c9de281b1bc92c6c63853b2cb",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-27T07:34:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-8058-9f6c-ce69afbb8bda",
+      "title": "Untitled",
+      "url": "https://www.notion.so/1ffec31c9de280589f6cce69afbb8bda",
+      "created_time": "2025-05-26T20:08:00.000Z",
+      "last_edited_time": "2025-05-26T20:08:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-80b1-8c25-f8ba12e701da",
+      "title": "Score Card",
+      "url": "https://www.notion.so/Score-Card-1ffec31c9de280b18c25f8ba12e701da",
+      "created_time": "2025-05-26T18:25:00.000Z",
+      "last_edited_time": "2025-05-26T18:35:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8079-9846-e8e2b7523194",
+      "title": "Rock Dogs event",
+      "url": "https://www.notion.so/Rock-Dogs-event-1fdec31c9de280799846e8e2b7523194",
+      "created_time": "2025-05-24T02:23:00.000Z",
+      "last_edited_time": "2025-05-26T18:35:00.000Z",
+      "parent_type": "page_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-8068-9f98-fa14d3708852",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Ellision-Park-1ffec31c9de280689f98fa14d3708852",
+      "created_time": "2025-05-26T18:32:00.000Z",
+      "last_edited_time": "2025-05-26T18:32:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-8055-8363-f6c1aa98999d",
+      "title": "H10 Optic",
+      "url": "https://www.notion.so/H10-Optic-1ffec31c9de280558363f6c1aa98999d",
+      "created_time": "2025-05-26T18:31:00.000Z",
+      "last_edited_time": "2025-05-26T18:31:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-80cc-a15a-f25b0ad59578",
+      "title": "Untitled",
+      "url": "https://www.notion.so/1ffec31c9de280cca15af25b0ad59578",
+      "created_time": "2025-05-26T18:24:00.000Z",
+      "last_edited_time": "2025-05-26T18:24:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-80a0-946e-e6750da6f331",
+      "title": "Sean R.",
+      "url": "https://www.notion.so/Sean-R-1ffec31c9de280a0946ee6750da6f331",
+      "created_time": "2025-05-26T18:03:00.000Z",
+      "last_edited_time": "2025-05-26T18:05:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1ffec31c-9de2-80cb-9f5c-caeff8ac2b58",
+      "title": "Michael S.",
+      "url": "https://www.notion.so/Michael-S-1ffec31c9de280cb9f5ccaeff8ac2b58",
+      "created_time": "2025-05-26T18:00:00.000Z",
+      "last_edited_time": "2025-05-26T18:05:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-80a0-b77d-e7013caccf0b",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Re-wire-for-new-ESC-1feec31c9de280a0b77de7013caccf0b",
+      "created_time": "2025-05-25T07:51:00.000Z",
+      "last_edited_time": "2025-05-25T07:52:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-811a-b3b2-dc1bb6191ace",
+      "title": "Trail Finder",
+      "url": "https://www.notion.so/Trail-Finder-1feec31c9de2811ab3b2dc1bb6191ace",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T07:42:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8085-9bed-c1ec2a51508d",
+      "title": "Untitled",
+      "url": "https://www.notion.so/1feec31c9de280859bedc1ec2a51508d",
+      "created_time": "2025-05-25T06:57:00.000Z",
+      "last_edited_time": "2025-05-25T06:57:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8133-9a77-f5356ac78eff",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Geico-1feec31c9de281339a77f5356ac78eff",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8149-b4b1-c721dfdffbc2",
+      "title": "Untitled",
+      "url": "https://www.notion.so/New-Insurance-1feec31c9de28149b4b1c721dfdffbc2",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8151-b679-ca493171d4af",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Geico-1feec31c9de28151b679ca493171d4af",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81a1-b790-c35ee7af8766",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Geico-1feec31c9de281a1b790c35ee7af8766",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81a7-8a28-f536fbcb1d55",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Geico-1feec31c9de281a78a28f536fbcb1d55",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81b2-9371-c26ba46707f9",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Geico-1feec31c9de281b29371c26ba46707f9",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81e0-ad80-da456dee4f5a",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Geico-1feec31c9de281e0ad80da456dee4f5a",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8142-a7a6-cdbb0196d06e",
+      "title": "Untitled",
+      "url": "https://www.notion.so/New-Service-Type-1feec31c9de28142a7a6cdbb0196d06e",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8154-b7aa-ec5ddc176684",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Detailing-1feec31c9de28154b7aaec5ddc176684",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-817a-aa6c-e1d230fdfd98",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Repairs-1feec31c9de2817aaa6ce1d230fdfd98",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8187-8398-e268dc9b7b26",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Regular-Maintenance-1feec31c9de281878398e268dc9b7b26",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8188-bf29-ce4e6ae668ac",
+      "title": "Untitled",
+      "url": "https://www.notion.so/State-Farm-1feec31c9de28188bf29ce4e6ae668ac",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81ad-9155-f6c2e912e22f",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Others-1feec31c9de281ad9155f6c2e912e22f",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81f4-bbe0-eea11b590a03",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Location-1feec31c9de281f4bbe0eea11b590a03",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81fc-b50f-d092213e7a25",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Detailing-1feec31c9de281fcb50fd092213e7a25",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-81e3-a0de-e2e8e9992569",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Maintenance-1feec31c9de281e3a0dee2e8e9992569",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-8103-88a4-eacc1c1b10a1",
+      "title": "Untitled",
+      "url": "https://www.notion.so/New-to-do-1feec31c9de2810388a4eacc1c1b10a1",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1feec31c-9de2-814b-bb7c-d52655bde172",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Car-wash-1feec31c9de2814bbb7cd52655bde172",
+      "created_time": "2025-05-25T06:48:00.000Z",
+      "last_edited_time": "2025-05-25T06:48:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8118-b03a-dfab95f547d4",
+      "title": "Christmas Day",
+      "url": "https://www.notion.so/Christmas-Day-1fdec31c9de28118b03adfab95f547d4",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-813e-bf3f-e5329405a0e6",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Slippers-1fdec31c9de2813ebf3fe5329405a0e6",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8147-9e40-cff6e7e56faf",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Quarterly-Chore-1fdec31c9de281479e40cff6e7e56faf",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-814c-b6bd-c5ef7896101a",
+      "title": "Christmas Eve",
+      "url": "https://www.notion.so/Christmas-Eve-1fdec31c9de2814cb6bdc5ef7896101a",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-815c-9280-c95480b4efc3",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Daily-Chore-1fdec31c9de2815c9280c95480b4efc3",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-816b-bbea-f0f4eb1bd99a",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Every-Other-Day-Chore-1fdec31c9de2816bbbeaf0f4eb1bd99a",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8183-b6e3-d13b2d4ec069",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Book-1fdec31c9de28183b6e3d13b2d4ec069",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81b8-b6db-d8c93dcb4998",
+      "title": "One Time Event",
+      "url": "https://www.notion.so/One-Time-Event-1fdec31c9de281b8b6dbd8c93dcb4998",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81c1-bf41-ee67e1272d91",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Monthly-Chore-1fdec31c9de281c1bf41ee67e1272d91",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81d0-b051-ddb44eefb006",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Yearly-Chore-1fdec31c9de281d0b051ddb44eefb006",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81eb-8c41-ce5d9621aa0f",
+      "title": "[notes db]",
+      "url": "https://www.notion.so/notes-db-1fdec31c9de281eb8c41ce5d9621aa0f",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81f3-86d8-e32735d18dba",
+      "title": "Untitled",
+      "url": "https://www.notion.so/Weekly-Chore-1fdec31c9de281f386d8e32735d18dba",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8113-9ca7-d259776da6cb",
+      "title": "[monday]",
+      "url": "https://www.notion.so/monday-1fdec31c9de281139ca7d259776da6cb",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8135-adc2-d1dfc1f118ef",
+      "title": "British Style Pancakes",
+      "url": "https://www.notion.so/British-Style-Pancakes-1fdec31c9de28135adc2d1dfc1f118ef",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8138-9b1d-d229ae02339b",
+      "title": "[friday]",
+      "url": "https://www.notion.so/friday-1fdec31c9de281389b1dd229ae02339b",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-814d-b502-f9300343a9ff",
+      "title": "[wednesday]",
+      "url": "https://www.notion.so/wednesday-1fdec31c9de2814db502f9300343a9ff",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8162-9ee7-ddc247387415",
+      "title": "[thursday]",
+      "url": "https://www.notion.so/thursday-1fdec31c9de281629ee7ddc247387415",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81b8-bad1-ceb687eb6c31",
+      "title": "[sunday]",
+      "url": "https://www.notion.so/sunday-1fdec31c9de281b8bad1ceb687eb6c31",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81cf-857d-f1c661dcecb5",
+      "title": "[tuesday]",
+      "url": "https://www.notion.so/tuesday-1fdec31c9de281cf857df1c661dcecb5",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81d0-b97a-cc7c2420be1d",
+      "title": "[saturday]",
+      "url": "https://www.notion.so/saturday-1fdec31c9de281d0b97acc7c2420be1d",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8164-a768-c2ac08fc2389",
+      "title": "monthly summary",
+      "url": "https://www.notion.so/monthly-summary-1fdec31c9de28164a768c2ac08fc2389",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-81d5-af6c-f8262dc8610d",
+      "title": "yearly summary",
+      "url": "https://www.notion.so/yearly-summary-1fdec31c9de281d5af6cf8262dc8610d",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "database_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-811f-9ec9-ca97fc1f37ab",
+      "title": "finances",
+      "url": "https://www.notion.so/finances-1fdec31c9de2811f9ec9ca97fc1f37ab",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-814c-8b2d-d9617f27d1f6",
+      "title": "calendar",
+      "url": "https://www.notion.so/calendar-1fdec31c9de2814c8b2dd9617f27d1f6",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    },
+    {
+      "id": "1fdec31c-9de2-8156-ad02-ebaeec42bb21",
+      "title": "habits",
+      "url": "https://www.notion.so/habits-1fdec31c9de28156ad02ebaeec42bb21",
+      "created_time": "2025-05-24T00:18:00.000Z",
+      "last_edited_time": "2025-05-24T00:18:00.000Z",
+      "parent_type": "block_id",
+      "archived": false
+    }
+  ],
+  "categories": {
+    "Knowledge Management": [
+      "20bec31c-9de2-814e-80db-d13d0c27d869",
+      "1fdec31c-9de2-814b-8231-e715f51bb81d",
+      "1fdec31c-9de2-819d-89d2-d96b25fad90d",
+      "1fdec31c-9de2-81e0-b667-da6b60ca6906",
+      "1fdec31c-9de2-81eb-8c41-ce5d9621aa0f"
+    ],
+    "Other Databases": [
+      "205ec31c-9de2-809b-8676-e5686fc02c52",
+      "205ec31c-9de2-8078-996f-f2c2a501b716",
+      "203ec31c-9de2-800b-b980-f69359be6edf",
+      "203ec31c-9de2-80ad-984f-e1f716f1b7ea",
+      "203ec31c-9de2-8117-a2d0-fe342ad051ff",
+      "203ec31c-9de2-81bf-82c4-c28a33635f9f",
+      "203ec31c-9de2-81f1-98e0-fd6ecaac16e3",
+      "203ec31c-9de2-81d4-90c6-ca4eea0106fc",
+      "1fdec31c-9de2-8152-a34d-f7faa3f9aecc",
+      "1fdec31c-9de2-81a4-9413-c6ae516847c3",
+      "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+      "200ec31c-9de2-80e2-817f-dfbc151b7946",
+      "200ec31c-9de2-803b-a9ab-d4bc2c3fe5cf",
+      "1fdec31c-9de2-8185-9ae8-e4ca325d9163",
+      "200ec31c-9de2-8096-9f58-e870135ca7e1",
+      "1ffec31c-9de2-80a3-bc2a-cb035303664f",
+      "1feec31c-9de2-8156-82ed-d5a045492ac9",
+      "1fdec31c-9de2-81dd-80d4-d07072888283",
+      "1feec31c-9de2-81d2-a677-d57f3eb653dd",
+      "1feec31c-9de2-8118-829f-f501a62a39e6",
+      "1feec31c-9de2-81cb-9b31-e32055d36f69",
+      "1feec31c-9de2-81bf-b92d-d18d2f5c3e8e",
+      "1fdec31c-9de2-810a-8195-dce2c5bb51b5",
+      "1fdec31c-9de2-815b-ab44-f416ead6bd65",
+      "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+      "1fdec31c-9de2-8187-8dbd-fffd30c4228f",
+      "1fdec31c-9de2-81e8-b50b-dcef00d01069",
+      "1fdec31c-9de2-81fc-8b7c-d85917d89653",
+      "1fdec31c-9de2-8180-b540-c25a5f5f5b26",
+      "1fdec31c-9de2-81d8-ac04-d187ce5a899e"
+    ],
+    "Content Management": [
+      "203ec31c-9de2-8079-ae4e-ed754d474888",
+      "205ec31c-9de2-80a2-a34a-f8f263bedb73",
+      "205ec31c-9de2-8057-bc2e-faeabf67fb36",
+      "205ec31c-9de2-8039-9b34-e6a2fa43ee3a",
+      "203ec31c-9de2-8030-90a7-ea9528e58428"
+    ],
+    "Calendar & Events": [
+      "203ec31c-9de2-8176-a4b2-f02415f950da",
+      "1feec31c-9de2-81aa-ae5f-c6a03e8fdf27",
+      "1fdec31c-9de2-81dd-813b-fdaaf622277d",
+      "1fdec31c-9de2-8079-9846-e8e2b7523194",
+      "1fdec31c-9de2-81b8-b6db-d8c93dcb4998",
+      "1fdec31c-9de2-814c-8b2d-d9617f27d1f6"
+    ],
+    "Habits & Routines": [
+      "1fdec31c-9de2-8126-bc1c-f8233192d910",
+      "1fdec31c-9de2-8161-96e4-cbf394be6204",
+      "1fdec31c-9de2-8156-ad02-ebaeec42bb21"
+    ],
+    "Goals & Planning": [
+      "1fdec31c-9de2-8102-9edf-f24c409b8059"
+    ],
+    "Financial Management": [
+      "1fdec31c-9de2-8105-bd50-cb703be7ef65",
+      "1fdec31c-9de2-81ae-bff1-ff4a2f3abecf",
+      "1fdec31c-9de2-811f-9ec9-ca97fc1f37ab"
+    ],
+    "Other Pages": [
+      "1fdec31c-9de2-8008-9fca-ca5c3dbb5fc0",
+      "205ec31c-9de2-806e-8e47-c32ae06b78df",
+      "20bec31c-9de2-80ef-852f-e6f618dc621d",
+      "20bec31c-9de2-8080-a79a-e461e111f0ad",
+      "20cec31c-9de2-8162-b4e4-e2cc594ac634",
+      "20bec31c-9de2-80cc-8d6f-e39503697872",
+      "20bec31c-9de2-81e5-be1d-f555c06b3acb",
+      "20bec31c-9de2-81bc-8d71-e5c3ad4113a7",
+      "20bec31c-9de2-814e-b202-edda96cd924d",
+      "20aec31c-9de2-81ef-a0a2-edbd11ea44a6",
+      "209ec31c-9de2-8134-b384-d522ee2e559f",
+      "208ec31c-9de2-810e-8708-d38294b3b4e9",
+      "207ec31c-9de2-819a-97a0-ebf5cdca05a6",
+      "206ec31c-9de2-8165-8066-e4598d5006df",
+      "205ec31c-9de2-806a-9d62-fc6a37e6e5f6",
+      "205ec31c-9de2-802c-9104-d98fb18cc741",
+      "205ec31c-9de2-80b4-ae75-de7453fba12b",
+      "205ec31c-9de2-8014-8217-e4732e3f45b3",
+      "203ec31c-9de2-8018-8f5f-e07cb528bfff",
+      "205ec31c-9de2-8009-ba78-c0230c14309d",
+      "203ec31c-9de2-80a5-9c0d-f6a245ac345e",
+      "205ec31c-9de2-80b1-abab-d6dcecb801dd",
+      "205ec31c-9de2-800e-a69d-cb515dcb7556",
+      "205ec31c-9de2-805f-8645-c50b2a9f0fbe",
+      "1fdec31c-9de2-8165-bdf0-dc8c3bd0e963",
+      "1fdec31c-9de2-81b0-8624-eb08b5f62007",
+      "200ec31c-9de2-8002-b340-c9e6902bacec",
+      "205ec31c-9de2-8035-961b-ec401151f5ed",
+      "205ec31c-9de2-8040-b106-c78dafb8398c",
+      "205ec31c-9de2-803a-8fb2-c218b72b4c9c",
+      "203ec31c-9de2-801b-bfc8-c87ae2f95af2",
+      "205ec31c-9de2-80bc-b0ee-fd7bf314ca00",
+      "205ec31c-9de2-8186-88b8-e22770ed5666",
+      "205ec31c-9de2-8093-a6f4-d8db4064c899",
+      "204ec31c-9de2-80c6-8b3c-f1cf79078bda",
+      "204ec31c-9de2-8013-bfa9-c0f3098b0a9c",
+      "204ec31c-9de2-8172-96b2-c28a8eb766c2",
+      "203ec31c-9de2-813d-bb01-c5dff656b7dd",
+      "203ec31c-9de2-8023-a399-f634214378e8",
+      "203ec31c-9de2-813f-ac80-dd3c697fa05d",
+      "203ec31c-9de2-8189-8133-d2abf494935a",
+      "203ec31c-9de2-8101-96e8-f154b80564a7",
+      "203ec31c-9de2-8149-b3c2-ddf6a94cd3b9",
+      "203ec31c-9de2-8174-af1d-e15d66e52d48",
+      "203ec31c-9de2-81e6-a694-caad39f2580e",
+      "203ec31c-9de2-81ed-850c-e3d8731d071b",
+      "203ec31c-9de2-813e-be90-efbf772cadc3",
+      "203ec31c-9de2-815f-b15f-c7fe104acd4d",
+      "203ec31c-9de2-819b-babe-d4b2bab6219e",
+      "203ec31c-9de2-81b9-a618-d4e065cca044",
+      "203ec31c-9de2-8084-8c2d-f9680c16c075",
+      "1fdec31c-9de2-8104-8465-e83ff4307906",
+      "1fdec31c-9de2-8150-ab2c-c5a574ac2db2",
+      "1fdec31c-9de2-8182-b227-c9f7835be485",
+      "203ec31c-9de2-8087-ad87-de5ac56d7268",
+      "203ec31c-9de2-80c5-9fca-ca0bca37ca7b",
+      "203ec31c-9de2-80e8-99c6-f383f4288e74",
+      "1feec31c-9de2-809e-ac23-f4b10a679905",
+      "203ec31c-9de2-800a-80bb-d7082fabd310",
+      "203ec31c-9de2-801f-8276-ef9f3217673a",
+      "203ec31c-9de2-80f8-b597-e70e21fe3d87",
+      "1fdec31c-9de2-8126-aa4f-f87c2fd029ad",
+      "202ec31c-9de2-805e-92ef-e2dc36c9aed3",
+      "202ec31c-9de2-80a9-a3b4-e9618e04abd2",
+      "201ec31c-9de2-80c3-8121-d121efba28bc",
+      "201ec31c-9de2-802c-9105-f87f04a1f1dc",
+      "201ec31c-9de2-80ca-ac2f-c2a54b422515",
+      "201ec31c-9de2-801e-8b1b-c13d08d403eb",
+      "201ec31c-9de2-80c0-a3d8-e7a1ae59a408",
+      "201ec31c-9de2-805e-8739-c8050b9fc2e1",
+      "200ec31c-9de2-800b-afd2-f0b87eb9f415",
+      "201ec31c-9de2-8089-8c22-f60e0f7d9d1f",
+      "1ffec31c-9de2-8041-85dc-cf180d7a72a9",
+      "1ffec31c-9de2-800a-a783-f86337e47dd5",
+      "1fdec31c-9de2-81a0-9e85-c9a9fcc9706f",
+      "200ec31c-9de2-802d-b269-cec42c238919",
+      "200ec31c-9de2-809c-84e0-df88555aefc4",
+      "200ec31c-9de2-8044-a4c1-d0f996f4ba14",
+      "200ec31c-9de2-80cb-9542-cce061e2cf46",
+      "1fdec31c-9de2-81b1-bc92-c6c63853b2cb",
+      "1ffec31c-9de2-8058-9f6c-ce69afbb8bda",
+      "1ffec31c-9de2-80b1-8c25-f8ba12e701da",
+      "1ffec31c-9de2-8068-9f98-fa14d3708852",
+      "1ffec31c-9de2-8055-8363-f6c1aa98999d",
+      "1ffec31c-9de2-80cc-a15a-f25b0ad59578",
+      "1ffec31c-9de2-80a0-946e-e6750da6f331",
+      "1ffec31c-9de2-80cb-9f5c-caeff8ac2b58",
+      "1feec31c-9de2-80a0-b77d-e7013caccf0b",
+      "1feec31c-9de2-811a-b3b2-dc1bb6191ace",
+      "1feec31c-9de2-8085-9bed-c1ec2a51508d",
+      "1feec31c-9de2-8133-9a77-f5356ac78eff",
+      "1feec31c-9de2-8149-b4b1-c721dfdffbc2",
+      "1feec31c-9de2-8151-b679-ca493171d4af",
+      "1feec31c-9de2-81a1-b790-c35ee7af8766",
+      "1feec31c-9de2-81a7-8a28-f536fbcb1d55",
+      "1feec31c-9de2-81b2-9371-c26ba46707f9",
+      "1feec31c-9de2-81e0-ad80-da456dee4f5a",
+      "1feec31c-9de2-8142-a7a6-cdbb0196d06e",
+      "1feec31c-9de2-8154-b7aa-ec5ddc176684",
+      "1feec31c-9de2-817a-aa6c-e1d230fdfd98",
+      "1feec31c-9de2-8187-8398-e268dc9b7b26",
+      "1feec31c-9de2-8188-bf29-ce4e6ae668ac",
+      "1feec31c-9de2-81ad-9155-f6c2e912e22f",
+      "1feec31c-9de2-81f4-bbe0-eea11b590a03",
+      "1feec31c-9de2-81fc-b50f-d092213e7a25",
+      "1feec31c-9de2-81e3-a0de-e2e8e9992569",
+      "1feec31c-9de2-8103-88a4-eacc1c1b10a1",
+      "1feec31c-9de2-814b-bb7c-d52655bde172",
+      "1fdec31c-9de2-8118-b03a-dfab95f547d4",
+      "1fdec31c-9de2-813e-bf3f-e5329405a0e6",
+      "1fdec31c-9de2-8147-9e40-cff6e7e56faf",
+      "1fdec31c-9de2-814c-b6bd-c5ef7896101a",
+      "1fdec31c-9de2-815c-9280-c95480b4efc3",
+      "1fdec31c-9de2-816b-bbea-f0f4eb1bd99a",
+      "1fdec31c-9de2-8183-b6e3-d13b2d4ec069",
+      "1fdec31c-9de2-81c1-bf41-ee67e1272d91",
+      "1fdec31c-9de2-81d0-b051-ddb44eefb006",
+      "1fdec31c-9de2-81f3-86d8-e32735d18dba",
+      "1fdec31c-9de2-8113-9ca7-d259776da6cb",
+      "1fdec31c-9de2-8135-adc2-d1dfc1f118ef",
+      "1fdec31c-9de2-8138-9b1d-d229ae02339b",
+      "1fdec31c-9de2-814d-b502-f9300343a9ff",
+      "1fdec31c-9de2-8162-9ee7-ddc247387415",
+      "1fdec31c-9de2-81b8-bad1-ceb687eb6c31",
+      "1fdec31c-9de2-81cf-857d-f1c661dcecb5",
+      "1fdec31c-9de2-81d0-b97a-cc7c2420be1d"
+    ],
+    "Tools & Resources": [
+      "20bec31c-9de2-8040-82a0-d8168c8f36cc"
+    ],
+    "Automation & Workflows": [
+      "20bec31c-9de2-80a9-88eb-e7d8288f3b3c",
+      "20cec31c-9de2-801f-86b4-f8342d7f4da0",
+      "20bec31c-9de2-8106-804c-dbd93df7cb55",
+      "20bec31c-9de2-8174-a86f-cb5764493e93"
+    ],
+    "Tasks & Projects": [
+      "207ec31c-9de2-80e7-b5af-f53d19992bdb",
+      "203ec31c-9de2-8077-aa4f-fff98a6bfd6f",
+      "203ec31c-9de2-80dc-92ae-e65099b65ead"
+    ],
+    "Dashboards & Reports": [
+      "1fdec31c-9de2-8164-a768-c2ac08fc2389",
+      "1fdec31c-9de2-81d5-af6c-f8262dc8610d"
+    ]
+  },
+  "hierarchy": {
+    "1fdec31c-9de2-819d-89d2-d96b25fad90d": [
+      "20bec31c-9de2-814e-80db-d13d0c27d869",
+      "203ec31c-9de2-8030-90a7-ea9528e58428"
+    ],
+    "205ec31c-9de2-80b1-abab-d6dcecb801dd": [
+      "205ec31c-9de2-809b-8676-e5686fc02c52"
+    ],
+    "205ec31c-9de2-802c-9104-d98fb18cc741": [
+      "205ec31c-9de2-8078-996f-f2c2a501b716"
+    ],
+    "203ec31c-9de2-8018-8f5f-e07cb528bfff": [
+      "203ec31c-9de2-800b-b980-f69359be6edf",
+      "203ec31c-9de2-80a5-9c0d-f6a245ac345e"
+    ],
+    "203ec31c-9de2-80a5-9c0d-f6a245ac345e": [
+      "203ec31c-9de2-80ad-984f-e1f716f1b7ea"
+    ],
+    "203ec31c-9de2-8030-90a7-ea9528e58428": [
+      "203ec31c-9de2-8079-ae4e-ed754d474888"
+    ],
+    "205ec31c-9de2-8035-961b-ec401151f5ed": [
+      "205ec31c-9de2-80a2-a34a-f8f263bedb73"
+    ],
+    "205ec31c-9de2-80bc-b0ee-fd7bf314ca00": [
+      "205ec31c-9de2-8057-bc2e-faeabf67fb36"
+    ],
+    "205ec31c-9de2-806e-8e47-c32ae06b78df": [
+      "205ec31c-9de2-8039-9b34-e6a2fa43ee3a"
+    ],
+    "200ec31c-9de2-8002-b340-c9e6902bacec": [
+      "200ec31c-9de2-80e2-817f-dfbc151b7946",
+      "200ec31c-9de2-803b-a9ab-d4bc2c3fe5cf"
+    ],
+    "200ec31c-9de2-809c-84e0-df88555aefc4": [
+      "200ec31c-9de2-8096-9f58-e870135ca7e1"
+    ],
+    "1feec31c-9de2-809e-ac23-f4b10a679905": [
+      "1ffec31c-9de2-80a3-bc2a-cb035303664f",
+      "1feec31c-9de2-81bf-b92d-d18d2f5c3e8e",
+      "1ffec31c-9de2-80b1-8c25-f8ba12e701da",
+      "1fdec31c-9de2-8079-9846-e8e2b7523194"
+    ],
+    "workspace_root": [
+      "1fdec31c-9de2-8008-9fca-ca5c3dbb5fc0"
+    ],
+    "203ec31c-9de2-8079-ae4e-ed754d474888": [
+      "205ec31c-9de2-806e-8e47-c32ae06b78df",
+      "205ec31c-9de2-8035-961b-ec401151f5ed",
+      "205ec31c-9de2-8040-b106-c78dafb8398c",
+      "203ec31c-9de2-801b-bfc8-c87ae2f95af2",
+      "205ec31c-9de2-80bc-b0ee-fd7bf314ca00"
+    ],
+    "20bec31c-9de2-814e-80db-d13d0c27d869": [
+      "20bec31c-9de2-80ef-852f-e6f618dc621d",
+      "20bec31c-9de2-8040-82a0-d8168c8f36cc",
+      "20bec31c-9de2-80a9-88eb-e7d8288f3b3c",
+      "20bec31c-9de2-8080-a79a-e461e111f0ad",
+      "20cec31c-9de2-801f-86b4-f8342d7f4da0",
+      "20bec31c-9de2-80cc-8d6f-e39503697872",
+      "20bec31c-9de2-81e5-be1d-f555c06b3acb",
+      "20bec31c-9de2-81bc-8d71-e5c3ad4113a7",
+      "20bec31c-9de2-8106-804c-dbd93df7cb55",
+      "20bec31c-9de2-8174-a86f-cb5764493e93"
+    ],
+    "1fdec31c-9de2-8191-a702-fbd24c8bc8f3": [
+      "20cec31c-9de2-8162-b4e4-e2cc594ac634",
+      "20bec31c-9de2-814e-b202-edda96cd924d",
+      "20aec31c-9de2-81ef-a0a2-edbd11ea44a6",
+      "209ec31c-9de2-8134-b384-d522ee2e559f",
+      "208ec31c-9de2-810e-8708-d38294b3b4e9",
+      "207ec31c-9de2-819a-97a0-ebf5cdca05a6",
+      "206ec31c-9de2-8165-8066-e4598d5006df",
+      "205ec31c-9de2-8186-88b8-e22770ed5666",
+      "204ec31c-9de2-8172-96b2-c28a8eb766c2",
+      "203ec31c-9de2-813d-bb01-c5dff656b7dd",
+      "202ec31c-9de2-805e-92ef-e2dc36c9aed3",
+      "201ec31c-9de2-80c3-8121-d121efba28bc",
+      "1fdec31c-9de2-8113-9ca7-d259776da6cb",
+      "1fdec31c-9de2-8138-9b1d-d229ae02339b",
+      "1fdec31c-9de2-814d-b502-f9300343a9ff",
+      "1fdec31c-9de2-8162-9ee7-ddc247387415",
+      "1fdec31c-9de2-81b8-bad1-ceb687eb6c31",
+      "1fdec31c-9de2-81cf-857d-f1c661dcecb5",
+      "1fdec31c-9de2-81d0-b97a-cc7c2420be1d"
+    ],
+    "1fdec31c-9de2-8008-9fca-ca5c3dbb5fc0": [
+      "207ec31c-9de2-80e7-b5af-f53d19992bdb",
+      "203ec31c-9de2-8023-a399-f634214378e8"
+    ],
+    "203ec31c-9de2-800b-b980-f69359be6edf": [
+      "205ec31c-9de2-806a-9d62-fc6a37e6e5f6",
+      "205ec31c-9de2-8014-8217-e4732e3f45b3",
+      "205ec31c-9de2-8009-ba78-c0230c14309d"
+    ],
+    "205ec31c-9de2-809b-8676-e5686fc02c52": [
+      "205ec31c-9de2-802c-9104-d98fb18cc741",
+      "205ec31c-9de2-800e-a69d-cb515dcb7556",
+      "205ec31c-9de2-805f-8645-c50b2a9f0fbe"
+    ],
+    "205ec31c-9de2-8078-996f-f2c2a501b716": [
+      "205ec31c-9de2-80b4-ae75-de7453fba12b"
+    ],
+    "1fdec31c-9de2-8126-aa4f-f87c2fd029ad": [
+      "203ec31c-9de2-8018-8f5f-e07cb528bfff"
+    ],
+    "1fdec31c-9de2-8165-bdf0-dc8c3bd0e963": [
+      "205ec31c-9de2-80b1-abab-d6dcecb801dd"
+    ],
+    "1fdec31c-9de2-81b0-8624-eb08b5f62007": [
+      "200ec31c-9de2-8002-b340-c9e6902bacec"
+    ],
+    "205ec31c-9de2-80a2-a34a-f8f263bedb73": [
+      "205ec31c-9de2-803a-8fb2-c218b72b4c9c"
+    ],
+    "203ec31c-9de2-8117-a2d0-fe342ad051ff": [
+      "205ec31c-9de2-8093-a6f4-d8db4064c899",
+      "204ec31c-9de2-80c6-8b3c-f1cf79078bda"
+    ],
+    "200ec31c-9de2-803b-a9ab-d4bc2c3fe5cf": [
+      "204ec31c-9de2-8013-bfa9-c0f3098b0a9c",
+      "202ec31c-9de2-80a9-a3b4-e9618e04abd2",
+      "201ec31c-9de2-802c-9105-f87f04a1f1dc",
+      "201ec31c-9de2-80ca-ac2f-c2a54b422515",
+      "201ec31c-9de2-801e-8b1b-c13d08d403eb",
+      "201ec31c-9de2-80c0-a3d8-e7a1ae59a408",
+      "201ec31c-9de2-805e-8739-c8050b9fc2e1"
+    ],
+    "203ec31c-9de2-81f1-98e0-fd6ecaac16e3": [
+      "203ec31c-9de2-813f-ac80-dd3c697fa05d"
+    ],
+    "203ec31c-9de2-8176-a4b2-f02415f950da": [
+      "203ec31c-9de2-8189-8133-d2abf494935a"
+    ],
+    "203ec31c-9de2-81bf-82c4-c28a33635f9f": [
+      "203ec31c-9de2-8101-96e8-f154b80564a7",
+      "203ec31c-9de2-8149-b3c2-ddf6a94cd3b9",
+      "203ec31c-9de2-8174-af1d-e15d66e52d48",
+      "203ec31c-9de2-81e6-a694-caad39f2580e",
+      "203ec31c-9de2-81ed-850c-e3d8731d071b"
+    ],
+    "1fdec31c-9de2-8152-a34d-f7faa3f9aecc": [
+      "203ec31c-9de2-8084-8c2d-f9680c16c075",
+      "1fdec31c-9de2-8104-8465-e83ff4307906",
+      "1fdec31c-9de2-8150-ab2c-c5a574ac2db2",
+      "1fdec31c-9de2-8182-b227-c9f7835be485",
+      "203ec31c-9de2-8087-ad87-de5ac56d7268"
+    ],
+    "1fdec31c-9de2-810a-8195-dce2c5bb51b5": [
+      "203ec31c-9de2-80c5-9fca-ca0bca37ca7b",
+      "203ec31c-9de2-80e8-99c6-f383f4288e74",
+      "1fdec31c-9de2-8135-adc2-d1dfc1f118ef"
+    ],
+    "203ec31c-9de2-80ad-984f-e1f716f1b7ea": [
+      "203ec31c-9de2-800a-80bb-d7082fabd310",
+      "203ec31c-9de2-8077-aa4f-fff98a6bfd6f",
+      "203ec31c-9de2-80dc-92ae-e65099b65ead",
+      "203ec31c-9de2-801f-8276-ef9f3217673a",
+      "203ec31c-9de2-80f8-b597-e70e21fe3d87"
+    ],
+    "200ec31c-9de2-80e2-817f-dfbc151b7946": [
+      "200ec31c-9de2-800b-afd2-f0b87eb9f415"
+    ],
+    "1fdec31c-9de2-8185-9ae8-e4ca325d9163": [
+      "201ec31c-9de2-8089-8c22-f60e0f7d9d1f",
+      "1ffec31c-9de2-8058-9f6c-ce69afbb8bda",
+      "1fdec31c-9de2-81eb-8c41-ce5d9621aa0f"
+    ],
+    "1fdec31c-9de2-81dd-80d4-d07072888283": [
+      "1ffec31c-9de2-8041-85dc-cf180d7a72a9",
+      "1ffec31c-9de2-800a-a783-f86337e47dd5",
+      "1fdec31c-9de2-8147-9e40-cff6e7e56faf",
+      "1fdec31c-9de2-815c-9280-c95480b4efc3",
+      "1fdec31c-9de2-816b-bbea-f0f4eb1bd99a",
+      "1fdec31c-9de2-81c1-bf41-ee67e1272d91",
+      "1fdec31c-9de2-81d0-b051-ddb44eefb006",
+      "1fdec31c-9de2-81f3-86d8-e32735d18dba"
+    ],
+    "1fdec31c-9de2-8161-96e4-cbf394be6204": [
+      "1fdec31c-9de2-81a0-9e85-c9a9fcc9706f"
+    ],
+    "200ec31c-9de2-8096-9f58-e870135ca7e1": [
+      "200ec31c-9de2-802d-b269-cec42c238919",
+      "200ec31c-9de2-8044-a4c1-d0f996f4ba14",
+      "200ec31c-9de2-80cb-9542-cce061e2cf46"
+    ],
+    "1fdec31c-9de2-81b1-bc92-c6c63853b2cb": [
+      "200ec31c-9de2-809c-84e0-df88555aefc4"
+    ],
+    "1feec31c-9de2-81aa-ae5f-c6a03e8fdf27": [
+      "1ffec31c-9de2-8068-9f98-fa14d3708852",
+      "1feec31c-9de2-81f4-bbe0-eea11b590a03"
+    ],
+    "1feec31c-9de2-8156-82ed-d5a045492ac9": [
+      "1ffec31c-9de2-8055-8363-f6c1aa98999d",
+      "1feec31c-9de2-811a-b3b2-dc1bb6191ace",
+      "1feec31c-9de2-8085-9bed-c1ec2a51508d"
+    ],
+    "1ffec31c-9de2-80a3-bc2a-cb035303664f": [
+      "1ffec31c-9de2-80cc-a15a-f25b0ad59578",
+      "1ffec31c-9de2-80a0-946e-e6750da6f331",
+      "1ffec31c-9de2-80cb-9f5c-caeff8ac2b58"
+    ],
+    "1feec31c-9de2-81bf-b92d-d18d2f5c3e8e": [
+      "1feec31c-9de2-80a0-b77d-e7013caccf0b",
+      "1feec31c-9de2-8103-88a4-eacc1c1b10a1",
+      "1feec31c-9de2-814b-bb7c-d52655bde172"
+    ],
+    "1feec31c-9de2-81d2-a677-d57f3eb653dd": [
+      "1feec31c-9de2-8133-9a77-f5356ac78eff",
+      "1feec31c-9de2-8149-b4b1-c721dfdffbc2",
+      "1feec31c-9de2-8151-b679-ca493171d4af",
+      "1feec31c-9de2-81a1-b790-c35ee7af8766",
+      "1feec31c-9de2-81a7-8a28-f536fbcb1d55",
+      "1feec31c-9de2-81b2-9371-c26ba46707f9",
+      "1feec31c-9de2-81e0-ad80-da456dee4f5a",
+      "1feec31c-9de2-8188-bf29-ce4e6ae668ac"
+    ],
+    "1feec31c-9de2-8118-829f-f501a62a39e6": [
+      "1feec31c-9de2-8142-a7a6-cdbb0196d06e",
+      "1feec31c-9de2-8154-b7aa-ec5ddc176684",
+      "1feec31c-9de2-817a-aa6c-e1d230fdfd98",
+      "1feec31c-9de2-8187-8398-e268dc9b7b26",
+      "1feec31c-9de2-81ad-9155-f6c2e912e22f"
+    ],
+    "1feec31c-9de2-81cb-9b31-e32055d36f69": [
+      "1feec31c-9de2-81fc-b50f-d092213e7a25",
+      "1feec31c-9de2-81e3-a0de-e2e8e9992569"
+    ],
+    "1fdec31c-9de2-81dd-813b-fdaaf622277d": [
+      "1fdec31c-9de2-8118-b03a-dfab95f547d4",
+      "1fdec31c-9de2-814c-b6bd-c5ef7896101a",
+      "1fdec31c-9de2-81b8-b6db-d8c93dcb4998"
+    ],
+    "1fdec31c-9de2-81fc-8b7c-d85917d89653": [
+      "1fdec31c-9de2-813e-bf3f-e5329405a0e6",
+      "1fdec31c-9de2-8183-b6e3-d13b2d4ec069"
+    ],
+    "1fdec31c-9de2-81d8-ac04-d187ce5a899e": [
+      "1fdec31c-9de2-8164-a768-c2ac08fc2389"
+    ],
+    "1fdec31c-9de2-8180-b540-c25a5f5f5b26": [
+      "1fdec31c-9de2-81d5-af6c-f8262dc8610d"
+    ]
+  },
+  "lifeos_structure_analysis": {
+    "identified_areas": {
+      "Knowledge Management": {
+        "count": 5,
+        "objects": [
+          "20bec31c-9de2-814e-80db-d13d0c27d869",
+          "1fdec31c-9de2-814b-8231-e715f51bb81d",
+          "1fdec31c-9de2-819d-89d2-d96b25fad90d",
+          "1fdec31c-9de2-81e0-b667-da6b60ca6906",
+          "1fdec31c-9de2-81eb-8c41-ce5d9621aa0f"
+        ]
+      },
+      "Other Databases": {
+        "count": 30,
+        "objects": [
+          "205ec31c-9de2-809b-8676-e5686fc02c52",
+          "205ec31c-9de2-8078-996f-f2c2a501b716",
+          "203ec31c-9de2-800b-b980-f69359be6edf",
+          "203ec31c-9de2-80ad-984f-e1f716f1b7ea",
+          "203ec31c-9de2-8117-a2d0-fe342ad051ff",
+          "203ec31c-9de2-81bf-82c4-c28a33635f9f",
+          "203ec31c-9de2-81f1-98e0-fd6ecaac16e3",
+          "203ec31c-9de2-81d4-90c6-ca4eea0106fc",
+          "1fdec31c-9de2-8152-a34d-f7faa3f9aecc",
+          "1fdec31c-9de2-81a4-9413-c6ae516847c3",
+          "1fdec31c-9de2-8191-a702-fbd24c8bc8f3",
+          "200ec31c-9de2-80e2-817f-dfbc151b7946",
+          "200ec31c-9de2-803b-a9ab-d4bc2c3fe5cf",
+          "1fdec31c-9de2-8185-9ae8-e4ca325d9163",
+          "200ec31c-9de2-8096-9f58-e870135ca7e1",
+          "1ffec31c-9de2-80a3-bc2a-cb035303664f",
+          "1feec31c-9de2-8156-82ed-d5a045492ac9",
+          "1fdec31c-9de2-81dd-80d4-d07072888283",
+          "1feec31c-9de2-81d2-a677-d57f3eb653dd",
+          "1feec31c-9de2-8118-829f-f501a62a39e6",
+          "1feec31c-9de2-81cb-9b31-e32055d36f69",
+          "1feec31c-9de2-81bf-b92d-d18d2f5c3e8e",
+          "1fdec31c-9de2-810a-8195-dce2c5bb51b5",
+          "1fdec31c-9de2-815b-ab44-f416ead6bd65",
+          "1fdec31c-9de2-8184-a168-fa38482ce0fd",
+          "1fdec31c-9de2-8187-8dbd-fffd30c4228f",
+          "1fdec31c-9de2-81e8-b50b-dcef00d01069",
+          "1fdec31c-9de2-81fc-8b7c-d85917d89653",
+          "1fdec31c-9de2-8180-b540-c25a5f5f5b26",
+          "1fdec31c-9de2-81d8-ac04-d187ce5a899e"
+        ]
+      },
+      "Content Management": {
+        "count": 5,
+        "objects": [
+          "203ec31c-9de2-8079-ae4e-ed754d474888",
+          "205ec31c-9de2-80a2-a34a-f8f263bedb73",
+          "205ec31c-9de2-8057-bc2e-faeabf67fb36",
+          "205ec31c-9de2-8039-9b34-e6a2fa43ee3a",
+          "203ec31c-9de2-8030-90a7-ea9528e58428"
+        ]
+      },
+      "Calendar & Events": {
+        "count": 6,
+        "objects": [
+          "203ec31c-9de2-8176-a4b2-f02415f950da",
+          "1feec31c-9de2-81aa-ae5f-c6a03e8fdf27",
+          "1fdec31c-9de2-81dd-813b-fdaaf622277d",
+          "1fdec31c-9de2-8079-9846-e8e2b7523194",
+          "1fdec31c-9de2-81b8-b6db-d8c93dcb4998",
+          "1fdec31c-9de2-814c-8b2d-d9617f27d1f6"
+        ]
+      },
+      "Habits & Routines": {
+        "count": 3,
+        "objects": [
+          "1fdec31c-9de2-8126-bc1c-f8233192d910",
+          "1fdec31c-9de2-8161-96e4-cbf394be6204",
+          "1fdec31c-9de2-8156-ad02-ebaeec42bb21"
+        ]
+      },
+      "Goals & Planning": {
+        "count": 1,
+        "objects": [
+          "1fdec31c-9de2-8102-9edf-f24c409b8059"
+        ]
+      },
+      "Financial Management": {
+        "count": 3,
+        "objects": [
+          "1fdec31c-9de2-8105-bd50-cb703be7ef65",
+          "1fdec31c-9de2-81ae-bff1-ff4a2f3abecf",
+          "1fdec31c-9de2-811f-9ec9-ca97fc1f37ab"
+        ]
+      },
+      "Other Pages": {
+        "count": 126,
+        "objects": [
+          "1fdec31c-9de2-8008-9fca-ca5c3dbb5fc0",
+          "205ec31c-9de2-806e-8e47-c32ae06b78df",
+          "20bec31c-9de2-80ef-852f-e6f618dc621d",
+          "20bec31c-9de2-8080-a79a-e461e111f0ad",
+          "20cec31c-9de2-8162-b4e4-e2cc594ac634",
+          "20bec31c-9de2-80cc-8d6f-e39503697872",
+          "20bec31c-9de2-81e5-be1d-f555c06b3acb",
+          "20bec31c-9de2-81bc-8d71-e5c3ad4113a7",
+          "20bec31c-9de2-814e-b202-edda96cd924d",
+          "20aec31c-9de2-81ef-a0a2-edbd11ea44a6",
+          "209ec31c-9de2-8134-b384-d522ee2e559f",
+          "208ec31c-9de2-810e-8708-d38294b3b4e9",
+          "207ec31c-9de2-819a-97a0-ebf5cdca05a6",
+          "206ec31c-9de2-8165-8066-e4598d5006df",
+          "205ec31c-9de2-806a-9d62-fc6a37e6e5f6",
+          "205ec31c-9de2-802c-9104-d98fb18cc741",
+          "205ec31c-9de2-80b4-ae75-de7453fba12b",
+          "205ec31c-9de2-8014-8217-e4732e3f45b3",
+          "203ec31c-9de2-8018-8f5f-e07cb528bfff",
+          "205ec31c-9de2-8009-ba78-c0230c14309d",
+          "203ec31c-9de2-80a5-9c0d-f6a245ac345e",
+          "205ec31c-9de2-80b1-abab-d6dcecb801dd",
+          "205ec31c-9de2-800e-a69d-cb515dcb7556",
+          "205ec31c-9de2-805f-8645-c50b2a9f0fbe",
+          "1fdec31c-9de2-8165-bdf0-dc8c3bd0e963",
+          "1fdec31c-9de2-81b0-8624-eb08b5f62007",
+          "200ec31c-9de2-8002-b340-c9e6902bacec",
+          "205ec31c-9de2-8035-961b-ec401151f5ed",
+          "205ec31c-9de2-8040-b106-c78dafb8398c",
+          "205ec31c-9de2-803a-8fb2-c218b72b4c9c",
+          "203ec31c-9de2-801b-bfc8-c87ae2f95af2",
+          "205ec31c-9de2-80bc-b0ee-fd7bf314ca00",
+          "205ec31c-9de2-8186-88b8-e22770ed5666",
+          "205ec31c-9de2-8093-a6f4-d8db4064c899",
+          "204ec31c-9de2-80c6-8b3c-f1cf79078bda",
+          "204ec31c-9de2-8013-bfa9-c0f3098b0a9c",
+          "204ec31c-9de2-8172-96b2-c28a8eb766c2",
+          "203ec31c-9de2-813d-bb01-c5dff656b7dd",
+          "203ec31c-9de2-8023-a399-f634214378e8",
+          "203ec31c-9de2-813f-ac80-dd3c697fa05d",
+          "203ec31c-9de2-8189-8133-d2abf494935a",
+          "203ec31c-9de2-8101-96e8-f154b80564a7",
+          "203ec31c-9de2-8149-b3c2-ddf6a94cd3b9",
+          "203ec31c-9de2-8174-af1d-e15d66e52d48",
+          "203ec31c-9de2-81e6-a694-caad39f2580e",
+          "203ec31c-9de2-81ed-850c-e3d8731d071b",
+          "203ec31c-9de2-813e-be90-efbf772cadc3",
+          "203ec31c-9de2-815f-b15f-c7fe104acd4d",
+          "203ec31c-9de2-819b-babe-d4b2bab6219e",
+          "203ec31c-9de2-81b9-a618-d4e065cca044",
+          "203ec31c-9de2-8084-8c2d-f9680c16c075",
+          "1fdec31c-9de2-8104-8465-e83ff4307906",
+          "1fdec31c-9de2-8150-ab2c-c5a574ac2db2",
+          "1fdec31c-9de2-8182-b227-c9f7835be485",
+          "203ec31c-9de2-8087-ad87-de5ac56d7268",
+          "203ec31c-9de2-80c5-9fca-ca0bca37ca7b",
+          "203ec31c-9de2-80e8-99c6-f383f4288e74",
+          "1feec31c-9de2-809e-ac23-f4b10a679905",
+          "203ec31c-9de2-800a-80bb-d7082fabd310",
+          "203ec31c-9de2-801f-8276-ef9f3217673a",
+          "203ec31c-9de2-80f8-b597-e70e21fe3d87",
+          "1fdec31c-9de2-8126-aa4f-f87c2fd029ad",
+          "202ec31c-9de2-805e-92ef-e2dc36c9aed3",
+          "202ec31c-9de2-80a9-a3b4-e9618e04abd2",
+          "201ec31c-9de2-80c3-8121-d121efba28bc",
+          "201ec31c-9de2-802c-9105-f87f04a1f1dc",
+          "201ec31c-9de2-80ca-ac2f-c2a54b422515",
+          "201ec31c-9de2-801e-8b1b-c13d08d403eb",
+          "201ec31c-9de2-80c0-a3d8-e7a1ae59a408",
+          "201ec31c-9de2-805e-8739-c8050b9fc2e1",
+          "200ec31c-9de2-800b-afd2-f0b87eb9f415",
+          "201ec31c-9de2-8089-8c22-f60e0f7d9d1f",
+          "1ffec31c-9de2-8041-85dc-cf180d7a72a9",
+          "1ffec31c-9de2-800a-a783-f86337e47dd5",
+          "1fdec31c-9de2-81a0-9e85-c9a9fcc9706f",
+          "200ec31c-9de2-802d-b269-cec42c238919",
+          "200ec31c-9de2-809c-84e0-df88555aefc4",
+          "200ec31c-9de2-8044-a4c1-d0f996f4ba14",
+          "200ec31c-9de2-80cb-9542-cce061e2cf46",
+          "1fdec31c-9de2-81b1-bc92-c6c63853b2cb",
+          "1ffec31c-9de2-8058-9f6c-ce69afbb8bda",
+          "1ffec31c-9de2-80b1-8c25-f8ba12e701da",
+          "1ffec31c-9de2-8068-9f98-fa14d3708852",
+          "1ffec31c-9de2-8055-8363-f6c1aa98999d",
+          "1ffec31c-9de2-80cc-a15a-f25b0ad59578",
+          "1ffec31c-9de2-80a0-946e-e6750da6f331",
+          "1ffec31c-9de2-80cb-9f5c-caeff8ac2b58",
+          "1feec31c-9de2-80a0-b77d-e7013caccf0b",
+          "1feec31c-9de2-811a-b3b2-dc1bb6191ace",
+          "1feec31c-9de2-8085-9bed-c1ec2a51508d",
+          "1feec31c-9de2-8133-9a77-f5356ac78eff",
+          "1feec31c-9de2-8149-b4b1-c721dfdffbc2",
+          "1feec31c-9de2-8151-b679-ca493171d4af",
+          "1feec31c-9de2-81a1-b790-c35ee7af8766",
+          "1feec31c-9de2-81a7-8a28-f536fbcb1d55",
+          "1feec31c-9de2-81b2-9371-c26ba46707f9",
+          "1feec31c-9de2-81e0-ad80-da456dee4f5a",
+          "1feec31c-9de2-8142-a7a6-cdbb0196d06e",
+          "1feec31c-9de2-8154-b7aa-ec5ddc176684",
+          "1feec31c-9de2-817a-aa6c-e1d230fdfd98",
+          "1feec31c-9de2-8187-8398-e268dc9b7b26",
+          "1feec31c-9de2-8188-bf29-ce4e6ae668ac",
+          "1feec31c-9de2-81ad-9155-f6c2e912e22f",
+          "1feec31c-9de2-81f4-bbe0-eea11b590a03",
+          "1feec31c-9de2-81fc-b50f-d092213e7a25",
+          "1feec31c-9de2-81e3-a0de-e2e8e9992569",
+          "1feec31c-9de2-8103-88a4-eacc1c1b10a1",
+          "1feec31c-9de2-814b-bb7c-d52655bde172",
+          "1fdec31c-9de2-8118-b03a-dfab95f547d4",
+          "1fdec31c-9de2-813e-bf3f-e5329405a0e6",
+          "1fdec31c-9de2-8147-9e40-cff6e7e56faf",
+          "1fdec31c-9de2-814c-b6bd-c5ef7896101a",
+          "1fdec31c-9de2-815c-9280-c95480b4efc3",
+          "1fdec31c-9de2-816b-bbea-f0f4eb1bd99a",
+          "1fdec31c-9de2-8183-b6e3-d13b2d4ec069",
+          "1fdec31c-9de2-81c1-bf41-ee67e1272d91",
+          "1fdec31c-9de2-81d0-b051-ddb44eefb006",
+          "1fdec31c-9de2-81f3-86d8-e32735d18dba",
+          "1fdec31c-9de2-8113-9ca7-d259776da6cb",
+          "1fdec31c-9de2-8135-adc2-d1dfc1f118ef",
+          "1fdec31c-9de2-8138-9b1d-d229ae02339b",
+          "1fdec31c-9de2-814d-b502-f9300343a9ff",
+          "1fdec31c-9de2-8162-9ee7-ddc247387415",
+          "1fdec31c-9de2-81b8-bad1-ceb687eb6c31",
+          "1fdec31c-9de2-81cf-857d-f1c661dcecb5",
+          "1fdec31c-9de2-81d0-b97a-cc7c2420be1d"
+        ]
+      },
+      "Tools & Resources": {
+        "count": 1,
+        "objects": [
+          "20bec31c-9de2-8040-82a0-d8168c8f36cc"
+        ]
+      },
+      "Automation & Workflows": {
+        "count": 4,
+        "objects": [
+          "20bec31c-9de2-80a9-88eb-e7d8288f3b3c",
+          "20cec31c-9de2-801f-86b4-f8342d7f4da0",
+          "20bec31c-9de2-8106-804c-dbd93df7cb55",
+          "20bec31c-9de2-8174-a86f-cb5764493e93"
+        ]
+      },
+      "Tasks & Projects": {
+        "count": 3,
+        "objects": [
+          "207ec31c-9de2-80e7-b5af-f53d19992bdb",
+          "203ec31c-9de2-8077-aa4f-fff98a6bfd6f",
+          "203ec31c-9de2-80dc-92ae-e65099b65ead"
+        ]
+      },
+      "Dashboards & Reports": {
+        "count": 2,
+        "objects": [
+          "1fdec31c-9de2-8164-a768-c2ac08fc2389",
+          "1fdec31c-9de2-81d5-af6c-f8262dc8610d"
+        ]
+      }
+    },
+    "potential_integrations": [
+      "Task Management",
+      "Knowledge Base",
+      "Content Creation",
+      "Goal Tracking",
+      "Habit Tracking",
+      "Financial Tracking",
+      "Calendar Integration",
+      "Dashboard System",
+      "Automation Framework"
+    ],
+    "recommended_setup": {
+      "primary_databases": [
+        {
+          "type": "knowledge",
+          "id": "20bec31c-9de2-814e-80db-d13d0c27d869",
+          "title": "Knowledge Hub - AI Enhanced"
+        },
+        {
+          "type": "content",
+          "id": "203ec31c-9de2-8079-ae4e-ed754d474888",
+          "title": "Youtube Channels"
+        },
+        {
+          "type": "knowledge",
+          "id": "1fdec31c-9de2-814b-8231-e715f51bb81d",
+          "title": "notes"
+        }
+      ],
+      "key_automation_areas": [
+        {
+          "id": "20bec31c-9de2-80a9-88eb-e7d8288f3b3c",
+          "title": "MCP + Notion: The Ultimate PM Workflow Tutorial (Kanban & Gantt)",
+          "type": "workflow"
+        },
+        {
+          "id": "20bec31c-9de2-8106-804c-dbd93df7cb55",
+          "title": "Claude AI Tutorial - Advanced Productivity Automation",
+          "type": "workflow"
+        }
+      ],
+      "content_workflows": [
+        {
+          "id": "203ec31c-9de2-8079-ae4e-ed754d474888",
+          "title": "Youtube Channels",
+          "type": "database"
+        },
+        {
+          "id": "205ec31c-9de2-80a2-a34a-f8f263bedb73",
+          "title": " Video",
+          "type": "database"
+        },
+        {
+          "id": "205ec31c-9de2-8057-bc2e-faeabf67fb36",
+          "title": "{page_id} Video",
+          "type": "database"
+        },
+        {
+          "id": "205ec31c-9de2-8039-9b34-e6a2fa43ee3a",
+          "title": "Video\u2019s",
+          "type": "database"
+        },
+        {
+          "id": "203ec31c-9de2-8030-90a7-ea9528e58428",
+          "title": "Youtube ",
+          "type": "page"
+        },
+        {
+          "id": "203ec31c-9de2-800a-80bb-d7082fabd310",
+          "title": "Social Media",
+          "type": "page"
+        }
+      ]
+    },
+    "missing_components": [
+      "Health Tracking",
+      "Network Management"
+    ]
+  }
+}

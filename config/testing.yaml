@@ -1,0 +1,203 @@
+# Testing Environment Configuration
+# Optimized for testing and CI/CD
+
+app:
+  environment: "testing"
+  debug: false
+  maintenance_mode: false
+
+# Testing API Configuration
+api:
+  openai:
+    model: "gpt-3.5-turbo"
+    max_tokens: 1024
+    timeout: 15
+    max_retries: 1
+  
+  anthropic:
+    model: "claude-3-haiku-20240307"
+    max_tokens: 1024
+    timeout: 15
+    max_retries: 1
+  
+  google:
+    model: "gemini-1.5-flash"
+    max_tokens: 1024
+    timeout: 15
+    max_retries: 1
+
+# Minimal resource usage for testing
+resources:
+  memory:
+    max_memory_mb: 512
+    warning_threshold_mb: 384
+    cleanup_threshold_mb: 448
+
+  cpu:
+    max_cpu_percent: 30
+    max_concurrent_tasks: 1
+
+  rate_limits:
+    requests_per_minute: 10
+    requests_per_hour: 100
+    requests_per_day: 500
+
+  storage:
+    max_disk_usage_gb: 1
+    log_retention_days: 1
+
+# Fast retry policies for testing
+retry:
+  global:
+    max_attempts: 1
+    base_delay: 0.1
+    max_delay: 1.0
+
+  services:
+    llm_apis:
+      max_attempts: 1
+      base_delay: 0.1
+      max_delay: 1.0
+
+# Testing-specific features
+features:
+  # Essential validation only
+  validation:
+    enabled: true
+    syntax_validation: true
+    logic_validation: false
+    security_validation: false
+    performance_validation: false
+
+  # Disable external integrations
+  integrations:
+    notion_sync: false
+    github_integration: false
+    monitoring: false
+    analytics: false
+
+  # Disable experimental features
+  experimental:
+    advanced_reasoning: false
+    multi_agent_collaboration: false
+    predictive_caching: false
+    auto_optimization: false
+
+# Minimal logging for testing
+logging:
+  level: "WARNING"
+  format: "simple"
+  
+  outputs:
+    console:
+      enabled: true
+      level: "ERROR"
+      format: "simple"
+      colorize: false
+    
+    file:
+      enabled: true
+      level: "WARNING"
+      format: "simple"
+      file_path: "logs/test.log"
+      max_size_mb: 10
+      backup_count: 1
+
+  components:
+    orchestrator:
+      level: "ERROR"
+      include_proposals: false
+      include_voting: false
+    
+    agents:
+      level: "ERROR"
+      include_prompts: false
+      include_responses: false
+    
+    self_healing:
+      level: "WARNING"
+      include_recovery_steps: false
+      include_fixes: false
+    
+    validation:
+      level: "ERROR"
+      include_test_results: false
+
+# Minimal security for testing
+security:
+  authentication:
+    required: false
+  
+  api_security:
+    rate_limiting: false
+    cors_enabled: true
+    allowed_origins: ["*"]
+  
+  data_protection:
+    encrypt_sensitive_data: false
+    mask_api_keys_in_logs: true
+  
+  validation:
+    validate_inputs: false
+    sanitize_outputs: false
+    check_malicious_patterns: false
+
+# Performance optimized for speed
+performance:
+  caching:
+    enabled: false
+    ttl_seconds: 300
+    max_cache_size_mb: 32
+
+  concurrency:
+    max_concurrent_requests: 2
+    worker_threads: 1
+
+  optimization:
+    enable_profiling: false
+    memory_profiling: false
+    auto_gc: false
+
+# No monitoring in testing
+monitoring:
+  metrics:
+    enabled: false
+  
+  health_checks:
+    enabled: false
+  
+  alerting:
+    enabled: false
+
+# Testing-specific settings
+development:
+  debug:
+    verbose_logging: false
+    include_stack_traces: false
+    profile_execution: false
+    save_intermediate_results: false
+
+  testing:
+    mock_external_apis: true
+    use_test_data: true
+    fast_mode: true
+    skip_validations: true
+
+  hot_reload:
+    enabled: false
+    watch_config: false
+    watch_code: false
+
+# Test-specific database settings
+database:
+  sqlite:
+    shared_memory_db: ":memory:"
+    orchestrator_db: ":memory:"
+    agents_db: ":memory:"
+    learning_db: ":memory:"
+    recovery_db: ":memory:"
+    notion_sync_db: ":memory:"
+    github_db: ":memory:"
+    
+    timeout: 5
+    synchronous: "OFF"

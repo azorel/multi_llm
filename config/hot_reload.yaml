@@ -1,0 +1,126 @@
+# Hot Reload Configuration
+# ========================
+
+# Global hot reload settings
+hot_reload:
+  enabled: true
+  auto_reload: true
+  reload_delay: 1.0  # seconds to wait before reloading
+  max_reload_attempts: 3
+  debounce_delay: 0.5  # seconds to wait for additional changes
+
+# File watching settings
+file_watcher:
+  watch_paths:
+    - src/
+  ignore_patterns:
+    - "*.pyc"
+    - "__pycache__"
+    - "*.log"
+    - ".git"
+    - ".idea"
+    - ".vscode"
+    - "*.tmp"
+    - "*.swp"
+    - ".env*"
+    - "venv"
+    - ".pytest_cache"
+    - "*.db"
+    - "*.sqlite"
+    - "test_*.py"
+    - "*_test.py"
+
+# Module-specific reload configuration
+modules:
+  # LifeOS Automation Engine
+  "src.automation.lifeos_automation_engine":
+    auto_reload: true
+    preserve_state: true
+    reload_delay: 2.0
+    priority: high
+
+  # YouTube Channel Processor
+  "src.processors.youtube_channel_processor":
+    auto_reload: true
+    preserve_state: true
+    reload_delay: 1.5
+    priority: high
+
+  # Content Processor Factory
+  "src.processors.content_processor_factory":
+    auto_reload: true
+    preserve_state: false
+    reload_delay: 1.0
+    priority: medium
+
+  # Notion MCP Client
+  "src.integrations.notion_mcp_client":
+    auto_reload: true
+    preserve_state: true
+    reload_delay: 1.5
+    priority: high
+
+  # Self-healing Components
+  "src.self_healing.recovery_manager":
+    auto_reload: true
+    preserve_state: true
+    reload_delay: 2.0
+    priority: medium
+
+  "src.self_healing.error_detector":
+    auto_reload: true
+    preserve_state: false
+    reload_delay: 1.0
+    priority: low
+
+  "src.self_healing.healing_loop":
+    auto_reload: true
+    preserve_state: true
+    reload_delay: 1.5
+    priority: medium
+
+  # Intelligence Components
+  "src.intelligence.autonomous_decision_engine":
+    auto_reload: true
+    preserve_state: true
+    reload_delay: 2.0
+    priority: high
+
+  # Integration Components
+  "src.integrations.sequential_thinking_client":
+    auto_reload: true
+    preserve_state: true
+    reload_delay: 1.0
+    priority: medium
+
+  # Tool Components
+  "src.tools.youtube_processor":
+    auto_reload: true
+    preserve_state: false
+    reload_delay: 1.0
+    priority: low
+
+  "src.tools.validation":
+    auto_reload: true
+    preserve_state: false
+    reload_delay: 0.5
+    priority: low
+
+  # Monitoring
+  "src.monitoring.observability":
+    auto_reload: true
+    preserve_state: true
+    reload_delay: 1.0
+    priority: medium
+
+# Development mode settings
+development:
+  debug_mode: true
+  performance_monitoring: true
+  verbose_logging: false
+  
+# Performance monitoring thresholds
+performance:
+  slow_operation_threshold: 2.0  # seconds
+  memory_check_interval: 60  # seconds
+  log_slow_operations: true

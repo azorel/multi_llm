@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LifeOS - Local Notion{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notion-style.css') }}">
+</head>
+<body>
+
+<div class="unified-nav" style="position: fixed; top: 0; left: 0; right: 0; background: var(--notion-bg); border-bottom: 1px solid var(--notion-border); z-index: 1000; padding: 10px 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="margin: 0; color: var(--notion-text);">🏢 Business Empire Control</h2>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="navigateTo('unified-dashboard')" class="nav-btn">📊 Dashboard</button>
+            <button onclick="navigateTo('business-empire')" class="nav-btn">👑 Empire</button>
+            <button onclick="navigateTo('active-agents')" class="nav-btn">🤖 Teams</button>
+            <button onclick="navigateTo('youtube-channels')" class="nav-btn">📺 Channels</button>
+            <button onclick="navigateTo('knowledge-hub')" class="nav-btn">🧠 Knowledge</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function navigateTo(page) {
+    window.location.href = '/' + page;
+}
+</script>
+
+<style>
+.nav-btn {
+    background: var(--notion-blue);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.nav-btn:hover {
+    background: var(--notion-blue-dark);
+}
+body {
+    padding-top: 80px; /* Account for fixed nav */
+}
+</style>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">🤖 LifeOS Local</div>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li>
+                        <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+                            <span class="sidebar-icon">🎯</span>
+                            Unified Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('todays_cc') }}" class="{% if request.endpoint == 'todays_cc' %}active{% endif %}">
+                            <span class="sidebar-icon">📅</span>
+                            Today's CC
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('knowledge_hub') }}" class="{% if request.endpoint == 'knowledge_hub' %}active{% endif %}">
+                            <span class="sidebar-icon">🧠</span>
+                            Knowledge Hub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('agent_command_center') }}" class="{% if request.endpoint == 'agent_command_center' %}active{% endif %}">
+                            <span class="sidebar-icon">🤖</span>
+                            Agent Command Center
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('provider_status') }}" class="{% if request.endpoint == 'provider_status' %}active{% endif %}">
+                            <span class="sidebar-icon">🔗</span>
+                            Provider Status
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('prompt_library') }}" class="{% if request.endpoint == 'prompt_library' %}active{% endif %}">
+                            <span class="sidebar-icon">📝</span>
+                            Prompt Library
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('github_users') }}" class="{% if request.endpoint == 'github_users' %}active{% endif %}">
+                            <span class="sidebar-icon">🐙</span>
+                            GitHub Users
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('youtube_channels') }}" class="{% if request.endpoint == 'youtube_channels' %}active{% endif %}">
+                            <span class="sidebar-icon">📺</span>
+                            YouTube Channels
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('tasks') }}" class="{% if request.endpoint == 'tasks' %}active{% endif %}">
+                            <span class="sidebar-icon">📋</span>
+                            Tasks
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('habits') }}" class="{% if request.endpoint == 'habits' %}active{% endif %}">
+                            <span class="sidebar-icon">🎯</span>
+                            Habits
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('shopping_list') }}" class="{% if request.endpoint == 'shopping_list' %}active{% endif %}">
+                            <span class="sidebar-icon">🛒</span>
+                            Shopping List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('notes') }}" class="{% if request.endpoint == 'notes' %}active{% endif %}">
+                            <span class="sidebar-icon">📝</span>
+                            Notes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('books') }}" class="{% if request.endpoint == 'books' %}active{% endif %}">
+                            <span class="sidebar-icon">📚</span>
+                            Books
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('journals') }}" class="{% if request.endpoint == 'journals' %}active{% endif %}">
+                            <span class="sidebar-icon">📔</span>
+                            Journals
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('maintenance_schedule') }}" class="{% if request.endpoint == 'maintenance_schedule' %}active{% endif %}">
+                            <span class="sidebar-icon">🔧</span>
+                            Maintenance
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('model_testing') }}" class="{% if request.endpoint == 'model_testing' %}active{% endif %}">
+                            <span class="sidebar-icon">🧪</span>
+                            Model Testing
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('voice_commands') }}" class="{% if request.endpoint == 'voice_commands' %}active{% endif %}">
+                            <span class="sidebar-icon">🎤</span>
+                            Voice Commands
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('workflow_templates') }}" class="{% if request.endpoint == 'workflow_templates' %}active{% endif %}">
+                            <span class="sidebar-icon">🔄</span>
+                            Workflows
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('agent_results') }}" class="{% if request.endpoint == 'agent_results' %}active{% endif %}">
+                            <span class="sidebar-icon">📊</span>
+                            Agent Results
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('cost_tracking') }}" class="{% if request.endpoint == 'cost_tracking' %}active{% endif %}">
+                            <span class="sidebar-icon">💰</span>
+                            Cost Tracking
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('server_status') }}" class="{% if request.endpoint == 'server_status' %}active{% endif %}">
+                            <span class="sidebar-icon">🖥️</span>
+                            Server Status
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('active_agents') }}" class="{% if request.endpoint == 'active_agents' %}active{% endif %}">
+                            <span class="sidebar-icon">🤖</span>
+                            Active Agents
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Live Update Indicator -->
+    <div class="live-indicator" id="liveIndicator">
+        🟢 Live
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Set live indicator to always show as live
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('liveIndicator').textContent = '🟢 Live';
+        });
+        
+        // Checkbox handling
+        function handleCheckboxChange(checkbox) {
+            const table = checkbox.dataset.table;
+            const id = checkbox.dataset.id;
+            const field = checkbox.dataset.field;
+            const value = checkbox.checked;
+            
+            // Update UI immediately
+            updateCheckboxDisplay(checkbox);
+            
+            // Send to server
+            fetch('/update-checkbox', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    table: table,
+                    id: parseInt(id),
+                    field: field,
+                    value: value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    // Revert on failure
+                    checkbox.checked = !value;
+                    updateCheckboxDisplay(checkbox);
+                    alert('Failed to update checkbox');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Revert on error
+                checkbox.checked = !value;
+                updateCheckboxDisplay(checkbox);
+            });
+        }
+        
+        function updateCheckboxDisplay(checkbox) {
+            const row = checkbox.closest('tr');
+            if (checkbox.checked) {
+                checkbox.classList.add('checked');
+                if (row) row.classList.add('completed');
+            } else {
+                checkbox.classList.remove('checked');
+                if (row) row.classList.remove('completed');
+            }
+        }
+        
+        // Initialize all checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.notion-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', () => handleCheckboxChange(checkbox));
+                updateCheckboxDisplay(checkbox);
+            });
+        });
+        
+        {% block scripts %}{% endblock %}
+    </script>
+</body>
+</html>

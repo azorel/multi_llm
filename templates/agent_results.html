@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Agent Results - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📊 Agent Results</h1>
+    <p class="page-subtitle">
+        View execution results and performance metrics from autonomous agents.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">Agent Executions ({{ results|length if results else 0 }} results)</span>
+        <button class="add-button" onclick="addNewResult()">+ Add Result</button>
+    </div>
+    
+    {% if results and results|length > 0 %}
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Agent</th>
+                <th>Execution Date</th>
+                <th>Success</th>
+                <th>Execution Time</th>
+                <th>Cost</th>
+                <th>Result Preview</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td style="font-weight: 600;">Agent #{{ result.agent_id or 'Unknown' }}</td>
+                <td style="color: var(--notion-text-light); font-size: 14px;">{{ result.execution_date or today }}</td>
+                <td>
+                    {% if result.success %}
+                        <span class="status-pill status-active">✅ Success</span>
+                    {% else %}
+                        <span class="status-pill status-error">❌ Failed</span>
+                    {% endif %}
+                </td>
+                <td style="color: var(--notion-blue);">{{ result.execution_time_ms or 0 }}ms</td>
+                <td style="color: var(--notion-orange);">${{ "%.4f"|format(result.cost or 0) }}</td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">{{ (result.result_data or '')[:100] }}{% if result.result_data and result.result_data|length > 100 %}...{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: var(--notion-text-light);">
+        <p>No agent execution results yet. Agents will populate this automatically.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Agent Performance Stats -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📈 Performance Overview</div>
+        <div class="card-content">
+            {% if results and results|length > 0 %}
+                {% set successful = results | selectattr('success', 'equalto', True) | list %}
+                {% set total_cost = results | map(attribute='cost') | select | sum %}
+                {% set avg_time = (results | map(attribute='execution_time_ms') | select | sum) / results|length %}
+                Success Rate: {{ "%.1f"|format((successful|length / results|length) * 100) }}%<br>
+                Total Cost: ${{ "%.4f"|format(total_cost) }}<br>
+                Avg Time: {{ "%.0f"|format(avg_time) }}ms
+            {% else %}
+                No data available
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🎯 Recent Activity</div>
+        <div class="card-content">
+            {% if results and results|length > 0 %}
+                {% set recent = results[:5] %}
+                Total Executions: {{ results|length }}<br>
+                Recent: {{ recent|length }}<br>
+                {% set recent_successful = recent | selectattr('success', 'equalto', True) | list %}
+                Recent Success: {{ recent_successful|length }}/{{ recent|length }}
+            {% else %}
+                No recent activity
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">💰 Cost Analysis</div>
+        <div class="card-content">
+            {% if results and results|length > 0 %}
+                {% set this_month = now.strftime('%Y-%m') %}
+                {% set month_results = results | selectattr('execution_date', 'match', this_month + '.*') | list %}
+                {% set month_cost = month_results | map(attribute='cost') | sum %}
+                This Month: ${{ "%.4f"|format(month_cost) }}<br>
+                Executions: {{ month_results|length }}<br>
+                Avg Cost: ${{ "%.4f"|format(month_cost / month_results|length if month_results|length > 0 else 0) }}
+            {% else %}
+                No cost data
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function addNewResult() {
+    const agentId = prompt('Agent ID:', '1');
+    if (agentId) {
+        const success = confirm('Was the execution successful?');
+        const executionTime = prompt('Execution time (ms):', '1000');
+        const cost = prompt('Cost in USD:', '0.001');
+        const resultData = prompt('Result data (summary):');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'agent_results',
+                data: {
+                    agent_id: parseInt(agentId) || 1,
+                    execution_date: new Date().toISOString(),
+                    result_data: resultData || '',
+                    success: success,
+                    execution_time_ms: parseInt(executionTime) || 1000,
+                    cost: parseFloat(cost) || 0.001
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add agent result');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

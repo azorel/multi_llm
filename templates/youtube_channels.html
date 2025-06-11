@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Channels - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📺 YouTube Channels</h1>
+    <p class="page-subtitle">
+        Process YouTube channels and import video content. Check the box to automatically process and analyze videos.
+    </p>
+</div>
+
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">YouTube Channels ({{ channels|length }} channels)</span>
+        <button class="add-button" onclick="addNewChannel()">+ Add Channel</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">⚙️</th>
+                <th>Channel Name</th>
+                <th>Channel URL</th>
+                <th>Videos Imported</th>
+                <th>Last Processed</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for channel in channels %}
+            <tr class="{% if channel.process_channel %}auto-generated{% endif %}">
+                <td>
+                    <input type="checkbox" 
+                           class="notion-checkbox" 
+                           {% if channel.process_channel %}checked{% endif %}
+                           data-table="youtube_channels" 
+                           data-id="{{ channel.id }}" 
+                           data-field="process_channel">
+                </td>
+                <td style="font-weight: 600;">{{ channel.channel_name }}</td>
+                <td>
+                    <a href="{{ channel.channel_url }}" target="_blank" style="color: var(--notion-blue);">
+                        {{ channel.channel_url }}
+                    </a>
+                </td>
+                <td>{{ channel.videos_imported or 0 }}</td>
+                <td style="color: var(--notion-text-light); font-size: 12px;">
+                    {{ channel.last_processed.split(' ')[0] if channel.last_processed else 'Never' }}
+                </td>
+                <td>
+                    <span class="status-pill status-{{ channel.status.lower() if channel.status else 'active' }}">
+                        {{ channel.status or 'Active' }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function addNewChannel() {
+    const channelName = prompt('Channel name:');
+    if (channelName) {
+        const channelUrl = prompt('Channel URL:');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'youtube_channels',
+                data: {
+                    channel_name: channelName,
+                    channel_url: channelUrl || '',
+                    process_channel: false,
+                    videos_imported: 0,
+                    status: 'Active'
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add channel');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

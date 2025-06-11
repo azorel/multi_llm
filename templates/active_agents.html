@@ -1,0 +1,659 @@
+{% extends "base.html" %}
+
+{% block title %}Active Agents - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🤖 Active Agents Dashboard</h1>
+    <p class="page-subtitle">
+        Real-time monitoring of multi-agent orchestration system with specialized task agents.
+        <span style="float: right; color: var(--notion-text-light); font-size: 12px;">
+            Last updated: {{ now.strftime('%H:%M:%S') }}
+            <button onclick="location.reload()" style="margin-left: 8px; background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                🔄 Refresh
+            </button>
+        </span>
+    </p>
+</div>
+
+<!-- Orchestrator Status -->
+<div class="notion-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">🎯 Orchestrator Status</div>
+    <div class="card-content" style="color: white;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Name</div>
+                <div style="font-size: 18px; font-weight: 600;">Real Agent Orchestrator</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Role</div>
+                <div style="font-size: 18px; font-weight: 600;">Multi-Agent Coordinator</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Tasks Completed</div>
+                <div style="font-size: 18px; font-weight: 600;">{{ agents.task_queue|length }}</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Agents Managed</div>
+                <div style="font-size: 18px; font-weight: 600;">{{ agents.agents|length }}</div>
+            </div>
+            <div>
+                <div style="font-size: 14px; opacity: 0.9;">Status</div>
+                <div style="font-size: 18px; font-weight: 600;">
+                    ✅ Active
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Direct Communication Interface -->
+<div class="notion-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">
+    <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">💬 Talk to Claude Orchestrator</div>
+    <div class="card-content" style="color: white;">
+        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+            <input type="text" 
+                   id="orchestratorCommand" 
+                   placeholder="Try: 'status', 'prompt library', 'test llm: write a function', 'deploy parallel: create widgets'"
+                   style="flex: 1; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; background: rgba(255,255,255,0.1); color: white; font-size: 18px;"
+                   onkeypress="if(event.key==='Enter') sendCommand()">
+            <button onclick="sendCommand()" 
+                    style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                💬 Send
+            </button>
+        </div>
+        <div id="orchestratorResponse" 
+             style="min-height: 40px; padding: 12px; background: rgba(0,0,0,0.1); border-radius: 6px; font-family: monospace; font-size: 17px; white-space: pre-wrap; border: 1px solid rgba(255,255,255,0.2);">
+            Ready to receive commands... Click 🔧 Test API button first to verify connection.
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button onclick="quickCommand('status')" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-size: 15px; cursor: pointer;">
+                📊 Status
+            </button>
+            <button onclick="quickCommand('prompt library')" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-size: 15px; cursor: pointer;">
+                📚 Prompts
+            </button>
+            <button onclick="quickCommand('test llm: hello world')" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-size: 15px; cursor: pointer;">
+                🧪 Test LLM
+            </button>
+            <button onclick="testConnection()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-size: 15px; cursor: pointer;">
+                🔧 Test API
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- System Metrics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 32px;">
+    <div class="notion-card">
+        <div class="card-title">🤖 Total Agents</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-blue);">{{ agents.get("system_metrics", {}).get("total_agents", 0) }}</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Specialized agents</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">⚡ Active Now</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">{{ agents.get("system_metrics", {}).get("active_agents", 0) }}</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Currently working</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">📋 Queue</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-orange);">{{ agents.get("system_metrics", {}).get("queued_tasks", 0) }}</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Waiting to start</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">✅ Completed</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">{{ agents.get("system_metrics", {}).get("completed_today", 0) }}</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Tasks today</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🎯 Success Rate</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">{{ "%.1f"|format(agents.get("system_metrics", {}).get("success_rate", 0)) }}%</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Task completion</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">⏱️ Avg Response</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-blue);">{{ agents.get("system_metrics", {}).get("avg_response_time", 0) }}s</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Response time</div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Agents -->
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">🔥 Active & Standby Agents ({{ agents.get("active_agents", [])|length }})</span>
+        <button onclick="pauseAllAgents()" class="add-button" style="background: var(--notion-orange);">⏸️ Pause All</button>
+    </div>
+    
+    {% if agents.get("active_agents") %}
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Agent Name</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Current Task</th>
+                <th>Progress</th>
+                <th>Performance</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agent in agents.get("active_agents", []) %}
+            <tr class="{% if agent.status == 'active' %}agent-active{% elif agent.status == 'standby' %}agent-standby{% endif %}">
+                <td style="font-weight: 600;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if agent.status == 'active' %}var(--notion-green){% else %}var(--notion-orange){% endif %};"></div>
+                        {{ agent.name }}
+                    </div>
+                </td>
+                <td>
+                    <span class="status-pill status-{{ agent.type.lower() }}">{{ agent.type }}</span>
+                </td>
+                <td>
+                    {% if agent.status == 'active' %}
+                        <span class="status-pill status-active">🔄 Active</span>
+                    {% else %}
+                        <span class="status-pill status-standby">⏸️ Standby</span>
+                    {% endif %}
+                </td>
+                <td style="max-width: 200px;">
+                    {% if agent.current_task %}
+                        <div style="font-size: 12px; color: var(--notion-text);">{{ agent.current_task }}</div>
+                        {% if agent.get('start_time') %}
+                            <div style="font-size: 10px; color: var(--notion-text-light);">Started: {{ agent.start_time }}</div>
+                        {% endif %}
+                    {% else %}
+                        <span style="color: var(--notion-text-light); font-style: italic;">Waiting for tasks</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if agent.current_task and agent.get('progress') is not none %}
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="background: #f0f0f0; height: 6px; width: 60px; border-radius: 3px;">
+                                <div style="background: var(--notion-blue); height: 100%; width: {{ agent.progress }}%; border-radius: 3px;"></div>
+                            </div>
+                            <span style="font-size: 11px; font-weight: 600;">{{ agent.progress }}%</span>
+                        </div>
+                        {% if agent.get('estimated_completion') %}
+                            <div style="font-size: 10px; color: var(--notion-text-light); margin-top: 2px;">
+                                ETA: {{ agent.estimated_completion }}
+                            </div>
+                        {% endif %}
+                    {% elif agent.get('continuous') %}
+                        <span style="color: var(--notion-green); font-size: 11px;">🔄 Continuous</span>
+                    {% else %}
+                        <span style="color: var(--notion-text-light);">—</span>
+                    {% endif %}
+                </td>
+                <td style="font-size: 11px;">
+                    {% if agent.get('tokens_used') %}
+                        <div>Tokens: {{ agent.tokens_used }}</div>
+                        <div>Cost: ${{ "%.4f"|format(agent.cost) }}</div>
+                    {% elif agent.get('items_processed') %}
+                        <div>Processed: {{ agent.items_processed }}</div>
+                        <div>Queue: {{ agent.queue_size }}</div>
+                    {% elif agent.get('alerts') is not none %}
+                        <div>Alerts: {{ agent.alerts }}</div>
+                        <div>Last: {{ agent.last_check }}</div>
+                    {% else %}
+                        <div style="color: var(--notion-text-light);">Ready</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="display: flex; gap: 4px;">
+                        {% if agent.status == 'active' %}
+                            <button onclick="pauseAgent('{{ agent.id }}')" style="background: var(--notion-orange); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                                ⏸️
+                            </button>
+                        {% else %}
+                            <button onclick="startAgent('{{ agent.id }}')" style="background: var(--notion-green); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                                ▶️
+                            </button>
+                        {% endif %}
+                        <button onclick="viewAgent('{{ agent.id }}')" style="background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                            👁️
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: var(--notion-text-light);">
+        <p>No active agents. The orchestrator is ready to deploy specialized agents on demand.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Agent Queue -->
+{% if agents.get("agent_queue") %}
+<div class="database-container" style="margin-top: 32px;">
+    <div class="database-header">
+        <span class="database-title">📋 Agent Queue ({{ agents.get("agent_queue", [])|length }})</span>
+        <button onclick="processQueue()" class="add-button">▶️ Process Queue</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Agent Name</th>
+                <th>Task</th>
+                <th>Priority</th>
+                <th>Estimated Start</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agent in agents.get("agent_queue", []) %}
+            <tr>
+                <td style="text-align: center; font-weight: 600;">#{{ agent.queue_position }}</td>
+                <td style="font-weight: 600;">{{ agent.name }}</td>
+                <td style="font-size: 12px;">{{ agent.current_task }}</td>
+                <td>
+                    <span class="status-pill status-{{ agent.priority }}">{{ agent.priority|title }}</span>
+                </td>
+                <td style="font-size: 12px; color: var(--notion-text-light);">{{ agent.estimated_start }}</td>
+                <td>
+                    <button onclick="prioritizeAgent('{{ agent.id }}')" style="background: var(--notion-red); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                        ⬆️ Priority
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<!-- Recent Completed Tasks -->
+<div class="database-container" style="margin-top: 32px;">
+    <div class="database-header">
+        <span class="database-title">✅ Recently Completed Tasks</span>
+        <button onclick="viewAllTasks()" class="add-button">📊 View All</button>
+    </div>
+    
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Agent</th>
+                <th>Task Description</th>
+                <th>Completed</th>
+                <th>Duration</th>
+                <th>Result</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in agents.get("completed_tasks", []) %}
+            <tr>
+                <td style="font-weight: 600;">{{ task.agent }}</td>
+                <td style="font-size: 12px;">{{ task.task }}</td>
+                <td style="font-size: 12px; color: var(--notion-text-light);">{{ task.completed_at }}</td>
+                <td style="font-size: 12px; color: var(--notion-blue);">{{ task.duration }}</td>
+                <td>
+                    {% if task.success %}
+                        <span class="status-pill status-completed">✅ Success</span>
+                    {% else %}
+                        <span class="status-pill status-error">❌ Failed</span>
+                    {% endif %}
+                </td>
+                <td style="font-size: 11px; font-family: monospace;">
+                    {% if task.get('tokens') %}
+                        {{ task.tokens }} tokens<br>
+                    {% endif %}
+                    ${{ "%.4f"|format(task.cost) }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Agent Capabilities Matrix -->
+<div class="notion-card" style="margin-top: 32px;">
+    <div class="card-title">🧠 Agent Capabilities Matrix</div>
+    <div class="card-content">
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; font-size: 12px;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 8px;">Agent</th>
+                        <th style="padding: 4px;">Research</th>
+                        <th style="padding: 4px;">Code Gen</th>
+                        <th style="padding: 4px;">Monitoring</th>
+                        <th style="padding: 4px;">Data Mgmt</th>
+                        <th style="padding: 4px;">Content</th>
+                        <th style="padding: 4px;">Workflow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agent in (agents.get("active_agents", []) + agents.get("agent_queue", [])) %}
+                    <tr>
+                        <td style="font-weight: 600; padding: 8px;">{{ agent.name }}</td>
+                        <td style="text-align: center; padding: 4px;">
+                            {% if 'web_search' in agent.capabilities or 'document_analysis' in agent.capabilities %}✅{% else %}—{% endif %}
+                        </td>
+                        <td style="text-align: center; padding: 4px;">
+                            {% if 'code_generation' in agent.capabilities %}✅{% else %}—{% endif %}
+                        </td>
+                        <td style="text-align: center; padding: 4px;">
+                            {% if 'system_monitoring' in agent.capabilities %}✅{% else %}—{% endif %}
+                        </td>
+                        <td style="text-align: center; padding: 4px;">
+                            {% if 'data_management' in agent.capabilities %}✅{% else %}—{% endif %}
+                        </td>
+                        <td style="text-align: center; padding: 4px;">
+                            {% if 'content_analysis' in agent.capabilities %}✅{% else %}—{% endif %}
+                        </td>
+                        <td style="text-align: center; padding: 4px;">
+                            {% if 'task_scheduling' in agent.capabilities %}✅{% else %}—{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh disabled - user can manually refresh if needed
+// setTimeout(function() {
+//     location.reload();
+// }, 15000);
+
+// Communication Functions
+function sendCommand() {
+    const input = document.getElementById('orchestratorCommand');
+    const response = document.getElementById('orchestratorResponse');
+    const command = input.value.trim();
+    
+    if (!command) {
+        response.textContent = '❌ Please enter a command';
+        return;
+    }
+    
+    response.textContent = '🤔 Processing command...';
+    response.style.color = '#666';
+    
+    console.log('Sending command:', command);
+    
+    fetch('/orchestrator-command', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({command: command})
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            response.textContent = data.response;
+            response.style.color = '#2d6a2d';
+            input.value = '';
+            // No auto-reload - let user manually refresh if needed
+        } else {
+            response.textContent = `❌ Error: ${data.response}`;
+            response.style.color = '#d73a49';
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        response.textContent = `❌ Network error: ${error.message}`;
+        response.style.color = '#d73a49';
+    });
+}
+
+function quickCommand(command) {
+    document.getElementById('orchestratorCommand').value = command;
+    sendCommand();
+}
+
+function testConnection() {
+    const response = document.getElementById('orchestratorResponse');
+    response.textContent = '🔧 Testing API connection...';
+    response.style.color = '#666';
+    
+    fetch('/orchestrator-command', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({command: 'test'})
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        response.textContent = '✅ API Connection Working! Try typing in the chat box above.';
+        response.style.color = '#2d6a2d';
+        console.log('✅ API test successful:', data);
+    })
+    .catch(error => {
+        response.textContent = `❌ API Connection Failed: ${error.message}`;
+        response.style.color = '#d73a49';
+        console.error('❌ API test failed:', error);
+    });
+}
+
+function createTaskDialog() {
+    const name = prompt('Task name:');
+    if (!name) return;
+    
+    const description = prompt('Task description:');
+    if (!description) return;
+    
+    const agentType = prompt('Agent type (research/code/content/monitoring/database/workflow/any):', 'any');
+    const priority = prompt('Priority (low/medium/high/critical):', 'medium');
+    
+    fetch('/create-task', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name: name,
+            description: description,
+            agent_type: agentType || 'any',
+            priority: priority || 'medium'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const response = document.getElementById('orchestratorResponse');
+        if (data.success) {
+            response.textContent = `✅ ${data.message}\nTask ID: ${data.task_id}`;
+            response.style.color = '#2d6a2d';
+        } else {
+            response.textContent = `❌ ${data.message}`;
+            response.style.color = '#d73a49';
+        }
+    })
+    .catch(error => {
+        const response = document.getElementById('orchestratorResponse');
+        response.textContent = `❌ Network error: ${error}`;
+        response.style.color = '#d73a49';
+    });
+}
+
+function startOrchestrator() {
+    const response = document.getElementById('orchestratorResponse');
+    response.textContent = '🚀 Starting orchestrator...';
+    response.style.color = '#666';
+    
+    fetch('/start-orchestrator', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            response.textContent = `✅ ${data.message}`;
+            response.style.color = '#2d6a2d';
+        } else {
+            response.textContent = `❌ ${data.message}`;
+            response.style.color = '#d73a49';
+        }
+    })
+    .catch(error => {
+        response.textContent = `❌ Network error: ${error}`;
+        response.style.color = '#d73a49';
+    });
+}
+
+// Agent Control Functions
+function pauseAgent(agentId) {
+    if (confirm('Pause this agent? Current task will be saved and can be resumed.')) {
+        agentAction('pause', agentId);
+    }
+}
+
+function startAgent(agentId) {
+    if (confirm('Start this agent? It will begin processing queued tasks.')) {
+        agentAction('start', agentId);
+    }
+}
+
+function agentAction(action, agentId, taskId = null) {
+    const response = document.getElementById('orchestratorResponse');
+    response.textContent = '⚙️ Processing action...';
+    response.style.color = '#666';
+    
+    fetch('/agent-action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            action: action,
+            agent_id: agentId,
+            task_id: taskId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            response.textContent = `✅ ${data.message}`;
+            response.style.color = '#2d6a2d';
+            // No auto-reload - let user manually refresh if needed
+        } else {
+            response.textContent = `❌ ${data.message}`;
+            response.style.color = '#d73a49';
+        }
+    })
+    .catch(error => {
+        response.textContent = `❌ Network error: ${error}`;
+        response.style.color = '#d73a49';
+    });
+}
+
+function viewAgent(agentId) {
+    // Show agent details in the response area
+    document.getElementById('orchestratorResponse').textContent = `📊 Viewing details for agent: ${agentId}\nUse the command interface above to interact with specific agents.`;
+}
+
+function pauseAllAgents() {
+    if (confirm('Pause all active agents? This will pause the entire orchestration system.')) {
+        agentAction('pause_all');
+    }
+}
+
+function processQueue() {
+    if (confirm('Process the agent queue? This will start the next queued agent.')) {
+        // This would trigger queue processing
+        document.getElementById('orchestratorResponse').textContent = '🔄 Processing queue... Agents will start automatically.';
+        setTimeout(() => location.reload(), 2000);
+    }
+}
+
+function prioritizeAgent(agentId) {
+    if (confirm('Move this task to high priority? It will be processed next.')) {
+        agentAction('prioritize', null, agentId);
+    }
+}
+
+function viewAllTasks() {
+    window.location.href = '/agent-results';
+}
+</script>
+
+<style>
+.agent-active {
+    background: rgba(34, 197, 94, 0.05);
+    border-left: 3px solid #22c55e;
+}
+
+.agent-standby {
+    background: rgba(251, 146, 60, 0.05);
+    border-left: 3px solid #fb923c;
+}
+
+.status-sfa {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-pipeline {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-tool {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-orchestrator {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+.status-standby {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-low {
+    background: #f0f9ff;
+    color: #0369a1;
+}
+
+.status-completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+</style>
+{% endblock %}

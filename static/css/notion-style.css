@@ -1,0 +1,381 @@
+/* Notion-like CSS Framework */
+/* ========================= */
+
+:root {
+    --notion-bg: #ffffff;
+    --notion-sidebar-bg: #f7f6f3;
+    --notion-text: #37352f;
+    --notion-text-light: #787774;
+    --notion-border: #e9e9e7;
+    --notion-hover: #f1f1ef;
+    --notion-blue: #2383e2;
+    --notion-blue-light: #e7f3ff;
+    --notion-green: #0f7b0f;
+    --notion-orange: #d9730d;
+    --notion-red: #e03e3e;
+    --notion-purple: #9065b0;
+    --notion-shadow: rgba(15, 15, 15, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: var(--notion-bg);
+    color: var(--notion-text);
+    line-height: 1.5;
+    font-size: 24px;
+}
+
+/* Layout */
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background-color: var(--notion-sidebar-bg);
+    border-right: 1px solid var(--notion-border);
+    padding: 12px;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 8px 12px;
+    margin-bottom: 16px;
+}
+
+.sidebar-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--notion-text);
+}
+
+.sidebar-nav {
+    list-style: none;
+}
+
+.sidebar-nav li {
+    margin-bottom: 2px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--notion-text);
+    font-size: 26px;
+    transition: background-color 0.15s ease;
+}
+
+.sidebar-nav a:hover {
+    background-color: var(--notion-hover);
+}
+
+.sidebar-nav a.active {
+    background-color: var(--notion-blue-light);
+    color: var(--notion-blue);
+}
+
+.sidebar-icon {
+    margin-right: 8px;
+    font-size: 24px;
+}
+
+/* Typography */
+h1 { font-size: 52px; font-weight: 700; margin-bottom: 16px; }
+h2 { font-size: 44px; font-weight: 600; margin-bottom: 12px; }
+h3 { font-size: 36px; font-weight: 600; margin-bottom: 10px; }
+h4 { font-size: 30px; font-weight: 600; margin-bottom: 8px; }
+h5 { font-size: 26px; font-weight: 600; margin-bottom: 6px; }
+h6 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 48px 96px;
+    overflow-y: auto;
+    max-width: calc(100vw - 240px);
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 32px;
+}
+
+.page-title {
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: var(--notion-text);
+}
+
+.page-subtitle {
+    font-size: 26px;
+    color: var(--notion-text-light);
+    margin-bottom: 24px;
+}
+
+/* Database Table */
+.database-container {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--notion-border);
+    overflow: hidden;
+    box-shadow: 0 2px 4px var(--notion-shadow);
+}
+
+.database-header {
+    background-color: var(--notion-sidebar-bg);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--notion-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.database-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--notion-text);
+}
+
+.add-button {
+    background: var(--notion-blue);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.add-button:hover {
+    background: #1a6cc4;
+}
+
+.database-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.database-table th {
+    background-color: var(--notion-sidebar-bg);
+    padding: 8px 16px;
+    text-align: left;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--notion-text-light);
+    border-bottom: 1px solid var(--notion-border);
+    white-space: nowrap;
+}
+
+.database-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--notion-border);
+    font-size: 24px;
+    vertical-align: top;
+}
+
+.database-table tr:hover {
+    background-color: var(--notion-hover);
+}
+
+/* Checkbox */
+.notion-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--notion-border);
+    border-radius: 3px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
+}
+
+.notion-checkbox:hover {
+    border-color: var(--notion-blue);
+}
+
+.notion-checkbox.checked {
+    background: var(--notion-blue);
+    border-color: var(--notion-blue);
+}
+
+.notion-checkbox.checked::after {
+    content: '✓';
+    position: absolute;
+    top: -2px;
+    left: 1px;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Select Dropdown */
+.notion-select {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    color: var(--notion-text);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.notion-select:hover {
+    background-color: var(--notion-hover);
+}
+
+/* Status Pills */
+.status-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-ready { background: #d3f8d3; color: var(--notion-green); }
+.status-active { background: #e7f3ff; color: var(--notion-blue); }
+.status-pending { background: #fff2e6; color: var(--notion-orange); }
+.status-error { background: #ffe6e6; color: var(--notion-red); }
+.status-completed { background: #f0e6ff; color: var(--notion-purple); }
+
+/* Priority Pills */
+.priority-high { background: #ffe6e6; color: var(--notion-red); }
+.priority-medium { background: #fff2e6; color: var(--notion-orange); }
+.priority-low { background: #e7f3ff; color: var(--notion-blue); }
+
+/* Today's CC specific styles */
+.todays-cc-date {
+    background: var(--notion-blue-light);
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    border-left: 4px solid var(--notion-blue);
+}
+
+.task-row {
+    transition: all 0.2s ease;
+}
+
+.task-row.completed {
+    opacity: 0.6;
+}
+
+.task-row.completed .task-name {
+    text-decoration: line-through;
+    color: var(--notion-text-light);
+}
+
+/* Cards for smaller content */
+.notion-card {
+    background: white;
+    border: 1px solid var(--notion-border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.15s ease;
+}
+
+.notion-card:hover {
+    border-color: var(--notion-blue);
+    box-shadow: 0 4px 8px var(--notion-shadow);
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--notion-text);
+}
+
+.card-content {
+    color: var(--notion-text-light);
+    font-size: 24px;
+    line-height: 1.5;
+}
+
+/* Loading states */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--notion-text-light);
+}
+
+.loading::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--notion-border);
+    border-top: 2px solid var(--notion-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 12px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 24px;
+    }
+    
+    .page-title {
+        font-size: 40px;
+    }
+    
+    .sidebar {
+        width: 200px;
+    }
+}
+
+/* Live update indicators */
+.live-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--notion-green);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 24px;
+    font-weight: 500;
+    z-index: 1000;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Auto-generated content styling */
+.auto-generated {
+    border-left: 3px solid var(--notion-green);
+    background: #f8fff8;
+}
+
+.auto-generated::before {
+    content: '🤖';
+    margin-right: 8px;
+}
