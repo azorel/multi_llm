@@ -1,0 +1,360 @@
+# CI/CD Pipeline for Autonomous Multi-LLM Agent System
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DOCKER_IMAGE: autonomous-agent
+  REGISTRY: ghcr.io
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Code Quality and Testing
+  quality:
+    name: Code Quality & Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    
+    - name: Lint with flake8
+      run: |
+        flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Type check with mypy
+      run: |
+        mypy src/ --ignore-missing-imports
+    
+    - name: Security check with bandit
+      run: |
+        bandit -r src/ -f json -o bandit-report.json
+        bandit -r src/
+    
+    - name: Run unit tests
+      run: |
+        pytest tests/ -v --cov=src --cov-report=xml --cov-report=html
+      env:
+        PYTHONPATH: src
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          coverage.xml
+          htmlcov/
+          bandit-report.json
+
+  # Security Scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: quality
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Build Docker Images
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [quality, security]
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=sha,prefix={{branch}}-
+    
+    - name: Build and push Docker image
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        target: production
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64
+    
+    - name: Generate SBOM
+      uses: anchore/sbom-action@v0
+      with:
+        image: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }}
+        format: spdx-json
+        output-file: sbom.spdx.json
+    
+    - name: Upload SBOM
+      uses: actions/upload-artifact@v3
+      with:
+        name: sbom
+        path: sbom.spdx.json
+
+  # Deploy to Staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Configure kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG_STAGING }}
+    
+    - name: Create namespace
+      run: |
+        kubectl apply -f k8s/namespace.yaml
+        # Update namespace to staging
+        sed 's/autonomous-agent/autonomous-agent-staging/g' k8s/namespace.yaml | kubectl apply -f -
+    
+    - name: Deploy secrets
+      run: |
+        kubectl create secret generic autonomous-agent-secrets \
+          --namespace=autonomous-agent-staging \
+          --from-literal=openai-api-key="${{ secrets.OPENAI_API_KEY }}" \
+          --from-literal=anthropic-api-key="${{ secrets.ANTHROPIC_API_KEY }}" \
+          --from-literal=google-api-key="${{ secrets.GOOGLE_API_KEY }}" \
+          --from-literal=notion-api-key="${{ secrets.NOTION_API_KEY }}" \
+          --from-literal=github-token="${{ secrets.GITHUB_TOKEN }}" \
+          --from-literal=alert-webhook-url="${{ secrets.ALERT_WEBHOOK_URL }}" \
+          --dry-run=client -o yaml | kubectl apply -f -
+    
+    - name: Deploy to staging
+      run: |
+        # Update manifests for staging
+        find k8s/ -name "*.yaml" -exec sed -i 's/autonomous-agent/autonomous-agent-staging/g' {} \;
+        find k8s/ -name "*.yaml" -exec sed -i 's/autonomous-agent:latest/${{ needs.build.outputs.image-tag }}/g' {} \;
+        
+        # Apply manifests
+        kubectl apply -f k8s/rbac.yaml
+        kubectl apply -f k8s/configmap.yaml
+        kubectl apply -f k8s/pvc.yaml
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/hpa.yaml
+        kubectl apply -f k8s/pdb.yaml
+    
+    - name: Wait for deployment
+      run: |
+        kubectl rollout status deployment/autonomous-agent \
+          --namespace=autonomous-agent-staging \
+          --timeout=300s
+    
+    - name: Run smoke tests
+      run: |
+        kubectl run smoke-test \
+          --namespace=autonomous-agent-staging \
+          --rm -i --restart=Never \
+          --image=curlimages/curl \
+          -- curl -f http://autonomous-agent.autonomous-agent-staging.svc.cluster.local/health
+
+  # Deploy to Production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, deploy-staging]
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Configure kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG_PRODUCTION }}
+    
+    - name: Create namespace
+      run: kubectl apply -f k8s/namespace.yaml
+    
+    - name: Deploy secrets
+      run: |
+        kubectl create secret generic autonomous-agent-secrets \
+          --namespace=autonomous-agent \
+          --from-literal=openai-api-key="${{ secrets.OPENAI_API_KEY_PROD }}" \
+          --from-literal=anthropic-api-key="${{ secrets.ANTHROPIC_API_KEY_PROD }}" \
+          --from-literal=google-api-key="${{ secrets.GOOGLE_API_KEY_PROD }}" \
+          --from-literal=notion-api-key="${{ secrets.NOTION_API_KEY_PROD }}" \
+          --from-literal=github-token="${{ secrets.GITHUB_TOKEN_PROD }}" \
+          --from-literal=alert-webhook-url="${{ secrets.ALERT_WEBHOOK_URL_PROD }}" \
+          --dry-run=client -o yaml | kubectl apply -f -
+    
+    - name: Deploy to production
+      run: |
+        # Update image tag
+        sed -i 's/autonomous-agent:latest/${{ needs.build.outputs.image-tag }}/g' k8s/deployment.yaml
+        
+        # Apply manifests
+        kubectl apply -f k8s/rbac.yaml
+        kubectl apply -f k8s/configmap.yaml
+        kubectl apply -f k8s/pvc.yaml
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/ingress.yaml
+        kubectl apply -f k8s/hpa.yaml
+        kubectl apply -f k8s/pdb.yaml
+    
+    - name: Wait for deployment
+      run: |
+        kubectl rollout status deployment/autonomous-agent \
+          --namespace=autonomous-agent \
+          --timeout=600s
+    
+    - name: Run production smoke tests
+      run: |
+        kubectl run production-smoke-test \
+          --namespace=autonomous-agent \
+          --rm -i --restart=Never \
+          --image=curlimages/curl \
+          -- curl -f http://autonomous-agent.autonomous-agent.svc.cluster.local/health
+    
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+  # Performance Tests
+  performance:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run load tests with k6
+      uses: grafana/k6-action@v0.3.1
+      with:
+        filename: tests/performance/load-test.js
+      env:
+        K6_PROMETHEUS_RW_SERVER_URL: ${{ secrets.PROMETHEUS_URL }}
+        BASE_URL: ${{ secrets.STAGING_URL }}
+    
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: k6-results.json
+
+  # Notifications
+  notify:
+    name: Notify Teams
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    
+    steps:
+    - name: Notify Slack on Success
+      if: success()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        channel: '#deployments'
+        message: |
+          🚀 Deployment successful!
+          Branch: ${{ github.ref }}
+          Commit: ${{ github.sha }}
+          Actor: ${{ github.actor }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    
+    - name: Notify Slack on Failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#deployments'
+        message: |
+          ❌ Deployment failed!
+          Branch: ${{ github.ref }}
+          Commit: ${{ github.sha }}
+          Actor: ${{ github.actor }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }

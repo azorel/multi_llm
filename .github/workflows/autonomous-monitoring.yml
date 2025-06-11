@@ -1,0 +1,126 @@
+name: Autonomous Agent Monitoring
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  schedule:
+    - cron: '0 */4 * * *'  # Every 4 hours
+
+jobs:
+  monitor-agents:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r core_system/requirements.txt
+        
+    - name: Run System Health Check
+      run: |
+        cd core_system
+        python -c "
+        import sys
+        sys.path.append('src')
+        from monitoring.observability import SystemMonitor
+        
+        monitor = SystemMonitor()
+        health = monitor.get_system_health()
+        
+        print('🏥 System Health Report')
+        print(f'Status: {health.get(\"status\", \"unknown\")}')
+        print(f'Active Agents: {health.get(\"active_agents\", 0)}')
+        print(f'Memory Usage: {health.get(\"memory_usage\", \"unknown\")}')
+        print(f'Uptime: {health.get(\"uptime\", \"unknown\")}')
+        
+        if health.get('status') != 'healthy':
+            print('❌ System health check failed')
+            sys.exit(1)
+        else:
+            print('✅ System health check passed')
+        "
+        
+    - name: Validate Agent Configuration
+      run: |
+        cd core_system
+        python -c "
+        import sys
+        sys.path.append('src')
+        from agents.agent_factory import AgentFactory
+        from config.config_manager import ConfigManager
+        
+        print('🤖 Agent Configuration Validation')
+        
+        config = ConfigManager()
+        factory = AgentFactory(config)
+        
+        # Test agent creation
+        test_agent = factory.create_agent('claude', 'test-agent')
+        if test_agent:
+            print('✅ Agent factory working correctly')
+        else:
+            print('❌ Agent factory failed')
+            sys.exit(1)
+        "
+        
+    - name: Monitor File Structure
+      run: |
+        echo "📁 Monitoring for chaos indicators..."
+        
+        # Check for emergency files that shouldn't exist
+        if find . -name "emergency_*.py" -o -name "quick_*.py" -o -name "*backup*" | grep -q .; then
+          echo "❌ Found chaotic files that should be excluded by .gitignore"
+          find . -name "emergency_*.py" -o -name "quick_*.py" -o -name "*backup*"
+          exit 1
+        else
+          echo "✅ No chaotic files found"
+        fi
+        
+        # Check for proper structure
+        if [ -d "core_system/src" ] && [ -f "core_system/main.py" ] && [ -f "README_CLEAN.md" ]; then
+          echo "✅ Clean project structure maintained"
+        else
+          echo "❌ Clean project structure compromised"
+          exit 1
+        fi
+        
+    - name: Generate Monitoring Report
+      run: |
+        echo "## 🤖 Autonomous System Monitoring Report" > monitoring_report.md
+        echo "**Date:** $(date)" >> monitoring_report.md
+        echo "**Commit:** ${{ github.sha }}" >> monitoring_report.md
+        echo "" >> monitoring_report.md
+        echo "### System Status" >> monitoring_report.md
+        echo "- ✅ Health Check: Passed" >> monitoring_report.md
+        echo "- ✅ Agent Configuration: Valid" >> monitoring_report.md
+        echo "- ✅ File Structure: Clean" >> monitoring_report.md
+        echo "- ✅ No Emergency Files: Confirmed" >> monitoring_report.md
+        echo "" >> monitoring_report.md
+        echo "### Recommendations" >> monitoring_report.md
+        echo "- Continue using version control for all changes" >> monitoring_report.md
+        echo "- Avoid creating emergency_*.py or quick_*.py files" >> monitoring_report.md
+        echo "- Use core_system/ for all development work" >> monitoring_report.md
+        
+    - name: Comment Monitoring Report
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('monitoring_report.md', 'utf8');
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: report
+          });
