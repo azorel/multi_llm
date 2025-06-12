@@ -28,6 +28,7 @@ emergency_web_server.py
 autonomous_generated/
 disler-repos/
 loguru-demo/
+core_system/
 
 # Keep only core system files
 !src/
