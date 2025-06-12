@@ -555,6 +555,10 @@
                         <span class="tab-icon">📺</span>
                         YouTube
                     </button>
+                    <button class="tab-button" data-tab="business">
+                        <span class="tab-icon">👑</span>
+                        Business Empire
+                    </button>
                     <button class="tab-button" data-tab="settings">
                         <span class="tab-icon">🔧</span>
                         Settings
@@ -631,6 +635,17 @@
                             </div>
                             <div class="card-value" id="dashEfficiency" style="color: var(--notion-purple);">87%</div>
                             <div class="card-description">Above average</div>
+                        </div>
+                        <!-- Business Empire Summary Card -->
+                        <div class="dashboard-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <div class="card-title" style="color: white;">👑 Business Empire</div>
+                                <button onclick="switchToBusinessTab()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+                                    View Details
+                                </button>
+                            </div>
+                            <div class="card-value" style="color: white;">$127K</div>
+                            <div class="card-description" style="color: white; opacity: 0.9;">Monthly revenue • 12 active projects • 47 opportunities</div>
                         </div>
                     </div>
 
@@ -1090,6 +1105,258 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Business Empire Tab -->
+                <div class="tab-content" id="business">
+                    <!-- Empire Overview Cards -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                            <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <div class="card-title" style="color: white;">💰 Total Revenue</div>
+                            </div>
+                            <div class="card-description" style="color: white;">
+                                <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">$127,450</div>
+                                <div style="font-size: 14px; opacity: 0.9;">Monthly recurring revenue</div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">↗️ +18.2% vs last month</div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+                            <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <div class="card-title" style="color: white;">🚀 Active Projects</div>
+                            </div>
+                            <div class="card-description" style="color: white;">
+                                <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">12</div>
+                                <div style="font-size: 14px; opacity: 0.9;">In development pipeline</div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">3 launching this month</div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
+                            <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <div class="card-title" style="color: white;">💡 Opportunities</div>
+                            </div>
+                            <div class="card-description" style="color: white;">
+                                <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">47</div>
+                                <div style="font-size: 14px; opacity: 0.9;">AI-discovered opportunities</div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">8 approved for development</div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
+                            <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <div class="card-title" style="color: white;">🤖 Business Agents</div>
+                            </div>
+                            <div class="card-description" style="color: white;">
+                                <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">8</div>
+                                <div style="font-size: 14px; opacity: 0.9;">Agents working 24/7</div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">342 actions today</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Empire Categories -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <div class="card-title">📊 Revenue by Category</div>
+                                <button onclick="viewBusinessOpportunities()" style="background: var(--notion-blue); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                    View All
+                                </button>
+                            </div>
+                            <div class="card-description">
+                                <div style="margin-bottom: 16px;">
+                                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 12px; height: 12px; background: #dc3545; border-radius: 50%;"></div>
+                                            <span style="font-weight: 600;">RC Racing</span>
+                                        </div>
+                                        <span style="font-weight: 600; color: var(--notion-green);">$45,200</span>
+                                    </div>
+                                    <div style="background: #f0f0f0; height: 6px; border-radius: 3px;">
+                                        <div style="background: #dc3545; height: 100%; width: 35%; border-radius: 3px;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 16px;">
+                                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 12px; height: 12px; background: #28a745; border-radius: 50%;"></div>
+                                            <span style="font-weight: 600;">Van Life</span>
+                                        </div>
+                                        <span style="font-weight: 600; color: var(--notion-green);">$38,750</span>
+                                    </div>
+                                    <div style="background: #f0f0f0; height: 6px; border-radius: 3px;">
+                                        <div style="background: #28a745; height: 100%; width: 30%; border-radius: 3px;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 16px;">
+                                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 12px; height: 12px; background: #007bff; border-radius: 50%;"></div>
+                                            <span style="font-weight: 600;">3D Printing</span>
+                                        </div>
+                                        <span style="font-weight: 600; color: var(--notion-green);">$32,100</span>
+                                    </div>
+                                    <div style="background: #f0f0f0; height: 6px; border-radius: 3px;">
+                                        <div style="background: #007bff; height: 100%; width: 25%; border-radius: 3px;"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 12px; height: 12px; background: #ffc107; border-radius: 50%;"></div>
+                                            <span style="font-weight: 600;">General</span>
+                                        </div>
+                                        <span style="font-weight: 600; color: var(--notion-green);">$11,400</span>
+                                    </div>
+                                    <div style="background: #f0f0f0; height: 6px; border-radius: 3px;">
+                                        <div style="background: #ffc107; height: 100%; width: 10%; border-radius: 3px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <div class="card-title">🎯 Active Business Agents</div>
+                                <button onclick="viewBusinessAgents()" style="background: var(--notion-green); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                    Control Panel
+                                </button>
+                            </div>
+                            <div class="card-description">
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                                            <span style="font-weight: 600;">CEO Agent</span>
+                                        </div>
+                                        <span style="font-size: 12px; color: var(--notion-text-light);">Analyzing opportunities</span>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                                            <span style="font-weight: 600;">Development Team</span>
+                                        </div>
+                                        <span style="font-size: 12px; color: var(--notion-text-light);">Building products</span>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                                            <span style="font-weight: 600;">Marketing Team</span>
+                                        </div>
+                                        <span style="font-size: 12px; color: var(--notion-text-light);">Customer acquisition</span>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                                            <span style="font-weight: 600;">Content Team</span>
+                                        </div>
+                                        <span style="font-size: 12px; color: var(--notion-text-light);">Creating content</span>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 6px;">
+                                    <div style="font-size: 12px; color: var(--notion-text-light); margin-bottom: 4px;">Total Actions Today</div>
+                                    <div style="font-size: 20px; font-weight: 600; color: var(--notion-text);">342</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Business Activity -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">⚡ Recent Business Activity</div>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="viewBusinessProjects()" style="background: var(--notion-blue); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                    Projects
+                                </button>
+                                <button onclick="viewBusinessRevenue()" style="background: var(--notion-green); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                    Revenue
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-description">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
+                                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 8px;">
+                                        <div>
+                                            <div style="font-weight: 600; margin-bottom: 4px;">RC Race Track Booking System</div>
+                                            <div style="font-size: 12px; color: var(--notion-text-light);">RC Racing • Development</div>
+                                        </div>
+                                        <span style="background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 12px; font-size: 11px; font-weight: 600;">85% Complete</span>
+                                    </div>
+                                    <div style="background: #f0f0f0; height: 6px; border-radius: 3px; margin-bottom: 8px;">
+                                        <div style="background: linear-gradient(90deg, #3b82f6, #2563eb); height: 100%; width: 85%; border-radius: 3px;"></div>
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--notion-text-light);">Launching next week</div>
+                                </div>
+
+                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
+                                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 8px;">
+                                        <div>
+                                            <div style="font-weight: 600; margin-bottom: 4px;">Van Life Route Planner App</div>
+                                            <div style="font-size: 12px; color: var(--notion-text-light);">Van Life • Testing</div>
+                                        </div>
+                                        <span style="background: #fef3c7; color: #d97706; padding: 2px 6px; border-radius: 12px; font-size: 11px; font-weight: 600;">92% Complete</span>
+                                    </div>
+                                    <div style="background: #f0f0f0; height: 6px; border-radius: 3px; margin-bottom: 8px;">
+                                        <div style="background: linear-gradient(90deg, #f59e0b, #d97706); height: 100%; width: 92%; border-radius: 3px;"></div>
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--notion-text-light);">Beta testing phase</div>
+                                </div>
+
+                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
+                                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 8px;">
+                                        <div>
+                                            <div style="font-weight: 600; margin-bottom: 4px;">Custom 3D Print Marketplace</div>
+                                            <div style="font-size: 12px; color: var(--notion-text-light);">3D Printing • Planning</div>
+                                        </div>
+                                        <span style="background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 12px; font-size: 11px; font-weight: 600;">15% Complete</span>
+                                    </div>
+                                    <div style="background: #f0f0f0; height: 6px; border-radius: 3px; margin-bottom: 8px;">
+                                        <div style="background: linear-gradient(90deg, #dc2626, #b91c1c); height: 100%; width: 15%; border-radius: 3px;"></div>
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--notion-text-light);">Market research phase</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Business Actions -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 24px;">
+                        <button onclick="sendBusinessCommand('CEO', 'find_opportunities')" style="padding: 16px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
+                            🎯 Find New Opportunities
+                        </button>
+                        <button onclick="sendBusinessCommand('Development', 'speed_up')" style="padding: 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
+                            🚀 Speed Up Development
+                        </button>
+                        <button onclick="sendBusinessCommand('Marketing', 'boost_campaigns')" style="padding: 16px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
+                            📢 Boost Marketing
+                        </button>
+                        <button onclick="sendBusinessCommand('Content', 'viral_content')" style="padding: 16px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
+                            🔥 Create Viral Content
+                        </button>
+                        <button onclick="viewFullEmpireReport()" style="padding: 16px; background: linear-gradient(135deg, #6b7280, #4b5563); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
+                            📊 Full Empire Report
+                        </button>
+                        <button onclick="emergencyBusinessMeeting()" style="padding: 16px; background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
+                            🚨 Emergency Meeting
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1253,6 +1520,83 @@
 
         // Initialize
         document.getElementById('liveIndicator').textContent = '🟢 Live';
+
+        // Business Empire Functions
+        function switchToBusinessTab() {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Activate business tab
+            document.querySelector('[data-tab="business"]').classList.add('active');
+            document.getElementById('business').classList.add('active');
+            
+            // Update breadcrumb
+            document.getElementById('currentBreadcrumb').textContent = 'Business Empire';
+        }
+
+        function viewBusinessOpportunities() {
+            window.location.href = '/business-opportunities';
+        }
+
+        function viewBusinessProjects() {
+            window.location.href = '/business-projects';
+        }
+
+        function viewBusinessRevenue() {
+            window.location.href = '/business-revenue';
+        }
+
+        function viewBusinessAgents() {
+            window.location.href = '/business-agents';
+        }
+
+        function sendBusinessCommand(agentType, command) {
+            fetch('/api/agent_command', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    agent_type: agentType,
+                    command: command
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Command sent successfully: ' + data.message);
+                } else {
+                    alert('❌ Command failed: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Network error: ' + error);
+            });
+        }
+
+        function viewFullEmpireReport() {
+            alert('📊 Full Empire Report\n\nGenerating comprehensive business empire analytics...\n\nThis will include:\n• Revenue analytics across all categories\n• Project progress reports\n• Agent performance metrics\n• Growth predictions\n• Investment recommendations');
+        }
+
+        function emergencyBusinessMeeting() {
+            if (confirm('🚨 Emergency Business Meeting\n\nThis will immediately alert all business agents for priority attention. Continue?')) {
+                sendBusinessCommand('All', 'emergency_meeting');
+            }
+        }
+
+        // Add hover effects for business action buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const businessButtons = document.querySelectorAll('#business button[style*="linear-gradient"]');
+            businessButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
     </script>
 </body>
 </html>
