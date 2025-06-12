@@ -2153,6 +2153,195 @@ def get_business_revenue_summary():
         logger.error(f"Error getting revenue summary: {e}")
         return []
 
+def get_all_business_opportunities():
+    """Get all business opportunities for the opportunities page."""
+    try:
+        if not os.path.exists('business_empire.db'):
+            return []
+            
+        import sqlite3
+        conn = sqlite3.connect('business_empire.db')
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id, category, title, revenue_model, revenue_potential, status, created_at, description
+            FROM business_opportunities
+            ORDER BY created_at DESC
+        """)
+        
+        opportunities = []
+        for row in cursor.fetchall():
+            opportunities.append({
+                'id': row[0] if row[0] else '',
+                'category': row[1] if row[1] else 'General',
+                'title': row[2] if row[2] else 'Untitled',
+                'revenue_model': row[3] if row[3] else 'Product',
+                'revenue_potential': row[4] if row[4] else 0,
+                'status': row[5] if row[5] else 'identified',
+                'created_at': row[6] if row[6] else 'Unknown',
+                'description': row[7] if len(row) > 7 and row[7] else 'No description available'
+            })
+        
+        conn.close()
+        return opportunities
+        
+    except Exception as e:
+        logger.error(f"Error getting all business opportunities: {e}")
+        return []
+
+def get_all_business_projects():
+    """Get all business projects for the projects page."""
+    try:
+        if not os.path.exists('business_empire.db'):
+            return []
+            
+        import sqlite3
+        conn = sqlite3.connect('business_empire.db')
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT p.id, p.name, p.progress, p.status, p.budget, p.timeline, o.category, p.created_at
+            FROM business_projects p
+            JOIN business_opportunities o ON p.opportunity_id = o.id
+            ORDER BY p.created_at DESC
+        """)
+        
+        projects = []
+        for row in cursor.fetchall():
+            projects.append({
+                'id': row[0],
+                'name': row[1],
+                'progress': row[2],
+                'status': row[3],
+                'budget': row[4],
+                'timeline': row[5],
+                'category': row[6],
+                'created_at': row[7]
+            })
+        
+        conn.close()
+        return projects
+        
+    except Exception as e:
+        logger.error(f"Error getting all business projects: {e}")
+        return []
+
+def get_detailed_business_revenue():
+    """Get detailed revenue data for the revenue page."""
+    try:
+        if not os.path.exists('business_empire.db'):
+            return {
+                'total_revenue': 0,
+                'monthly_revenue': 0,
+                'revenue_by_category': [],
+                'revenue_streams': [],
+                'growth_metrics': {}
+            }
+            
+        import sqlite3
+        conn = sqlite3.connect('business_empire.db')
+        cursor = conn.cursor()
+        
+        # Get revenue by category
+        cursor.execute("""
+            SELECT o.category, SUM(r.amount) as total, COUNT(r.id) as streams, AVG(r.amount) as avg
+            FROM revenue_streams r
+            JOIN business_projects p ON r.project_id = p.id
+            JOIN business_opportunities o ON p.opportunity_id = o.id
+            WHERE r.status = 'active'
+            GROUP BY o.category
+        """)
+        
+        revenue_by_category = []
+        total_revenue = 0
+        for row in cursor.fetchall():
+            category_revenue = row[1] or 0
+            total_revenue += category_revenue
+            revenue_by_category.append({
+                'category': row[0],
+                'revenue': category_revenue,
+                'streams': row[2] or 0,
+                'avg_revenue': row[3] or 0
+            })
+        
+        # Get individual revenue streams
+        cursor.execute("""
+            SELECT r.stream_name, r.amount, r.frequency, p.name as project_name, o.category, r.status
+            FROM revenue_streams r
+            JOIN business_projects p ON r.project_id = p.id
+            JOIN business_opportunities o ON p.opportunity_id = o.id
+            ORDER BY r.amount DESC
+        """)
+        
+        revenue_streams = []
+        for row in cursor.fetchall():
+            revenue_streams.append({
+                'stream_name': row[0],
+                'amount': row[1] or 0,
+                'frequency': row[2],
+                'project_name': row[3],
+                'category': row[4],
+                'status': row[5]
+            })
+        
+        conn.close()
+        
+        return {
+            'total_revenue': total_revenue,
+            'monthly_revenue': total_revenue,  # Assuming monthly for now
+            'revenue_by_category': revenue_by_category,
+            'revenue_streams': revenue_streams,
+            'growth_metrics': {
+                'monthly_growth': 15.2,  # Placeholder
+                'yearly_growth': 180.5   # Placeholder
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting detailed business revenue: {e}")
+        return {
+            'total_revenue': 0,
+            'monthly_revenue': 0,
+            'revenue_by_category': [],
+            'revenue_streams': [],
+            'growth_metrics': {}
+        }
+
+def get_business_agent_activity():
+    """Get agent activity logs for the agents page."""
+    try:
+        if not os.path.exists('business_empire.db'):
+            return []
+            
+        import sqlite3
+        conn = sqlite3.connect('business_empire.db')
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT agent_type, action_type, target_id, action_data, success, created_at
+            FROM agent_actions
+            ORDER BY created_at DESC
+            LIMIT 100
+        """)
+        
+        agent_logs = []
+        for row in cursor.fetchall():
+            agent_logs.append({
+                'agent_type': row[0],
+                'action_type': row[1],
+                'target_id': row[2],
+                'action_data': row[3],
+                'success': row[4],
+                'created_at': row[5]
+            })
+        
+        conn.close()
+        return agent_logs
+        
+    except Exception as e:
+        logger.error(f"Error getting business agent activity: {e}")
+        return []
+
 def approve_opportunity_for_development_api(opp_id: str) -> bool:
     """Approve an opportunity for development."""
     try:

@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block title %}Business Agents - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🤖 Business Agents Activity</h1>
+    <p class="page-subtitle">
+        Real-time monitoring of AI agents working on business empire development.
+        <span style="float: right; color: var(--notion-text-light); font-size: 12px;">
+            Total actions: {{ agent_logs|length }}
+            <button onclick="location.reload()" style="margin-left: 8px; background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                🔄 Refresh
+            </button>
+        </span>
+    </p>
+</div>
+
+<!-- Agent Status Overview -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
+    <div class="notion-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+        <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">🎯 CEO Agent</div>
+        <div class="card-content" style="color: white;">
+            <div class="agent-status-indicator active"></div>
+            <div style="font-size: 14px; opacity: 0.9;">Analyzing opportunities</div>
+            <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">
+                Last action: {{ agent_logs|selectattr('agent_type', 'equalto', 'CEO')|list|first.created_at if agent_logs|selectattr('agent_type', 'equalto', 'CEO')|list else 'No activity' }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="notion-card" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+        <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">🔨 Development Team</div>
+        <div class="card-content" style="color: white;">
+            <div class="agent-status-indicator active"></div>
+            <div style="font-size: 14px; opacity: 0.9;">Building products</div>
+            <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">
+                Last action: {{ agent_logs|selectattr('agent_type', 'equalto', 'Development')|list|first.created_at if agent_logs|selectattr('agent_type', 'equalto', 'Development')|list else 'No activity' }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="notion-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
+        <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">📢 Marketing Team</div>
+        <div class="card-content" style="color: white;">
+            <div class="agent-status-indicator active"></div>
+            <div style="font-size: 14px; opacity: 0.9;">Customer acquisition</div>
+            <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">
+                Last action: {{ agent_logs|selectattr('agent_type', 'equalto', 'Marketing')|list|first.created_at if agent_logs|selectattr('agent_type', 'equalto', 'Marketing')|list else 'No activity' }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="notion-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
+        <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">📝 Content Team</div>
+        <div class="card-content" style="color: white;">
+            <div class="agent-status-indicator active"></div>
+            <div style="font-size: 14px; opacity: 0.9;">Creating content</div>
+            <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">
+                Last action: {{ agent_logs|selectattr('agent_type', 'equalto', 'Content')|list|first.created_at if agent_logs|selectattr('agent_type', 'equalto', 'Content')|list else 'No activity' }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Agent Commands -->
+<div class="notion-card" style="margin-bottom: 32px;">
+    <div class="card-title">⚡ Quick Agent Commands</div>
+    <div class="card-content">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <button onclick="sendAgentCommand('CEO', 'analyze_opportunities')" class="agent-command-btn ceo">
+                🎯 Find Opportunities
+            </button>
+            <button onclick="sendAgentCommand('Development', 'speed_up_builds')" class="agent-command-btn dev">
+                🚀 Speed Up Development
+            </button>
+            <button onclick="sendAgentCommand('Marketing', 'boost_campaigns')" class="agent-command-btn marketing">
+                📢 Boost Marketing
+            </button>
+            <button onclick="sendAgentCommand('Content', 'create_viral_content')" class="agent-command-btn content">
+                🔥 Create Viral Content
+            </button>
+            <button onclick="sendAgentCommand('Business Monitor', 'full_empire_report')" class="agent-command-btn monitor">
+                📊 Empire Report
+            </button>
+            <button onclick="sendAgentCommand('All', 'synchronized_push')" class="agent-command-btn all">
+                ⚡ Synchronized Push
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Agent Activity Log -->
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">📋 Agent Activity Log ({{ agent_logs|length }})</span>
+        <div style="display: flex; gap: 8px;">
+            <select id="agentFilter" onchange="filterLogs()" style="padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">All Agents</option>
+                <option value="CEO">CEO Agent</option>
+                <option value="Development">Development Team</option>
+                <option value="Marketing">Marketing Team</option>
+                <option value="Content">Content Team</option>
+                <option value="RC Orchestrator">RC Orchestrator</option>
+                <option value="Van Life Orchestrator">Van Life Orchestrator</option>
+                <option value="3D Print Orchestrator">3D Print Orchestrator</option>
+                <option value="Business Monitor">Business Monitor</option>
+            </select>
+            <button onclick="clearLogs()" class="add-button" style="background: var(--notion-red);">🗑️ Clear</button>
+        </div>
+    </div>
+    
+    {% if agent_logs %}
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Agent</th>
+                <th>Action Type</th>
+                <th>Target</th>
+                <th>Details</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody id="agentLogTable">
+            {% for log in agent_logs %}
+            <tr class="agent-log-row" data-agent="{{ log.agent_type }}">
+                <td style="font-size: 12px; color: var(--notion-text-light);">
+                    {{ log.created_at }}
+                </td>
+                <td>
+                    <span class="agent-pill agent-{{ log.agent_type.lower().replace(' ', '-') }}">
+                        {{ log.agent_type }}
+                    </span>
+                </td>
+                <td style="font-weight: 600;">{{ log.action_type.replace('_', ' ').title() }}</td>
+                <td style="font-size: 14px;">{{ log.target_id }}</td>
+                <td style="font-size: 12px; max-width: 300px;">
+                    {{ log.action_data[:100] }}{% if log.action_data|length > 100 %}...{% endif %}
+                </td>
+                <td>
+                    {% if log.success %}
+                        <span class="status-pill status-success">✅ Success</span>
+                    {% else %}
+                        <span class="status-pill status-error">❌ Failed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: var(--notion-text-light);">
+        <h3>No agent activity logged yet</h3>
+        <p>Agent actions will appear here as they work on business development tasks.</p>
+        <button onclick="sendAgentCommand('CEO', 'test_connection')" class="add-button" style="margin-top: 16px;">
+            🧪 Test Agent Connection
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Agent Performance Metrics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📊 Agent Performance</div>
+        <div class="card-content">
+            {% if agent_logs %}
+                {% set total_actions = agent_logs|length %}
+                {% set successful_actions = agent_logs|selectattr('success', 'equalto', True)|list|length %}
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 8px;">
+                        <span>Success Rate</span>
+                        <span style="font-weight: 600; color: var(--notion-green);">
+                            {{ "%.1f"|format((successful_actions / total_actions * 100) if total_actions > 0 else 0) }}%
+                        </span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: {{ (successful_actions / total_actions * 100) if total_actions > 0 else 0 }}%;"></div>
+                    </div>
+                </div>
+                
+                <div style="font-size: 12px; color: var(--notion-text-light);">
+                    Total Actions: {{ total_actions }}<br>
+                    Successful: {{ successful_actions }}<br>
+                    Failed: {{ total_actions - successful_actions }}
+                </div>
+            {% else %}
+                <div style="text-align: center; color: var(--notion-text-light);">
+                    No performance data available
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">⚡ Recent Activity</div>
+        <div class="card-content">
+            {% if agent_logs %}
+                {% for log in agent_logs[:5] %}
+                <div style="display: flex; justify-content: between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 12px;">{{ log.agent_type }}</div>
+                        <div style="font-size: 11px; color: var(--notion-text-light);">{{ log.action_type.replace('_', ' ').title() }}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        {% if log.success %}
+                            <span style="color: var(--notion-green); font-size: 12px;">✅</span>
+                        {% else %}
+                            <span style="color: var(--notion-red); font-size: 12px;">❌</span>
+                        {% endif %}
+                        <div style="font-size: 10px; color: var(--notion-text-light);">{{ log.created_at }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; color: var(--notion-text-light);">
+                    No recent activity
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function sendAgentCommand(agentType, command) {
+    fetch('/api/agent_command', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            agent_type: agentType,
+            command: command
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ Command sent successfully: ' + data.message);
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            alert('❌ Command failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Network error: ' + error);
+    });
+}
+
+function filterLogs() {
+    const filter = document.getElementById('agentFilter').value;
+    const rows = document.querySelectorAll('.agent-log-row');
+    
+    rows.forEach(row => {
+        if (filter === '' || row.dataset.agent === filter) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function clearLogs() {
+    if (confirm('Clear all agent logs? This action cannot be undone.')) {
+        alert('Clear logs functionality coming soon!');
+    }
+}
+</script>
+
+<style>
+.agent-status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+.agent-status-indicator.active {
+    background: #22c55e;
+    animation: pulse 2s infinite;
+}
+
+.agent-status-indicator.inactive {
+    background: #94a3b8;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.agent-command-btn {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.agent-command-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.agent-command-btn.ceo { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+.agent-command-btn.dev { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+.agent-command-btn.marketing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+.agent-command-btn.content { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.agent-command-btn.monitor { background: linear-gradient(135deg, #6b7280, #4b5563); color: white; }
+.agent-command-btn.all { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+
+.agent-pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.agent-pill.agent-ceo { background: #d1fae5; color: #065f46; }
+.agent-pill.agent-development { background: #dbeafe; color: #1e40af; }
+.agent-pill.agent-marketing { background: #f3e8ff; color: #7c2d12; }
+.agent-pill.agent-content { background: #fef3c7; color: #92400e; }
+.agent-pill.agent-rc-orchestrator { background: #fee2e2; color: #991b1b; }
+.agent-pill.agent-van-life-orchestrator { background: #dcfce7; color: #166534; }
+.agent-pill.agent-3d-print-orchestrator { background: #dbeafe; color: #1e40af; }
+.agent-pill.agent-business-monitor { background: #f1f5f9; color: #475569; }
+
+.agent-log-row {
+    transition: all 0.2s ease;
+}
+
+.agent-log-row:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.status-success { background: #dcfce7; color: #16a34a; }
+.status-error { background: #fee2e2; color: #dc2626; }
+
+.progress-container {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--notion-green);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+</style>
+{% endblock %}

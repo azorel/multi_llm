@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}Business Projects - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🚀 Business Projects</h1>
+    <p class="page-subtitle">
+        Active and completed business development projects from approved opportunities.
+        <span style="float: right; color: var(--notion-text-light); font-size: 12px;">
+            Total projects: {{ projects|length }}
+            <button onclick="location.reload()" style="margin-left: 8px; background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                🔄 Refresh
+            </button>
+        </span>
+    </p>
+</div>
+
+<!-- Projects Grid -->
+<div class="database-container">
+    <div class="database-header">
+        <span class="database-title">🚀 All Business Projects ({{ projects|length }})</span>
+        <button onclick="createProject()" class="add-button">➕ New Project</button>
+    </div>
+    
+    {% if projects %}
+    <table class="database-table">
+        <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Category</th>
+                <th>Progress</th>
+                <th>Status</th>
+                <th>Budget</th>
+                <th>Timeline</th>
+                <th>Started</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr class="project-row category-{{ project.category.lower().replace(' ', '-') }}">
+                <td>
+                    <div style="font-weight: 600; margin-bottom: 4px;">{{ project.name }}</div>
+                    <div style="font-size: 12px; color: var(--notion-text-light);">
+                        ID: {{ project.id }}
+                    </div>
+                </td>
+                <td>
+                    <span class="status-pill category-{{ project.category.lower().replace(' ', '-') }}">
+                        {{ project.category }}
+                    </span>
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: {{ project.progress }}%;"></div>
+                        </div>
+                        <span style="font-size: 12px; font-weight: 600;">{{ project.progress }}%</span>
+                    </div>
+                    {% if project.progress < 100 %}
+                        <div style="font-size: 10px; color: var(--notion-text-light); margin-top: 2px;">
+                            In progress
+                        </div>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if project.status == 'planning' %}
+                        <span class="status-pill status-planning">📋 Planning</span>
+                    {% elif project.status == 'development' %}
+                        <span class="status-pill status-development">🔨 Development</span>
+                    {% elif project.status == 'testing' %}
+                        <span class="status-pill status-testing">🧪 Testing</span>
+                    {% elif project.status == 'completed' %}
+                        <span class="status-pill status-completed">✅ Completed</span>
+                    {% elif project.status == 'launched' %}
+                        <span class="status-pill status-launched">🚀 Launched</span>
+                    {% else %}
+                        <span class="status-pill status-default">{{ project.status.replace('_', ' ').title() }}</span>
+                    {% endif %}
+                </td>
+                <td style="font-size: 14px; font-weight: 600; color: var(--notion-green);">
+                    ${{ "{:,}".format(project.budget) }}
+                </td>
+                <td style="font-size: 12px;">{{ project.timeline }}</td>
+                <td style="font-size: 12px; color: var(--notion-text-light);">
+                    {{ project.created_at }}
+                </td>
+                <td>
+                    <div style="display: flex; gap: 4px;">
+                        <button onclick="updateProgress('{{ project.id }}')" 
+                                style="background: var(--notion-blue); color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                            📊 Update
+                        </button>
+                        <button onclick="viewProject('{{ project.id }}')" 
+                                style="background: var(--notion-green); color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                            👁️ View
+                        </button>
+                        {% if project.status != 'completed' and project.status != 'launched' %}
+                        <button onclick="changeStatus('{{ project.id }}')" 
+                                style="background: var(--notion-orange); color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                            🔄 Status
+                        </button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: var(--notion-text-light);">
+        <h3>No business projects found</h3>
+        <p>Approved opportunities will automatically become projects, or you can create projects manually.</p>
+        <button onclick="createProject()" class="add-button" style="margin-top: 16px;">
+            🚀 Create Project
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Project Stats -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px;">
+    <div class="notion-card">
+        <div class="card-title">📈 Total Projects</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-blue);">{{ projects|length }}</div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">All time</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🔨 In Development</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-orange);">
+                {{ projects|selectattr('status', 'equalto', 'development')|list|length }}
+            </div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Active projects</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">✅ Completed</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">
+                {{ projects|selectattr('status', 'equalto', 'completed')|list|length }}
+            </div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Ready to launch</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">💰 Total Budget</div>
+        <div class="card-content">
+            <div style="font-size: 24px; font-weight: 600; color: var(--notion-green);">
+                ${{ "{:,}".format(projects|sum(attribute='budget')|int) }}
+            </div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Investment</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">📊 Avg Progress</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-blue);">
+                {% if projects %}
+                    {{ "%.0f"|format(projects|sum(attribute='progress') / projects|length) }}%
+                {% else %}
+                    0%
+                {% endif %}
+            </div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Completion rate</div>
+        </div>
+    </div>
+    
+    <div class="notion-card">
+        <div class="card-title">🚀 Launched</div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 600; color: var(--notion-purple);">
+                {{ projects|selectattr('status', 'equalto', 'launched')|list|length }}
+            </div>
+            <div style="font-size: 12px; color: var(--notion-text-light);">Live products</div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateProgress(projectId) {
+    const newProgress = prompt('Enter new progress percentage (0-100):');
+    if (newProgress && !isNaN(newProgress) && newProgress >= 0 && newProgress <= 100) {
+        fetch('/api/update_project_progress', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                project_id: projectId,
+                progress: parseInt(newProgress)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to update progress: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+    }
+}
+
+function viewProject(projectId) {
+    alert('Project details view coming soon! ID: ' + projectId);
+}
+
+function changeStatus(projectId) {
+    const newStatus = prompt('Enter new status (planning/development/testing/completed/launched):');
+    if (newStatus && ['planning', 'development', 'testing', 'completed', 'launched'].includes(newStatus)) {
+        fetch('/api/update_project_status', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                project_id: projectId,
+                status: newStatus
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to update status: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+    }
+}
+
+function createProject() {
+    const name = prompt('Project name:');
+    if (!name) return;
+    
+    const category = prompt('Category (RC/Van Life/3D Printing/General):', 'General');
+    const budget = prompt('Budget ($):', '5000');
+    const timeline = prompt('Timeline (e.g., "8 weeks"):', '4 weeks');
+    
+    if (name && category && budget && timeline) {
+        alert('Manual project creation coming soon!');
+    }
+}
+</script>
+
+<style>
+.project-row {
+    transition: all 0.2s ease;
+}
+
+.project-row:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.progress-container {
+    width: 60px;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--notion-blue), var(--notion-green));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.category-rc { border-left: 4px solid #dc3545; }
+.category-van-life { border-left: 4px solid #28a745; }
+.category-3d-printing { border-left: 4px solid #007bff; }
+.category-general { border-left: 4px solid #ffc107; }
+
+.status-pill.category-rc { background: #fee2e2; color: #dc2626; }
+.status-pill.category-van-life { background: #dcfce7; color: #16a34a; }
+.status-pill.category-3d-printing { background: #dbeafe; color: #2563eb; }
+.status-pill.category-general { background: #fef3c7; color: #d97706; }
+
+.status-planning { background: #fef3c7; color: #d97706; }
+.status-development { background: #dbeafe; color: #2563eb; }
+.status-testing { background: #fef0e6; color: #ea580c; }
+.status-completed { background: #dcfce7; color: #16a34a; }
+.status-launched { background: #f3e8ff; color: #9333ea; }
+.status-default { background: #f3f4f6; color: #6b7280; }
+</style>
+{% endblock %}
