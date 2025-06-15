@@ -1,0 +1,1122 @@
+{
+  "total_endpoints": 80,
+  "successful": 75,
+  "failed": 5,
+  "endpoint_results": [
+    {
+      "endpoint": "GET /",
+      "url": "http://localhost:8081/",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.03,
+      "content_length": 42365,
+      "error": null
+    },
+    {
+      "endpoint": "GET /unified-dashboard",
+      "url": "http://localhost:8081/unified-dashboard",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 4.79,
+      "content_length": 42365,
+      "error": null
+    },
+    {
+      "endpoint": "GET /modern-dashboard",
+      "url": "http://localhost:8081/modern-dashboard",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 3.02,
+      "content_length": 42365,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/recent-repos",
+      "url": "http://localhost:8081/api/recent-repos",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.16,
+      "content_length": 1525,
+      "error": null
+    },
+    {
+      "endpoint": "GET /todays-cc",
+      "url": "http://localhost:8081/todays-cc",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.28,
+      "content_length": 38579,
+      "error": null
+    },
+    {
+      "endpoint": "GET /todays-cc-modern",
+      "url": "http://localhost:8081/todays-cc-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.92,
+      "content_length": 38579,
+      "error": null
+    },
+    {
+      "endpoint": "GET /knowledge-hub",
+      "url": "http://localhost:8081/knowledge-hub",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 11.64,
+      "content_length": 267150,
+      "error": null
+    },
+    {
+      "endpoint": "GET /knowledge-hub-modern",
+      "url": "http://localhost:8081/knowledge-hub-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 7.94,
+      "content_length": 267150,
+      "error": null
+    },
+    {
+      "endpoint": "GET /agent-command-center",
+      "url": "http://localhost:8081/agent-command-center",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 7.23,
+      "content_length": 52070,
+      "error": null
+    },
+    {
+      "endpoint": "GET /agent-command-center-modern",
+      "url": "http://localhost:8081/agent-command-center-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.88,
+      "content_length": 52070,
+      "error": null
+    },
+    {
+      "endpoint": "GET /prompt-library",
+      "url": "http://localhost:8081/prompt-library",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.28,
+      "content_length": 59364,
+      "error": null
+    },
+    {
+      "endpoint": "GET /prompt-library-modern",
+      "url": "http://localhost:8081/prompt-library-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 5.32,
+      "content_length": 59364,
+      "error": null
+    },
+    {
+      "endpoint": "GET /youtube-channels",
+      "url": "http://localhost:8081/youtube-channels",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.58,
+      "content_length": 34218,
+      "error": null
+    },
+    {
+      "endpoint": "GET /github-users",
+      "url": "http://localhost:8081/github-users",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.33,
+      "content_length": 50120,
+      "error": null
+    },
+    {
+      "endpoint": "GET /github-users-modern",
+      "url": "http://localhost:8081/github-users-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.52,
+      "content_length": 50120,
+      "error": null
+    },
+    {
+      "endpoint": "GET /github-repos",
+      "url": "http://localhost:8081/github-repos",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.66,
+      "content_length": 71441,
+      "error": null
+    },
+    {
+      "endpoint": "GET /github-repos-modern",
+      "url": "http://localhost:8081/github-repos-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.64,
+      "content_length": 71441,
+      "error": null
+    },
+    {
+      "endpoint": "GET /youtube-channels-modern",
+      "url": "http://localhost:8081/youtube-channels-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.55,
+      "content_length": 34218,
+      "error": null
+    },
+    {
+      "endpoint": "GET /shopping-list",
+      "url": "http://localhost:8081/shopping-list",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 15.97,
+      "content_length": 56579,
+      "error": null
+    },
+    {
+      "endpoint": "GET /shopping-list-modern",
+      "url": "http://localhost:8081/shopping-list-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.87,
+      "content_length": 56579,
+      "error": null
+    },
+    {
+      "endpoint": "GET /tasks",
+      "url": "http://localhost:8081/tasks",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.25,
+      "content_length": 47322,
+      "error": null
+    },
+    {
+      "endpoint": "GET /tasks-modern",
+      "url": "http://localhost:8081/tasks-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.92,
+      "content_length": 47322,
+      "error": null
+    },
+    {
+      "endpoint": "GET /habits",
+      "url": "http://localhost:8081/habits",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.1,
+      "content_length": 52765,
+      "error": null
+    },
+    {
+      "endpoint": "GET /habits-modern",
+      "url": "http://localhost:8081/habits-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.54,
+      "content_length": 52765,
+      "error": null
+    },
+    {
+      "endpoint": "GET /books",
+      "url": "http://localhost:8081/books",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 28.04,
+      "content_length": 55668,
+      "error": null
+    },
+    {
+      "endpoint": "GET /books-modern",
+      "url": "http://localhost:8081/books-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.39,
+      "content_length": 55668,
+      "error": null
+    },
+    {
+      "endpoint": "GET /journals",
+      "url": "http://localhost:8081/journals",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 18.71,
+      "content_length": 40326,
+      "error": null
+    },
+    {
+      "endpoint": "GET /journals-modern",
+      "url": "http://localhost:8081/journals-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.87,
+      "content_length": 40326,
+      "error": null
+    },
+    {
+      "endpoint": "GET /notes",
+      "url": "http://localhost:8081/notes",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.48,
+      "content_length": 46303,
+      "error": null
+    },
+    {
+      "endpoint": "GET /notes-modern",
+      "url": "http://localhost:8081/notes-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 5.67,
+      "content_length": 46303,
+      "error": null
+    },
+    {
+      "endpoint": "GET /maintenance-schedule",
+      "url": "http://localhost:8081/maintenance-schedule",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 32.85,
+      "content_length": 45287,
+      "error": null
+    },
+    {
+      "endpoint": "GET /maintenance-schedule-modern",
+      "url": "http://localhost:8081/maintenance-schedule-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 5.04,
+      "content_length": 45287,
+      "error": null
+    },
+    {
+      "endpoint": "GET /model-testing",
+      "url": "http://localhost:8081/model-testing",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 30.36,
+      "content_length": 46793,
+      "error": null
+    },
+    {
+      "endpoint": "GET /model-testing-modern",
+      "url": "http://localhost:8081/model-testing-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 5.42,
+      "content_length": 46793,
+      "error": null
+    },
+    {
+      "endpoint": "GET /voice-commands",
+      "url": "http://localhost:8081/voice-commands",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 33.41,
+      "content_length": 48769,
+      "error": null
+    },
+    {
+      "endpoint": "GET /voice-commands-modern",
+      "url": "http://localhost:8081/voice-commands-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.89,
+      "content_length": 48769,
+      "error": null
+    },
+    {
+      "endpoint": "GET /workflow-templates",
+      "url": "http://localhost:8081/workflow-templates",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 7.41,
+      "content_length": 55426,
+      "error": null
+    },
+    {
+      "endpoint": "GET /workflow-templates-modern",
+      "url": "http://localhost:8081/workflow-templates-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.93,
+      "content_length": 55426,
+      "error": null
+    },
+    {
+      "endpoint": "GET /provider-status",
+      "url": "http://localhost:8081/provider-status",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 6.66,
+      "content_length": 34810,
+      "error": null
+    },
+    {
+      "endpoint": "GET /provider-status-modern",
+      "url": "http://localhost:8081/provider-status-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.73,
+      "content_length": 34810,
+      "error": null
+    },
+    {
+      "endpoint": "GET /agent-results",
+      "url": "http://localhost:8081/agent-results",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 38.34,
+      "content_length": 49469,
+      "error": null
+    },
+    {
+      "endpoint": "GET /agent-results-modern",
+      "url": "http://localhost:8081/agent-results-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 6.9,
+      "content_length": 49469,
+      "error": null
+    },
+    {
+      "endpoint": "GET /cost-tracking",
+      "url": "http://localhost:8081/cost-tracking",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 5.61,
+      "content_length": 42937,
+      "error": null
+    },
+    {
+      "endpoint": "GET /cost-tracking-modern",
+      "url": "http://localhost:8081/cost-tracking-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.6,
+      "content_length": 42937,
+      "error": null
+    },
+    {
+      "endpoint": "GET /server-status",
+      "url": "http://localhost:8081/server-status",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 2039.01,
+      "content_length": 28133,
+      "error": null
+    },
+    {
+      "endpoint": "GET /server-status-modern",
+      "url": "http://localhost:8081/server-status-modern",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 2015.43,
+      "content_length": 28133,
+      "error": null
+    },
+    {
+      "endpoint": "GET /active-agents",
+      "url": "http://localhost:8081/active-agents",
+      "method": "GET",
+      "status_code": 500,
+      "expected_status": [
+        200
+      ],
+      "success": false,
+      "response_time_ms": 5.98,
+      "content_length": 265,
+      "error": "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the s"
+    },
+    {
+      "endpoint": "GET /api/dashboard/todays-cc",
+      "url": "http://localhost:8081/api/dashboard/todays-cc",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 5.78,
+      "content_length": 1669,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/dashboard/knowledge-hub",
+      "url": "http://localhost:8081/api/dashboard/knowledge-hub",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.93,
+      "content_length": 7242,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/dashboard/agents",
+      "url": "http://localhost:8081/api/dashboard/agents",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.43,
+      "content_length": 4235,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/search",
+      "url": "http://localhost:8081/api/search?q=test",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 5.14,
+      "content_length": 12368,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/system/metrics",
+      "url": "http://localhost:8081/api/system/metrics",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 1036.92,
+      "content_length": 129,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/providers/status",
+      "url": "http://localhost:8081/api/providers/status",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 2.61,
+      "content_length": 173,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/orchestrator/status",
+      "url": "http://localhost:8081/api/orchestrator/status",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 3.94,
+      "content_length": 2280,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/orchestrator/tasks",
+      "url": "http://localhost:8081/api/orchestrator/tasks",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 3.69,
+      "content_length": 1290,
+      "error": null
+    },
+    {
+      "endpoint": "GET /api/knowledge-hub/integrated-repositories",
+      "url": "http://localhost:8081/api/knowledge-hub/integrated-repositories",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 5.09,
+      "content_length": 11586,
+      "error": null
+    },
+    {
+      "endpoint": "GET /get-item",
+      "url": "http://localhost:8081/get-item?table=knowledge_hub&id=1",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.97,
+      "content_length": 619,
+      "error": null
+    },
+    {
+      "endpoint": "POST /update-checkbox",
+      "url": "http://localhost:8081/update-checkbox",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 5.25,
+      "content_length": 18,
+      "error": null
+    },
+    {
+      "endpoint": "POST /add-item",
+      "url": "http://localhost:8081/add-item",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 18.59,
+      "content_length": 24,
+      "error": null
+    },
+    {
+      "endpoint": "POST /edit-item",
+      "url": "http://localhost:8081/edit-item",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 8.85,
+      "content_length": 17,
+      "error": null
+    },
+    {
+      "endpoint": "POST /delete-item",
+      "url": "http://localhost:8081/delete-item",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 4.01,
+      "content_length": 18,
+      "error": null
+    },
+    {
+      "endpoint": "POST /add-github-repo",
+      "url": "http://localhost:8081/add-github-repo",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 8.44,
+      "content_length": 113,
+      "error": null
+    },
+    {
+      "endpoint": "POST /process-github-user",
+      "url": "http://localhost:8081/process-github-user",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        400
+      ],
+      "success": true,
+      "response_time_ms": 481.88,
+      "content_length": 83,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/quick-execute",
+      "url": "http://localhost:8081/api/quick-execute",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 3.62,
+      "content_length": 117,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/youtube/transcript",
+      "url": "http://localhost:8081/api/youtube/transcript",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        400
+      ],
+      "success": true,
+      "response_time_ms": 23.34,
+      "content_length": 71,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/youtube/process-channel",
+      "url": "http://localhost:8081/api/youtube/process-channel",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        400
+      ],
+      "success": true,
+      "response_time_ms": 6.49,
+      "content_length": 102,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/providers/rebalance",
+      "url": "http://localhost:8081/api/providers/rebalance",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 2.72,
+      "content_length": 120,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/knowledge-hub/process-youtube",
+      "url": "http://localhost:8081/api/knowledge-hub/process-youtube",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        400
+      ],
+      "success": true,
+      "response_time_ms": 20.5,
+      "content_length": 74,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/knowledge-hub/process-github",
+      "url": "http://localhost:8081/api/knowledge-hub/process-github",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        400
+      ],
+      "success": true,
+      "response_time_ms": 980.47,
+      "content_length": 445,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/knowledge-hub/agent-action",
+      "url": "http://localhost:8081/api/knowledge-hub/agent-action",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        400
+      ],
+      "success": true,
+      "response_time_ms": 1008.61,
+      "content_length": 233,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/knowledge-hub/integrate-repository",
+      "url": "http://localhost:8081/api/knowledge-hub/integrate-repository",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        400
+      ],
+      "success": true,
+      "response_time_ms": 5.7,
+      "content_length": 76,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/knowledge-hub/remove-integration",
+      "url": "http://localhost:8081/api/knowledge-hub/remove-integration",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        400
+      ],
+      "success": true,
+      "response_time_ms": 4.89,
+      "content_length": 50,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/orchestrator/process-message",
+      "url": "http://localhost:8081/api/orchestrator/process-message",
+      "method": "POST",
+      "status_code": 0,
+      "expected_status": [
+        200
+      ],
+      "success": false,
+      "response_time_ms": 0,
+      "content_length": 0,
+      "error": "HTTPConnectionPool(host='localhost', port=8081): Read timed out. (read timeout=10)"
+    },
+    {
+      "endpoint": "POST /api/orchestrator/add-task",
+      "url": "http://localhost:8081/api/orchestrator/add-task",
+      "method": "POST",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 17.5,
+      "content_length": 98,
+      "error": null
+    },
+    {
+      "endpoint": "POST /api/orchestrator/execute-test-task",
+      "url": "http://localhost:8081/api/orchestrator/execute-test-task",
+      "method": "POST",
+      "status_code": 0,
+      "expected_status": [
+        200
+      ],
+      "success": false,
+      "response_time_ms": 0,
+      "content_length": 0,
+      "error": "HTTPConnectionPool(host='localhost', port=8081): Read timed out. (read timeout=10)"
+    },
+    {
+      "endpoint": "GET /api/realtime-teams",
+      "url": "http://localhost:8081/api/realtime-teams",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        500
+      ],
+      "success": true,
+      "response_time_ms": 16.63,
+      "content_length": 2817,
+      "error": null
+    },
+    {
+      "endpoint": "GET /business-empire",
+      "url": "http://localhost:8081/business-empire",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200,
+        302
+      ],
+      "success": true,
+      "response_time_ms": 7.53,
+      "content_length": 34077,
+      "error": null
+    },
+    {
+      "endpoint": "GET /business-opportunities",
+      "url": "http://localhost:8081/business-opportunities",
+      "method": "GET",
+      "status_code": 500,
+      "expected_status": [
+        200
+      ],
+      "success": false,
+      "response_time_ms": 7.63,
+      "content_length": 265,
+      "error": "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the s"
+    },
+    {
+      "endpoint": "GET /business-projects",
+      "url": "http://localhost:8081/business-projects",
+      "method": "GET",
+      "status_code": 500,
+      "expected_status": [
+        200
+      ],
+      "success": false,
+      "response_time_ms": 5.18,
+      "content_length": 265,
+      "error": "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the s"
+    },
+    {
+      "endpoint": "GET /business-revenue",
+      "url": "http://localhost:8081/business-revenue",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": [
+        200
+      ],
+      "success": true,
+      "response_time_ms": 18.7,
+      "content_length": 37607,
+      "error": null
+    }
+  ],
+  "critical_failures": [
+    {
+      "endpoint": "GET /active-agents",
+      "url": "http://localhost:8081/active-agents",
+      "method": "GET",
+      "status_code": 500,
+      "expected_status": [
+        200
+      ],
+      "success": false,
+      "response_time_ms": 5.98,
+      "content_length": 265,
+      "error": "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the s"
+    },
+    {
+      "endpoint": "POST /api/orchestrator/process-message",
+      "url": "http://localhost:8081/api/orchestrator/process-message",
+      "method": "POST",
+      "status_code": 0,
+      "expected_status": [
+        200
+      ],
+      "success": false,
+      "response_time_ms": 0,
+      "content_length": 0,
+      "error": "HTTPConnectionPool(host='localhost', port=8081): Read timed out. (read timeout=10)"
+    },
+    {
+      "endpoint": "POST /api/orchestrator/execute-test-task",
+      "url": "http://localhost:8081/api/orchestrator/execute-test-task",
+      "method": "POST",
+      "status_code": 0,
+      "expected_status": [
+        200
+      ],
+      "success": false,
+      "response_time_ms": 0,
+      "content_length": 0,
+      "error": "HTTPConnectionPool(host='localhost', port=8081): Read timed out. (read timeout=10)"
+    }
+  ],
+  "test_start_time": "2025-06-14T12:16:57.065287"
+}

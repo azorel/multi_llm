@@ -1,0 +1,143 @@
+{
+  "test_settings": {
+    "server_timeout": 30,
+    "database_timeout": 10,
+    "api_timeout": 15,
+    "performance_monitoring": true,
+    "mock_data": false,
+    "html_reports": true,
+    "detailed_logging": true
+  },
+  "test_server": {
+    "host": "localhost",
+    "port": 5000,
+    "start_timeout": 10
+  },
+  "test_database": {
+    "path": "test_unified_dashboard.db",
+    "backup_main": true,
+    "cleanup_after": true
+  },
+  "youtube_test_videos": [
+    {
+      "id": "dQw4w9WgXcQ",
+      "name": "Rick Roll - Test Video",
+      "expected_transcript": true
+    }
+  ],
+  "indydandev_test_videos": [
+    {
+      "note": "Add real IndyDanDev video IDs here when available",
+      "examples": [
+        "REPLACE_WITH_REAL_VIDEO_ID_1",
+        "REPLACE_WITH_REAL_VIDEO_ID_2"
+      ]
+    }
+  ],
+  "dashboard_pages": [
+    {
+      "url": "/",
+      "name": "Home (redirects to Today's CC)",
+      "expected_redirect": true
+    },
+    {
+      "url": "/todays-cc",
+      "name": "Today's Command Center",
+      "required_elements": ["Today's CC", "task"]
+    },
+    {
+      "url": "/knowledge-hub",
+      "name": "Knowledge Hub",
+      "required_elements": ["Knowledge Hub", "entries"]
+    },
+    {
+      "url": "/agent-command-center",
+      "name": "Agent Command Center",
+      "required_elements": ["Agent Command Center", "agents"]
+    },
+    {
+      "url": "/active-agents",
+      "name": "Active Agents Dashboard",
+      "required_elements": ["Active Agents", "dashboard"]
+    },
+    {
+      "url": "/github-users",
+      "name": "GitHub Users",
+      "required_elements": ["GitHub Users"]
+    },
+    {
+      "url": "/youtube-channels",
+      "name": "YouTube Channels",
+      "required_elements": ["YouTube Channels"]
+    },
+    {
+      "url": "/server-status",
+      "name": "Server Status",
+      "required_elements": ["Server Status", "system"]
+    }
+  ],
+  "api_endpoints": [
+    {
+      "path": "/update-checkbox",
+      "method": "POST",
+      "test_data": {
+        "table": "todays_cc",
+        "id": 1,
+        "field": "completed",
+        "value": true
+      }
+    },
+    {
+      "path": "/orchestrator-command",
+      "method": "POST",
+      "test_data": {
+        "command": "test"
+      }
+    },
+    {
+      "path": "/add-item",
+      "method": "POST",
+      "test_data": {
+        "table": "notes",
+        "data": {
+          "title": "Test Note",
+          "content": "Test content"
+        }
+      }
+    }
+  ],
+  "orchestrator_commands": [
+    {
+      "command": "test",
+      "expected_success": true
+    },
+    {
+      "command": "status",
+      "expected_success": true
+    },
+    {
+      "command": "database",
+      "expected_success": true
+    }
+  ],
+  "performance_thresholds": {
+    "page_load_time_max": 5.0,
+    "api_response_time_max": 2.0,
+    "database_query_time_max": 1.0,
+    "cpu_usage_max": 80.0,
+    "memory_usage_max": 90.0
+  },
+  "expected_database_tables": [
+    "knowledge_hub",
+    "youtube_channels", 
+    "github_users",
+    "agent_command_center",
+    "prompt_library",
+    "todays_cc",
+    "tasks",
+    "habits",
+    "shopping_list",
+    "books",
+    "notes"
+  ]
+}

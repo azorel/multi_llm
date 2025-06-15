@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Dashboard - GitHub Integration Pipeline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --info-color: #06b6d4;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: var(--bg-primary);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .status-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .status-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-value.running { color: var(--success-color); }
+        .status-value.stopped { color: var(--error-color); }
+        .status-value.warning { color: var(--warning-color); }
+
+        .status-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .controls-section {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .controls-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .tabs {
+            margin-bottom: 2rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .content-card {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-info {
+            background: #e0f2fe;
+            color: #0891b2;
+        }
+
+        .badge-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success-color);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #6ee7b7;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        .alert-info {
+            background: #f0f9ff;
+            color: #0369a1;
+            border: 1px solid #7dd3fc;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+
+            .tab-buttons {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Automation Dashboard</h1>
+            <p>GitHub Integration Pipeline - Automated Repository Processing & Analysis</p>
+        </div>
+
+        <!-- Pipeline Status -->
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>Pipeline Status</h3>
+                <div class="status-value" id="pipeline-status">Loading...</div>
+                <div class="status-meta" id="pipeline-meta">Checking status...</div>
+            </div>
+            <div class="status-card">
+                <h3>Active Jobs</h3>
+                <div class="status-value" id="active-jobs">0</div>
+                <div class="status-meta">Background operations</div>
+            </div>
+            <div class="status-card">
+                <h3>Repositories</h3>
+                <div class="status-value" id="repos-processed">0</div>
+                <div class="status-meta">Successfully processed</div>
+            </div>
+            <div class="status-card">
+                <h3>Rate Limit</h3>
+                <div class="status-value" id="rate-limit">Unknown</div>
+                <div class="status-meta" id="rate-limit-meta">GitHub API</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-section">
+            <h2>Pipeline Controls</h2>
+            <div class="button-group">
+                <button class="btn btn-success" onclick="startPipeline()">
+                    <i data-feather="play"></i> Start Pipeline
+                </button>
+                <button class="btn btn-danger" onclick="stopPipeline()">
+                    <i data-feather="stop-circle"></i> Stop Pipeline
+                </button>
+                <button class="btn btn-primary" onclick="triggerDiscovery()">
+                    <i data-feather="search"></i> Trigger Discovery
+                </button>
+                <button class="btn btn-warning" onclick="triggerMonitoring()">
+                    <i data-feather="eye"></i> Monitor Repos
+                </button>
+                <button class="btn btn-secondary" onclick="triggerHealthCheck()">
+                    <i data-feather="heart"></i> Health Check
+                </button>
+                <button class="btn btn-secondary" onclick="refreshStatus()">
+                    <i data-feather="refresh-cw"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('jobs')">Background Jobs</button>
+                <button class="tab-button" onclick="switchTab('workflows')">Workflows</button>
+                <button class="tab-button" onclick="switchTab('operations')">Active Operations</button>
+                <button class="tab-button" onclick="switchTab('config')">Configuration</button>
+                <button class="tab-button" onclick="switchTab('stats')">Statistics</button>
+            </div>
+
+            <!-- Background Jobs Tab -->
+            <div class="tab-content active" id="jobs-tab">
+                <div class="content-card">
+                    <h3>Background Jobs</h3>
+                    <div class="table-container">
+                        <table class="table" id="jobs-table">
+                            <thead>
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Type</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Progress</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="jobs-tbody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem;">
+                                        <div class="loading"></div>
+                                        <div style="margin-top: 0.5rem;">Loading jobs...</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflows Tab -->
+            <div class="tab-content" id="workflows-tab">
+                <div class="content-card">
+                    <h3>Automation Workflows</h3>
+                    <div class="table-container">
+                        <table class="table" id="workflows-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Trigger</th>
+                                    <th>Status</th>
+                                    <th>Last Run</th>
+                                    <th>Next Run</th>
+                                    <th>Success Rate</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workflows-tbody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem;">
+                                        <div class="loading"></div>
+                                        <div style="margin-top: 0.5rem;">Loading workflows...</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Operations Tab -->
+            <div class="tab-content" id="operations-tab">
+                <div class="content-card">
+                    <h3>Active Operations</h3>
+                    <div class="table-container">
+                        <table class="table" id="operations-table">
+                            <thead>
+                                <tr>
+                                    <th>Operation ID</th>
+                                    <th>Type</th>
+                                    <th>Target</th>
+                                    <th>Status</th>
+                                    <th>Started</th>
+                                    <th>Duration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="operations-tbody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem;">
+                                        <div class="loading"></div>
+                                        <div style="margin-top: 0.5rem;">Loading operations...</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Tab -->
+            <div class="tab-content" id="config-tab">
+                <div class="content-card">
+                    <h3>Pipeline Configuration</h3>
+                    <div id="config-form">
+                        <div class="loading"></div>
+                        <div style="margin-top: 0.5rem;">Loading configuration...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div class="tab-content" id="stats-tab">
+                <div class="content-card">
+                    <h3>Pipeline Statistics</h3>
+                    <div id="stats-content">
+                        <div class="loading"></div>
+                        <div style="margin-top: 0.5rem;">Loading statistics...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert container -->
+    <div id="alert-container" style="position: fixed; top: 1rem; right: 1rem; z-index: 1000; max-width: 400px;"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.js"></script>
+    <script>
+        // Initialize feather icons
+        feather.replace();
+
+        // Global state
+        let currentTab = 'jobs';
+        let refreshInterval;
+
+        // API base URL
+        const API_BASE = '/api/automation';
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            currentTab = tabName;
+
+            // Load tab content
+            loadTabContent(tabName);
+        }
+
+        // Load tab content
+        async function loadTabContent(tabName) {
+            try {
+                switch (tabName) {
+                    case 'jobs':
+                        await loadJobs();
+                        break;
+                    case 'workflows':
+                        await loadWorkflows();
+                        break;
+                    case 'operations':
+                        await loadOperations();
+                        break;
+                    case 'config':
+                        await loadConfig();
+                        break;
+                    case 'stats':
+                        await loadStats();
+                        break;
+                }
+            } catch (error) {
+                console.error(`Error loading ${tabName}:`, error);
+                showAlert(`Error loading ${tabName}: ${error.message}`, 'error');
+            }
+        }
+
+        // Pipeline controls
+        async function startPipeline() {
+            try {
+                showAlert('Starting automation pipeline...', 'info');
+                const response = await fetch(`${API_BASE}/start`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Pipeline started successfully!', 'success');
+                    refreshStatus();
+                } else {
+                    showAlert(`Failed to start pipeline: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error starting pipeline: ${error.message}`, 'error');
+            }
+        }
+
+        async function stopPipeline() {
+            try {
+                showAlert('Stopping automation pipeline...', 'info');
+                const response = await fetch(`${API_BASE}/stop`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Pipeline stopped successfully!', 'success');
+                    refreshStatus();
+                } else {
+                    showAlert(`Failed to stop pipeline: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error stopping pipeline: ${error.message}`, 'error');
+            }
+        }
+
+        async function triggerDiscovery() {
+            try {
+                showAlert('Triggering repository discovery...', 'info');
+                const response = await fetch(`${API_BASE}/discovery/trigger`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Discovery triggered successfully!', 'success');
+                    refreshStatus();
+                } else {
+                    showAlert(`Failed to trigger discovery: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error triggering discovery: ${error.message}`, 'error');
+            }
+        }
+
+        async function triggerMonitoring() {
+            try {
+                showAlert('Triggering repository monitoring...', 'info');
+                const response = await fetch(`${API_BASE}/monitoring/trigger`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Monitoring triggered successfully!', 'success');
+                    refreshStatus();
+                } else {
+                    showAlert(`Failed to trigger monitoring: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error triggering monitoring: ${error.message}`, 'error');
+            }
+        }
+
+        async function triggerHealthCheck() {
+            try {
+                showAlert('Triggering health check...', 'info');
+                const response = await fetch(`${API_BASE}/health-check/trigger`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Health check triggered successfully!', 'success');
+                    refreshStatus();
+                } else {
+                    showAlert(`Failed to trigger health check: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error triggering health check: ${error.message}`, 'error');
+            }
+        }
+
+        // Status loading
+        async function refreshStatus() {
+            try {
+                await Promise.all([
+                    loadPipelineStatus(),
+                    loadRateLimit(),
+                    loadTabContent(currentTab)
+                ]);
+            } catch (error) {
+                console.error('Error refreshing status:', error);
+            }
+        }
+
+        async function loadPipelineStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const pipeline = result.pipeline;
+                    
+                    // Update pipeline status
+                    const statusEl = document.getElementById('pipeline-status');
+                    const metaEl = document.getElementById('pipeline-meta');
+                    
+                    if (pipeline.running) {
+                        statusEl.textContent = 'Running';
+                        statusEl.className = 'status-value running';
+                        metaEl.textContent = `${pipeline.worker_threads} workers active`;
+                    } else {
+                        statusEl.textContent = 'Stopped';
+                        statusEl.className = 'status-value stopped';
+                        metaEl.textContent = 'Pipeline not running';
+                    }
+                    
+                    // Update active jobs
+                    document.getElementById('active-jobs').textContent = pipeline.active_operations.length;
+                    
+                    // Update repositories processed
+                    document.getElementById('repos-processed').textContent = pipeline.stats.repositories_processed || 0;
+                    
+                } else {
+                    console.error('Failed to load pipeline status:', result.error);
+                }
+            } catch (error) {
+                console.error('Error loading pipeline status:', error);
+            }
+        }
+
+        async function loadRateLimit() {
+            try {
+                const response = await fetch(`${API_BASE}/github/api/rate-limit`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const core = result.core || {};
+                    const remaining = core.remaining || 0;
+                    const limit = core.limit || 5000;
+                    
+                    document.getElementById('rate-limit').textContent = `${remaining}/${limit}`;
+                    
+                    const metaEl = document.getElementById('rate-limit-meta');
+                    if (remaining < 100) {
+                        metaEl.textContent = 'Low - Consider waiting';
+                        document.getElementById('rate-limit').className = 'status-value warning';
+                    } else if (remaining < 500) {
+                        metaEl.textContent = 'Medium - Monitor usage';
+                        document.getElementById('rate-limit').className = 'status-value warning';
+                    } else {
+                        metaEl.textContent = 'GitHub API';
+                        document.getElementById('rate-limit').className = 'status-value';
+                    }
+                } else {
+                    document.getElementById('rate-limit').textContent = 'Error';
+                    document.getElementById('rate-limit-meta').textContent = 'Unable to fetch';
+                }
+            } catch (error) {
+                console.error('Error loading rate limit:', error);
+                document.getElementById('rate-limit').textContent = 'Error';
+                document.getElementById('rate-limit-meta').textContent = 'Unable to fetch';
+            }
+        }
+
+        async function loadJobs() {
+            try {
+                const response = await fetch(`${API_BASE}/jobs?limit=50`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const tbody = document.getElementById('jobs-tbody');
+                    
+                    if (result.jobs.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No jobs found</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = result.jobs.map(job => `
+                        <tr>
+                            <td><code>${job.job_id.substring(0, 8)}...</code></td>
+                            <td>${job.job_type}</td>
+                            <td>${job.title}</td>
+                            <td><span class="badge badge-${getStatusColor(job.status)}">${job.status}</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${job.progress?.percentage || 0}%"></div>
+                                </div>
+                                ${job.progress?.percentage || 0}%
+                            </td>
+                            <td>${formatDate(job.created_at)}</td>
+                            <td>
+                                ${job.status === 'running' ? `<button class="btn btn-danger" onclick="cancelJob('${job.job_id}')">Cancel</button>` : ''}
+                                ${job.status === 'failed' ? `<button class="btn btn-warning" onclick="retryJob('${job.job_id}')">Retry</button>` : ''}
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    document.getElementById('jobs-tbody').innerHTML = 
+                        `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Error loading jobs: ${result.error}</td></tr>`;
+                }
+            } catch (error) {
+                document.getElementById('jobs-tbody').innerHTML = 
+                    `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Error loading jobs: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function loadWorkflows() {
+            try {
+                const response = await fetch(`${API_BASE}/workflows`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const tbody = document.getElementById('workflows-tbody');
+                    
+                    if (result.workflows.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No workflows found</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = result.workflows.map(workflow => `
+                        <tr>
+                            <td>${workflow.name}</td>
+                            <td><span class="badge badge-info">${workflow.trigger}</span></td>
+                            <td><span class="badge badge-${workflow.enabled ? 'success' : 'secondary'}">${workflow.enabled ? 'Enabled' : 'Disabled'}</span></td>
+                            <td>${workflow.last_run ? formatDate(workflow.last_run) : 'Never'}</td>
+                            <td>${workflow.next_run ? formatDate(workflow.next_run) : 'N/A'}</td>
+                            <td>${workflow.run_count > 0 ? Math.round((workflow.success_count / workflow.run_count) * 100) : 0}%</td>
+                            <td>
+                                ${workflow.enabled ? 
+                                    `<button class="btn btn-warning" onclick="disableWorkflow('${workflow.workflow_id}')">Disable</button>` :
+                                    `<button class="btn btn-success" onclick="enableWorkflow('${workflow.workflow_id}')">Enable</button>`
+                                }
+                                <button class="btn btn-primary" onclick="executeWorkflow('${workflow.workflow_id}')">Execute</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    document.getElementById('workflows-tbody').innerHTML = 
+                        `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Error loading workflows: ${result.error}</td></tr>`;
+                }
+            } catch (error) {
+                document.getElementById('workflows-tbody').innerHTML = 
+                    `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Error loading workflows: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function loadOperations() {
+            try {
+                const response = await fetch(`${API_BASE}/operations`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const tbody = document.getElementById('operations-tbody');
+                    
+                    if (result.operations.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No active operations</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = result.operations.map(op => `
+                        <tr>
+                            <td><code>${op.operation_id.substring(0, 8)}...</code></td>
+                            <td>${op.type}</td>
+                            <td>${op.username || op.repository || 'N/A'}</td>
+                            <td><span class="badge badge-${getStatusColor(op.status)}">${op.status}</span></td>
+                            <td>${formatDate(op.started_at)}</td>
+                            <td>${calculateDuration(op.started_at)}</td>
+                            <td>
+                                ${op.job_id ? `<button class="btn btn-secondary" onclick="viewJob('${op.job_id}')">View Job</button>` : ''}
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    document.getElementById('operations-tbody').innerHTML = 
+                        `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Error loading operations: ${result.error}</td></tr>`;
+                }
+            } catch (error) {
+                document.getElementById('operations-tbody').innerHTML = 
+                    `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Error loading operations: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/config`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const config = result.config;
+                    document.getElementById('config-form').innerHTML = `
+                        <div class="form-group">
+                            <label class="form-label">GitHub Monitoring</label>
+                            <select class="form-select" id="github-monitoring">
+                                <option value="true" ${config.github_monitoring_enabled ? 'selected' : ''}>Enabled</option>
+                                <option value="false" ${!config.github_monitoring_enabled ? 'selected' : ''}>Disabled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Auto Repository Discovery</label>
+                            <select class="form-select" id="auto-discovery">
+                                <option value="true" ${config.auto_repository_discovery ? 'selected' : ''}>Enabled</option>
+                                <option value="false" ${!config.auto_repository_discovery ? 'selected' : ''}>Disabled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Auto Code Analysis</label>
+                            <select class="form-select" id="auto-analysis">
+                                <option value="true" ${config.auto_code_analysis ? 'selected' : ''}>Enabled</option>
+                                <option value="false" ${!config.auto_code_analysis ? 'selected' : ''}>Disabled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Max Concurrent Operations</label>
+                            <input type="number" class="form-input" id="max-concurrent" value="${config.max_concurrent_operations}" min="1" max="10">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Discovery Interval (hours)</label>
+                            <input type="number" class="form-input" id="discovery-interval" value="${config.discovery_interval_hours}" min="1" max="168">
+                        </div>
+                        <button class="btn btn-primary" onclick="updateConfig()">Update Configuration</button>
+                    `;
+                } else {
+                    document.getElementById('config-form').innerHTML = `Error loading configuration: ${result.error}`;
+                }
+            } catch (error) {
+                document.getElementById('config-form').innerHTML = `Error loading configuration: ${error.message}`;
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.stats;
+                    document.getElementById('stats-content').innerHTML = `
+                        <div class="metric-grid">
+                            <div class="metric-item">
+                                <div class="metric-value">${stats.repositories_discovered || 0}</div>
+                                <div class="metric-label">Repositories Discovered</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">${stats.repositories_processed || 0}</div>
+                                <div class="metric-label">Repositories Processed</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">${stats.repositories_analyzed || 0}</div>
+                                <div class="metric-label">Repositories Analyzed</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">${stats.repositories_integrated || 0}</div>
+                                <div class="metric-label">Repositories Integrated</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">${stats.errors_encountered || 0}</div>
+                                <div class="metric-label">Errors Encountered</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">${stats.runtime_formatted || 'N/A'}</div>
+                                <div class="metric-label">Runtime</div>
+                            </div>
+                        </div>
+                        ${stats.repositories_per_hour ? `
+                            <div style="margin-top: 2rem;">
+                                <h4>Performance Metrics</h4>
+                                <p>Repositories per hour: <strong>${stats.repositories_per_hour.toFixed(2)}</strong></p>
+                                <p>Integrations per hour: <strong>${stats.integrations_per_hour.toFixed(2)}</strong></p>
+                            </div>
+                        ` : ''}
+                    `;
+                } else {
+                    document.getElementById('stats-content').innerHTML = `Error loading statistics: ${result.error}`;
+                }
+            } catch (error) {
+                document.getElementById('stats-content').innerHTML = `Error loading statistics: ${error.message}`;
+            }
+        }
+
+        // Job actions
+        async function cancelJob(jobId) {
+            try {
+                const response = await fetch(`${API_BASE}/jobs/${jobId}/cancel`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Job cancelled successfully!', 'success');
+                    loadJobs();
+                } else {
+                    showAlert(`Failed to cancel job: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error cancelling job: ${error.message}`, 'error');
+            }
+        }
+
+        async function retryJob(jobId) {
+            try {
+                const response = await fetch(`${API_BASE}/jobs/${jobId}/retry`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Job retry initiated!', 'success');
+                    loadJobs();
+                } else {
+                    showAlert(`Failed to retry job: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error retrying job: ${error.message}`, 'error');
+            }
+        }
+
+        // Workflow actions
+        async function enableWorkflow(workflowId) {
+            try {
+                const response = await fetch(`${API_BASE}/workflows/${workflowId}/enable`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Workflow enabled!', 'success');
+                    loadWorkflows();
+                } else {
+                    showAlert(`Failed to enable workflow: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error enabling workflow: ${error.message}`, 'error');
+            }
+        }
+
+        async function disableWorkflow(workflowId) {
+            try {
+                const response = await fetch(`${API_BASE}/workflows/${workflowId}/disable`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Workflow disabled!', 'success');
+                    loadWorkflows();
+                } else {
+                    showAlert(`Failed to disable workflow: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error disabling workflow: ${error.message}`, 'error');
+            }
+        }
+
+        async function executeWorkflow(workflowId) {
+            try {
+                const response = await fetch(`${API_BASE}/workflows/${workflowId}/execute`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Workflow execution started!', 'success');
+                    loadWorkflows();
+                    loadJobs();
+                } else {
+                    showAlert(`Failed to execute workflow: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error executing workflow: ${error.message}`, 'error');
+            }
+        }
+
+        // Configuration update
+        async function updateConfig() {
+            try {
+                const config = {
+                    github_monitoring_enabled: document.getElementById('github-monitoring').value === 'true',
+                    auto_repository_discovery: document.getElementById('auto-discovery').value === 'true',
+                    auto_code_analysis: document.getElementById('auto-analysis').value === 'true',
+                    max_concurrent_operations: parseInt(document.getElementById('max-concurrent').value),
+                    discovery_interval_hours: parseInt(document.getElementById('discovery-interval').value)
+                };
+                
+                const response = await fetch(`${API_BASE}/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Configuration updated successfully!', 'success');
+                } else {
+                    showAlert(`Failed to update configuration: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error updating configuration: ${error.message}`, 'error');
+            }
+        }
+
+        // Utility functions
+        function getStatusColor(status) {
+            switch (status) {
+                case 'completed': return 'success';
+                case 'running': return 'info';
+                case 'failed': return 'error';
+                case 'pending': return 'warning';
+                default: return 'secondary';
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+
+        function calculateDuration(startTime) {
+            if (!startTime) return 'N/A';
+            const start = new Date(startTime);
+            const now = new Date();
+            const diff = now - start;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            if (minutes > 0) return `${minutes}m ${seconds}s`;
+            return `${seconds}s`;
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertId = `alert-${Date.now()}`;
+            
+            const alertHtml = `
+                <div id="${alertId}" class="alert alert-${type}">
+                    <i data-feather="${getAlertIcon(type)}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            alertContainer.insertAdjacentHTML('beforeend', alertHtml);
+            feather.replace();
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                const alertEl = document.getElementById(alertId);
+                if (alertEl) {
+                    alertEl.remove();
+                }
+            }, 5000);
+        }
+
+        function getAlertIcon(type) {
+            switch (type) {
+                case 'success': return 'check-circle';
+                case 'error': return 'x-circle';
+                case 'warning': return 'alert-triangle';
+                case 'info': return 'info';
+                default: return 'info';
+            }
+        }
+
+        function viewJob(jobId) {
+            // Switch to jobs tab and highlight the job
+            switchTab('jobs');
+            // TODO: Implement job detail view
+        }
+
+        // Initialize page
+        async function initialize() {
+            try {
+                await refreshStatus();
+                
+                // Set up auto-refresh
+                refreshInterval = setInterval(refreshStatus, 30000); // Refresh every 30 seconds
+            } catch (error) {
+                console.error('Error initializing page:', error);
+                showAlert('Error initializing automation dashboard', 'error');
+            }
+        }
+
+        // Start initialization when page loads
+        document.addEventListener('DOMContentLoaded', initialize);
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

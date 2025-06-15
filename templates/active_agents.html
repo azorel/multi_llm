@@ -1,15 +1,16 @@
-{% extends "base.html" %}
+{% extends "base_modern.html" %}
 
 {% block title %}Active Agents - LifeOS{% endblock %}
+{% block header_title %}Active Agents Dashboard{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">🤖 Active Agents Dashboard</h1>
     <p class="page-subtitle">
         Real-time monitoring of multi-agent orchestration system with specialized task agents.
-        <span style="float: right; color: var(--notion-text-light); font-size: 12px;">
-            Last updated: {{ now.strftime('%H:%M:%S') }}
-            <button onclick="location.reload()" style="margin-left: 8px; background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+        <span style="float: right; color: var(--text-tertiary); font-size: 12px;">
+            Last updated: {{ now.strftime('%H:%M:%S') if now else 'Unknown' }}
+            <button onclick="location.reload()" class="btn btn-secondary btn-sm">
                 🔄 Refresh
             </button>
         </span>
@@ -17,8 +18,10 @@
 </div>
 
 <!-- Orchestrator Status -->
-<div class="notion-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-    <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">🎯 Orchestrator Status</div>
+<div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="card-header" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">
+        <h3 class="card-title" style="color: white;">🎯 Orchestrator Status</h3>
+    </div>
     <div class="card-content" style="color: white;">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
             <div>
@@ -31,11 +34,11 @@
             </div>
             <div>
                 <div style="font-size: 14px; opacity: 0.9;">Tasks Completed</div>
-                <div style="font-size: 18px; font-weight: 600;">{{ agents.task_queue|length }}</div>
+                <div style="font-size: 18px; font-weight: 600;">{{ agents.task_queue|default([])|length }}</div>
             </div>
             <div>
                 <div style="font-size: 14px; opacity: 0.9;">Agents Managed</div>
-                <div style="font-size: 18px; font-weight: 600;">{{ agents.agents|length }}</div>
+                <div style="font-size: 18px; font-weight: 600;">{{ agents.agents|default([])|length }}</div>
             </div>
             <div>
                 <div style="font-size: 14px; opacity: 0.9;">Status</div>
@@ -48,8 +51,10 @@
 </div>
 
 <!-- Direct Communication Interface -->
-<div class="notion-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">
-    <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">💬 Talk to Claude Orchestrator</div>
+<div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">
+    <div class="card-header" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">
+        <h3 class="card-title" style="color: white;">💬 Talk to Claude Orchestrator</h3>
+    </div>
     <div class="card-content" style="color: white;">
         <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
             <input type="text" 
@@ -84,65 +89,44 @@
 </div>
 
 <!-- System Metrics -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 32px;">
-    <div class="notion-card">
-        <div class="card-title">🤖 Total Agents</div>
-        <div class="card-content">
-            <div style="font-size: 32px; font-weight: 600; color: var(--notion-blue);">{{ agents.get("system_metrics", {}).get("total_agents", 0) }}</div>
-            <div style="font-size: 12px; color: var(--notion-text-light);">Specialized agents</div>
-        </div>
+<div class="grid grid-cols-6 gap-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ agents.get("system_metrics", {}).get("total_agents", 0) }}</div>
+        <div class="stat-label">Total Agents</div>
     </div>
-    
-    <div class="notion-card">
-        <div class="card-title">⚡ Active Now</div>
-        <div class="card-content">
-            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">{{ agents.get("system_metrics", {}).get("active_agents", 0) }}</div>
-            <div style="font-size: 12px; color: var(--notion-text-light);">Currently working</div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ agents.get("system_metrics", {}).get("active_agents", 0) }}</div>
+        <div class="stat-label">Active Now</div>
     </div>
-    
-    <div class="notion-card">
-        <div class="card-title">📋 Queue</div>
-        <div class="card-content">
-            <div style="font-size: 32px; font-weight: 600; color: var(--notion-orange);">{{ agents.get("system_metrics", {}).get("queued_tasks", 0) }}</div>
-            <div style="font-size: 12px; color: var(--notion-text-light);">Waiting to start</div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ agents.get("system_metrics", {}).get("queued_tasks", 0) }}</div>
+        <div class="stat-label">Queue</div>
     </div>
-    
-    <div class="notion-card">
-        <div class="card-title">✅ Completed</div>
-        <div class="card-content">
-            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">{{ agents.get("system_metrics", {}).get("completed_today", 0) }}</div>
-            <div style="font-size: 12px; color: var(--notion-text-light);">Tasks today</div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ agents.get("system_metrics", {}).get("completed_today", 0) }}</div>
+        <div class="stat-label">Completed</div>
     </div>
-    
-    <div class="notion-card">
-        <div class="card-title">🎯 Success Rate</div>
-        <div class="card-content">
-            <div style="font-size: 32px; font-weight: 600; color: var(--notion-green);">{{ "%.1f"|format(agents.get("system_metrics", {}).get("success_rate", 0)) }}%</div>
-            <div style="font-size: 12px; color: var(--notion-text-light);">Task completion</div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ "%.1f"|format(agents.get("system_metrics", {}).get("success_rate", 0)) }}%</div>
+        <div class="stat-label">Success Rate</div>
     </div>
-    
-    <div class="notion-card">
-        <div class="card-title">⏱️ Avg Response</div>
-        <div class="card-content">
-            <div style="font-size: 32px; font-weight: 600; color: var(--notion-blue);">{{ agents.get("system_metrics", {}).get("avg_response_time", 0) }}s</div>
-            <div style="font-size: 12px; color: var(--notion-text-light);">Response time</div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ agents.get("system_metrics", {}).get("avg_response_time", 0) }}s</div>
+        <div class="stat-label">Avg Response</div>
     </div>
 </div>
 
 <!-- Active Agents -->
-<div class="database-container">
-    <div class="database-header">
-        <span class="database-title">🔥 Active & Standby Agents ({{ agents.get("active_agents", [])|length }})</span>
-        <button onclick="pauseAllAgents()" class="add-button" style="background: var(--notion-orange);">⏸️ Pause All</button>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">🔥 Active & Standby Agents ({{ agents.get("active_agents", [])|length }})</h3>
+        <button onclick="pauseAllAgents()" class="btn btn-warning">⏸️ Pause All</button>
     </div>
+    <div class="card-content">
     
-    {% if agents.get("active_agents") %}
-    <table class="database-table">
+        {% if agents.get("active_agents") %}
+        <div class="table-container">
+            <table class="table">
         <thead>
             <tr>
                 <th>Agent Name</th>
@@ -156,44 +140,44 @@
         </thead>
         <tbody>
             {% for agent in agents.get("active_agents", []) %}
-            <tr class="{% if agent.status == 'active' %}agent-active{% elif agent.status == 'standby' %}agent-standby{% endif %}">
+            <tr class="{% if agent.status|default('') == 'active' %}agent-active{% elif agent.status|default('') == 'standby' %}agent-standby{% endif %}">
                 <td style="font-weight: 600;">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if agent.status == 'active' %}var(--notion-green){% else %}var(--notion-orange){% endif %};"></div>
-                        {{ agent.name }}
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if agent.status|default('') == 'active' %}var(--notion-green){% else %}var(--notion-orange){% endif %};"></div>
+                        {{ agent.name|default('Unknown Agent') }}
                     </div>
                 </td>
                 <td>
-                    <span class="status-pill status-{{ agent.type.lower() }}">{{ agent.type }}</span>
+                    <span class="status-pill status-{{ (agent.type|default('general')).lower() }}">{{ agent.type|default('General') }}</span>
                 </td>
                 <td>
-                    {% if agent.status == 'active' %}
+                    {% if agent.status|default('') == 'active' %}
                         <span class="status-pill status-active">🔄 Active</span>
                     {% else %}
                         <span class="status-pill status-standby">⏸️ Standby</span>
                     {% endif %}
                 </td>
                 <td style="max-width: 200px;">
-                    {% if agent.current_task %}
-                        <div style="font-size: 12px; color: var(--notion-text);">{{ agent.current_task }}</div>
+                    {% if agent.current_task|default('') %}
+                        <div style="font-size: 12px; color: var(--notion-text);">{{ agent.current_task|default('No task') }}</div>
                         {% if agent.get('start_time') %}
-                            <div style="font-size: 10px; color: var(--notion-text-light);">Started: {{ agent.start_time }}</div>
+                            <div style="font-size: 10px; color: var(--notion-text-light);">Started: {{ agent.start_time|default('Unknown') }}</div>
                         {% endif %}
                     {% else %}
                         <span style="color: var(--notion-text-light); font-style: italic;">Waiting for tasks</span>
                     {% endif %}
                 </td>
                 <td>
-                    {% if agent.current_task and agent.get('progress') is not none %}
+                    {% if agent.current_task|default('') and agent.get('progress') is not none %}
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <div style="background: #f0f0f0; height: 6px; width: 60px; border-radius: 3px;">
-                                <div style="background: var(--notion-blue); height: 100%; width: {{ agent.progress }}%; border-radius: 3px;"></div>
+                                <div style="background: var(--notion-blue); height: 100%; width: {{ agent.progress|default(0) }}%; border-radius: 3px;"></div>
                             </div>
-                            <span style="font-size: 11px; font-weight: 600;">{{ agent.progress }}%</span>
+                            <span style="font-size: 11px; font-weight: 600;">{{ agent.progress|default(0) }}%</span>
                         </div>
                         {% if agent.get('estimated_completion') %}
                             <div style="font-size: 10px; color: var(--notion-text-light); margin-top: 2px;">
-                                ETA: {{ agent.estimated_completion }}
+                                ETA: {{ agent.estimated_completion|default('Unknown') }}
                             </div>
                         {% endif %}
                     {% elif agent.get('continuous') %}
@@ -204,54 +188,58 @@
                 </td>
                 <td style="font-size: 11px;">
                     {% if agent.get('tokens_used') %}
-                        <div>Tokens: {{ agent.tokens_used }}</div>
-                        <div>Cost: ${{ "%.4f"|format(agent.cost) }}</div>
+                        <div>Tokens: {{ agent.tokens_used|default(0) }}</div>
+                        <div>Cost: ${{ "%.4f"|format(agent.cost|default(0)) }}</div>
                     {% elif agent.get('items_processed') %}
-                        <div>Processed: {{ agent.items_processed }}</div>
-                        <div>Queue: {{ agent.queue_size }}</div>
+                        <div>Processed: {{ agent.items_processed|default(0) }}</div>
+                        <div>Queue: {{ agent.queue_size|default(0) }}</div>
                     {% elif agent.get('alerts') is not none %}
-                        <div>Alerts: {{ agent.alerts }}</div>
-                        <div>Last: {{ agent.last_check }}</div>
+                        <div>Alerts: {{ agent.alerts|default(0) }}</div>
+                        <div>Last: {{ agent.last_check|default('Never') }}</div>
                     {% else %}
                         <div style="color: var(--notion-text-light);">Ready</div>
                     {% endif %}
                 </td>
                 <td>
                     <div style="display: flex; gap: 4px;">
-                        {% if agent.status == 'active' %}
-                            <button onclick="pauseAgent('{{ agent.id }}')" style="background: var(--notion-orange); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                        {% if agent.status|default('') == 'active' %}
+                            <button onclick="pauseAgent('{{ agent.id|default('') }}')" style="background: var(--notion-orange); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
                                 ⏸️
                             </button>
                         {% else %}
-                            <button onclick="startAgent('{{ agent.id }}')" style="background: var(--notion-green); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                            <button onclick="startAgent('{{ agent.id|default('') }}')" style="background: var(--notion-green); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
                                 ▶️
                             </button>
                         {% endif %}
-                        <button onclick="viewAgent('{{ agent.id }}')" style="background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
+                        <button onclick="viewAgent('{{ agent.id|default('') }}')" style="background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer;">
                             👁️
                         </button>
                     </div>
                 </td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <div style="padding: 40px; text-align: center; color: var(--notion-text-light);">
-        <p>No active agents. The orchestrator is ready to deploy specialized agents on demand.</p>
+            </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-12 text-gray-500">
+            <p>No active agents. The orchestrator is ready to deploy specialized agents on demand.</p>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
 
 <!-- Agent Queue -->
 {% if agents.get("agent_queue") %}
-<div class="database-container" style="margin-top: 32px;">
-    <div class="database-header">
-        <span class="database-title">📋 Agent Queue ({{ agents.get("agent_queue", [])|length }})</span>
-        <button onclick="processQueue()" class="add-button">▶️ Process Queue</button>
+<div class="card" style="margin-top: 32px;">
+    <div class="card-header">
+        <h3 class="card-title">📋 Agent Queue ({{ agents.get("agent_queue", [])|length }})</h3>
+        <button onclick="processQueue()" class="btn btn-primary">▶️ Process Queue</button>
     </div>
+    <div class="card-content">
+        <div class="table-container">
     
-    <table class="database-table">
+            <table class="table">
         <thead>
             <tr>
                 <th>Position</th>
@@ -279,19 +267,23 @@
                 </td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endif %}
 
 <!-- Recent Completed Tasks -->
-<div class="database-container" style="margin-top: 32px;">
-    <div class="database-header">
-        <span class="database-title">✅ Recently Completed Tasks</span>
-        <button onclick="viewAllTasks()" class="add-button">📊 View All</button>
+<div class="card" style="margin-top: 32px;">
+    <div class="card-header">
+        <h3 class="card-title">✅ Recently Completed Tasks</h3>
+        <button onclick="viewAllTasks()" class="btn btn-secondary">📊 View All</button>
     </div>
+    <div class="card-content">
+        <div class="table-container">
     
-    <table class="database-table">
+            <table class="table">
         <thead>
             <tr>
                 <th>Agent</th>
@@ -323,14 +315,18 @@
                     ${{ "%.4f"|format(task.cost) }}
                 </td>
             </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Agent Capabilities Matrix -->
-<div class="notion-card" style="margin-top: 32px;">
-    <div class="card-title">🧠 Agent Capabilities Matrix</div>
+<div class="card" style="margin-top: 32px;">
+    <div class="card-header">
+        <h3 class="card-title">🧠 Agent Capabilities Matrix</h3>
+    </div>
     <div class="card-content">
         <div style="overflow-x: auto;">
             <table style="width: 100%; font-size: 12px;">

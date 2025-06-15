@@ -1,0 +1,671 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Maintenance Schedule - LifeOS{% endblock %}
+{% block header_title %}Maintenance Schedule{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🔧 Maintenance Schedule</h1>
+    <p class="page-subtitle">Track equipment maintenance, schedules, and service records</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ equipment|length|default(0) }}</div>
+        <div class="stat-label">Total Equipment</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ maintenance_tasks|selectattr('status', 'equalto', 'overdue')|list|length|default(0) }}</div>
+        <div class="stat-label">Overdue Tasks</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ maintenance_tasks|selectattr('status', 'equalto', 'due_soon')|list|length|default(0) }}</div>
+        <div class="stat-label">Due Soon</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">${{ maintenance_tasks|sum(attribute='estimated_cost')|default(0) }}</div>
+        <div class="stat-label">Total Est. Cost</div>
+    </div>
+</div>
+
+<!-- Add Equipment Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">➕ Add Equipment</h3>
+    </div>
+    <div class="card-content">
+        <form id="equipmentForm">
+            <div class="grid grid-cols-4 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Equipment Name</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="equipmentName" 
+                           placeholder="Equipment name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-input" id="equipmentType">
+                        <option value="">Select type</option>
+                        <option value="vehicle">🚗 Vehicle</option>
+                        <option value="appliance">🏠 Appliance</option>
+                        <option value="hvac">❄️ HVAC</option>
+                        <option value="electronics">💻 Electronics</option>
+                        <option value="machinery">⚙️ Machinery</option>
+                        <option value="tools">🔨 Tools</option>
+                        <option value="other">📦 Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Model/Serial</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="equipmentModel" 
+                           placeholder="Model or serial number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Purchase Date</label>
+                    <input type="date" 
+                           class="form-input" 
+                           id="equipmentPurchaseDate">
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="equipmentLocation" 
+                           placeholder="Where is it located?">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Warranty Expiry</label>
+                    <input type="date" 
+                           class="form-input" 
+                           id="equipmentWarranty">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Purchase Cost</label>
+                    <input type="number" 
+                           class="form-input" 
+                           id="equipmentCost" 
+                           placeholder="0.00"
+                           step="0.01">
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button type="submit" class="btn btn-primary">
+                    💾 Add Equipment
+                    <span id="equipmentLoader" class="loading" style="display: none;"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="clearEquipmentForm()">
+                    🗑️ Clear
+                </button>
+            </div>
+        </form>
+        <div id="equipmentResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Equipment List -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">🔧 Equipment List</h3>
+        <div class="flex gap-2">
+            <input type="text" 
+                   class="form-input" 
+                   id="searchEquipment" 
+                   placeholder="Search equipment..."
+                   style="width: 200px;">
+            <select class="form-input" id="filterType" style="width: 150px;">
+                <option value="">All Types</option>
+                <option value="vehicle">Vehicle</option>
+                <option value="appliance">Appliance</option>
+                <option value="hvac">HVAC</option>
+                <option value="electronics">Electronics</option>
+                <option value="machinery">Machinery</option>
+                <option value="tools">Tools</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Type</th>
+                        <th>Location</th>
+                        <th>Last Service</th>
+                        <th>Next Service</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in equipment|default([]) %}
+                    <tr class="equipment-row">
+                        <td>
+                            <div>
+                                <div class="font-semibold">{{ item.name|default('Unknown Equipment') }}</div>
+                                <div class="text-sm text-gray-500">{{ item.model|default('No model specified') }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-info">
+                                {% if item.type == 'vehicle' %}🚗{% elif item.type == 'appliance' %}🏠{% elif item.type == 'hvac' %}❄️{% elif item.type == 'electronics' %}💻{% elif item.type == 'machinery' %}⚙️{% elif item.type == 'tools' %}🔨{% else %}📦{% endif %}
+                                {{ item.type|title|default('Other') }}
+                            </span>
+                        </td>
+                        <td>{{ item.location|default('Not specified') }}</td>
+                        <td class="text-sm">{{ item.last_service|default('Never') }}</td>
+                        <td class="text-sm">{{ item.next_service|default('Not scheduled') }}</td>
+                        <td>
+                            <span class="badge badge-{% if item.status == 'good' %}success{% elif item.status == 'needs_attention' %}warning{% elif item.status == 'critical' %}danger{% else %}info{% endif %}">
+                                {{ item.status|title|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-primary btn-sm" onclick="scheduleMaintenanceFor({{ item.id }})">
+                                    📅 Schedule
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="editEquipment({{ item.id }})">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteEquipment({{ item.id }})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">🔧</div>
+                            <div>No equipment registered yet</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Maintenance Tasks -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📋 Maintenance Tasks</h3>
+        <button class="btn btn-primary" onclick="showScheduleModal()">
+            ➕ Schedule Task
+        </button>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Equipment</th>
+                        <th>Type</th>
+                        <th>Due Date</th>
+                        <th>Estimated Cost</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in maintenance_tasks|default([]) %}
+                    <tr class="task-row {% if task.status == 'overdue' %}bg-red-50{% elif task.status == 'due_soon' %}bg-yellow-50{% endif %}">
+                        <td>
+                            <div>
+                                <div class="font-semibold">{{ task.task_name|default('Unnamed Task') }}</div>
+                                <div class="text-sm text-gray-500">{{ task.description|default('No description') }}</div>
+                            </div>
+                        </td>
+                        <td>{{ task.equipment_name|default('Unknown Equipment') }}</td>
+                        <td>
+                            <span class="badge badge-info">
+                                {% if task.maintenance_type == 'routine' %}🔄{% elif task.maintenance_type == 'inspection' %}🔍{% elif task.maintenance_type == 'repair' %}🔧{% elif task.maintenance_type == 'replacement' %}🔄{% else %}📋{% endif %}
+                                {{ task.maintenance_type|title|default('General') }}
+                            </span>
+                        </td>
+                        <td class="text-sm">{{ task.due_date|default('Not set') }}</td>
+                        <td class="text-sm">${{ task.estimated_cost|default(0) }}</td>
+                        <td>
+                            <span class="badge badge-{% if task.status == 'completed' %}success{% elif task.status == 'overdue' %}danger{% elif task.status == 'due_soon' %}warning{% else %}info{% endif %}">
+                                {{ task.status|replace('_', ' ')|title|default('Pending') }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                {% if task.status != 'completed' %}
+                                <button class="btn btn-success btn-sm" onclick="completeTask({{ task.id }})">
+                                    ✅ Complete
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-secondary btn-sm" onclick="editTask({{ task.id }})">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteTask({{ task.id }})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">📋</div>
+                            <div>No maintenance tasks scheduled</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Maintenance Modal -->
+<div id="scheduleModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📅 Schedule Maintenance</h3>
+            <button class="modal-close" onclick="closeScheduleModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="scheduleForm">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Task Name</label>
+                        <input type="text" id="taskName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Equipment</label>
+                        <select id="taskEquipment" class="form-input" required>
+                            <option value="">Select equipment</option>
+                            {% for item in equipment|default([]) %}
+                            <option value="{{ item.id }}">{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="taskDescription" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Maintenance Type</label>
+                        <select id="taskType" class="form-input">
+                            <option value="routine">🔄 Routine</option>
+                            <option value="inspection">🔍 Inspection</option>
+                            <option value="repair">🔧 Repair</option>
+                            <option value="replacement">🔄 Replacement</option>
+                            <option value="other">📋 Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" id="taskDueDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Estimated Cost</label>
+                        <input type="number" id="taskCost" class="form-input" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeScheduleModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Schedule Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.equipment-row:hover {
+    background-color: var(--color-gray-50);
+}
+
+.task-row:hover {
+    background-color: var(--color-gray-50);
+}
+
+.bg-red-50 {
+    background-color: #fef2f2;
+}
+
+.bg-yellow-50 {
+    background-color: #fffbeb;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+</style>
+
+<script>
+// Add equipment
+document.getElementById('equipmentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('equipmentName').value.trim();
+    const type = document.getElementById('equipmentType').value;
+    const model = document.getElementById('equipmentModel').value.trim();
+    const purchaseDate = document.getElementById('equipmentPurchaseDate').value;
+    const location = document.getElementById('equipmentLocation').value.trim();
+    const warranty = document.getElementById('equipmentWarranty').value;
+    const cost = document.getElementById('equipmentCost').value;
+    const loader = document.getElementById('equipmentLoader');
+    
+    if (!name) {
+        showResult('equipmentResult', 'Equipment name is required', 'error');
+        return;
+    }
+    
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'equipment',
+            data: {
+                name: name,
+                type: type,
+                model: model,
+                purchase_date: purchaseDate,
+                location: location,
+                warranty_expiry: warranty,
+                purchase_cost: cost ? parseFloat(cost) : null,
+                status: 'good',
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('equipmentResult', '✅ Equipment added successfully!', 'success');
+            clearEquipmentForm();
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('equipmentResult', '❌ Failed to add equipment', 'error');
+        }
+    })
+    .catch(error => {
+        loader.style.display = 'none';
+        showResult('equipmentResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+});
+
+function clearEquipmentForm() {
+    document.getElementById('equipmentForm').reset();
+}
+
+function showScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'flex';
+}
+
+function closeScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'none';
+}
+
+function scheduleMaintenanceFor(equipmentId) {
+    // Pre-populate the equipment in the modal
+    document.getElementById('taskEquipment').value = equipmentId;
+    showScheduleModal();
+}
+
+// Schedule maintenance task
+document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const taskName = document.getElementById('taskName').value.trim();
+    const equipmentId = document.getElementById('taskEquipment').value;
+    const description = document.getElementById('taskDescription').value.trim();
+    const type = document.getElementById('taskType').value;
+    const dueDate = document.getElementById('taskDueDate').value;
+    const cost = document.getElementById('taskCost').value;
+    
+    if (!taskName || !equipmentId || !dueDate) {
+        alert('Task name, equipment, and due date are required');
+        return;
+    }
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'maintenance_tasks',
+            data: {
+                task_name: taskName,
+                equipment_id: equipmentId,
+                description: description,
+                maintenance_type: type,
+                due_date: dueDate,
+                estimated_cost: cost ? parseFloat(cost) : 0,
+                status: 'scheduled',
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeScheduleModal();
+            location.reload();
+        } else {
+            alert('Failed to schedule task');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error scheduling task');
+    });
+});
+
+function completeTask(taskId) {
+    if (confirm('Mark this maintenance task as completed?')) {
+        fetch('/edit-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'maintenance_tasks',
+                id: taskId,
+                data: {
+                    status: 'completed',
+                    completed_at: new Date().toISOString()
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to complete task');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error completing task');
+        });
+    }
+}
+
+function editEquipment(equipmentId) {
+    // This would open an edit modal - simplified for now
+    alert('Edit equipment functionality would be implemented here');
+}
+
+function deleteEquipment(equipmentId) {
+    if (confirm('Are you sure you want to delete this equipment? This will also delete all associated maintenance tasks.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'equipment',
+                id: equipmentId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete equipment');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting equipment');
+        });
+    }
+}
+
+function editTask(taskId) {
+    // This would open an edit modal - simplified for now
+    alert('Edit task functionality would be implemented here');
+}
+
+function deleteTask(taskId) {
+    if (confirm('Are you sure you want to delete this maintenance task?')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'maintenance_tasks',
+                id: taskId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete task');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting task');
+        });
+    }
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Search and filter functionality
+document.getElementById('searchEquipment').addEventListener('input', filterEquipment);
+document.getElementById('filterType').addEventListener('change', filterEquipment);
+
+function filterEquipment() {
+    const searchTerm = document.getElementById('searchEquipment').value.toLowerCase();
+    const typeFilter = document.getElementById('filterType').value;
+    const rows = document.querySelectorAll('.equipment-row');
+    
+    rows.forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        const type = row.cells[1].textContent.toLowerCase();
+        
+        const matchesSearch = name.includes(searchTerm);
+        const matchesType = !typeFilter || type.includes(typeFilter);
+        
+        row.style.display = (matchesSearch && matchesType) ? '' : 'none';
+    });
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const scheduleModal = document.getElementById('scheduleModal');
+    
+    if (event.target === scheduleModal) {
+        closeScheduleModal();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,550 @@
+{% extends "base_modern.html" %}
+
+{% block title %}TDD Dashboard - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🧪 Test-Driven Development Dashboard</h1>
+    <p class="page-subtitle">Red-Green-Refactor with AI-Powered Code Generation</p>
+</div>
+
+<!-- TDD Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value" id="totalCycles">0</div>
+        <div class="stat-label">Total Cycles</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="activeCycles">0</div>
+        <div class="stat-label">Active Cycles</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="completedCycles">0</div>
+        <div class="stat-label">Completed Cycles</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="testCoverage">0%</div>
+        <div class="stat-label">Average Coverage</div>
+    </div>
+</div>
+
+<!-- Create New TDD Cycle -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">🚀 Create New TDD Cycle</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-2 gap-6">
+            <div>
+                <div class="form-group">
+                    <label class="form-label">Cycle Name *</label>
+                    <input type="text" class="form-input" id="cycleName" placeholder="e.g., Calculator Functions">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="cycleDescription" rows="3" placeholder="Brief description of what you're building..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Feature Specification *</label>
+                    <textarea class="form-input" id="specification" rows="6" placeholder="Detailed specification for the feature you want to implement using TDD...
+
+Example:
+Create a calculator class that can perform basic arithmetic operations:
+- Addition of two numbers
+- Subtraction of two numbers  
+- Multiplication of two numbers
+- Division of two numbers (with zero division handling)
+- Should raise appropriate exceptions for invalid inputs"></textarea>
+                </div>
+            </div>
+            <div>
+                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                    <h4 class="font-bold mb-2">🔄 TDD Process:</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center">
+                            <span class="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center mr-2 text-xs">1</span>
+                            <span><strong>RED:</strong> Write failing tests based on specification</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center mr-2 text-xs">2</span>
+                            <span><strong>GREEN:</strong> Write minimal code to make tests pass</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center mr-2 text-xs">3</span>
+                            <span><strong>REFACTOR:</strong> Improve code while keeping tests green</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <button class="btn btn-primary w-full" onclick="createCycle()">
+                        📝 Create Cycle
+                    </button>
+                    <button class="btn btn-success w-full" onclick="createAndRunFullCycle()" id="fullCycleBtn">
+                        🚀 Create & Run Full TDD Cycle
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="createResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- TDD Cycles List -->
+<div class="card">
+    <div class="card-header flex justify-between items-center">
+        <h3 class="card-title">📋 TDD Cycles</h3>
+        <button class="btn btn-secondary btn-sm" onclick="refreshCycles()">
+            🔄 Refresh
+        </button>
+    </div>
+    <div class="card-content">
+        <div id="cyclesList">
+            <!-- Cycles will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- TDD Cycle Details Modal (would be shown when clicking on a cycle) -->
+<div id="cycleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold" id="modalTitle">Cycle Details</h3>
+                    <button class="text-gray-500 hover:text-gray-700" onclick="closeModal()">
+                        ✕
+                    </button>
+                </div>
+                <div id="modalContent">
+                    <!-- Cycle details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.w-full { width: 100%; }
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-8 { margin-bottom: 2rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.rounded-lg { border-radius: 0.5rem; }
+.bg-gray-50 { background-color: #f9fafb; }
+.text-sm { font-size: 0.875rem; }
+.font-bold { font-weight: 700; }
+
+.cycle-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.cycle-item:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.status-active { color: #059669; }
+.status-completed { color: #3b82f6; }
+.status-failed { color: #dc2626; }
+
+.phase-indicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+    font-size: 12px;
+    margin-right: 8px;
+}
+
+.phase-red { background-color: #dc2626; }
+.phase-green { background-color: #059669; }
+.phase-blue { background-color: #2563eb; }
+
+.result-success {
+    padding: 1rem;
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: 0.5rem;
+    color: #166534;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+}
+
+.result-error {
+    padding: 1rem;
+    background: #fee2e2;
+    border: 1px solid #dc2626;
+    border-radius: 0.5rem;
+    color: #991b1b;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+}
+
+.loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+// Global variables
+let currentCycles = [];
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    refreshCycles();
+    loadStats();
+});
+
+function createCycle() {
+    const name = document.getElementById('cycleName').value.trim();
+    const description = document.getElementById('cycleDescription').value.trim();
+    
+    if (!name) {
+        showResult('createResult', 'error', 'Cycle name is required');
+        return;
+    }
+    
+    showResult('createResult', 'success', 'Creating TDD cycle...');
+    
+    fetch('/api/tdd/cycles', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name: name,
+            description: description
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showResult('createResult', 'success', `✅ ${data.message}`);
+            // Clear form
+            document.getElementById('cycleName').value = '';
+            document.getElementById('cycleDescription').value = '';
+            // Refresh cycles list
+            setTimeout(refreshCycles, 1000);
+        } else {
+            showResult('createResult', 'error', `❌ Error: ${data.error}`);
+        }
+    })
+    .catch(error => {
+        showResult('createResult', 'error', `❌ Network error: ${error.message}`);
+    });
+}
+
+function createAndRunFullCycle() {
+    const name = document.getElementById('cycleName').value.trim();
+    const description = document.getElementById('cycleDescription').value.trim();
+    const specification = document.getElementById('specification').value.trim();
+    
+    if (!name) {
+        showResult('createResult', 'error', 'Cycle name is required');
+        return;
+    }
+    
+    if (!specification) {
+        showResult('createResult', 'error', 'Feature specification is required for full TDD cycle');
+        return;
+    }
+    
+    const btn = document.getElementById('fullCycleBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Running Full TDD Cycle...';
+    btn.disabled = true;
+    
+    showResult('createResult', 'success', '🚀 Starting full TDD cycle (Red-Green-Refactor)...');
+    
+    // First create the cycle
+    fetch('/api/tdd/cycles', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name: name,
+            description: description
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const cycleId = data.cycle_id;
+            showResult('createResult', 'success', `✅ Cycle created. Running full TDD process...`);
+            
+            // Run the complete TDD cycle
+            return fetch(`/api/tdd/cycles/${cycleId}/complete`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    specification: specification
+                })
+            });
+        } else {
+            throw new Error(data.error);
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        
+        if (data.success) {
+            let message = `🎉 Full TDD cycle completed successfully!\\n\\n`;
+            message += `💰 Total Cost: $${data.total_cost.toFixed(4)}\\n`;
+            message += `🔤 Total Tokens: ${data.total_tokens}\\n\\n`;
+            
+            // Show phase results
+            if (data.phases.red) message += `🔴 RED: Tests generated\\n`;
+            if (data.phases.green) message += `🟢 GREEN: Implementation created\\n`;
+            if (data.phases.refactor) message += `🔵 REFACTOR: Code improved\\n`;
+            
+            showResult('createResult', 'success', message.replace(/\\n/g, '<br>'));
+            
+            // Clear form
+            document.getElementById('cycleName').value = '';
+            document.getElementById('cycleDescription').value = '';
+            document.getElementById('specification').value = '';
+            
+            // Refresh cycles list
+            setTimeout(refreshCycles, 2000);
+        } else {
+            showResult('createResult', 'error', `❌ TDD cycle failed: ${data.error}`);
+        }
+    })
+    .catch(error => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        showResult('createResult', 'error', `❌ Error: ${error.message}`);
+    });
+}
+
+function refreshCycles() {
+    fetch('/api/tdd/cycles')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            currentCycles = data.cycles;
+            displayCycles(data.cycles);
+            updateStats(data);
+        } else {
+            document.getElementById('cyclesList').innerHTML = `<p class="text-red-600">Error loading cycles: ${data.error}</p>`;
+        }
+    })
+    .catch(error => {
+        document.getElementById('cyclesList').innerHTML = `<p class="text-red-600">Network error: ${error.message}</p>`;
+    });
+}
+
+function displayCycles(cycles) {
+    const container = document.getElementById('cyclesList');
+    
+    if (cycles.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-8">No TDD cycles created yet. Create your first cycle above!</p>';
+        return;
+    }
+    
+    let html = '';
+    cycles.forEach(cycle => {
+        const statusClass = `status-${cycle.status}`;
+        const coveragePercent = cycle.coverage_percentage || 0;
+        
+        html += `
+            <div class="cycle-item" onclick="viewCycleDetails(${cycle.id})">
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="font-bold text-lg">${cycle.name}</h4>
+                    <span class="px-2 py-1 rounded text-sm ${statusClass}">${cycle.status.toUpperCase()}</span>
+                </div>
+                <div class="grid grid-cols-4 gap-4 text-sm text-gray-600 mb-2">
+                    <div>📅 Created: ${new Date(cycle.created_date).toLocaleDateString()}</div>
+                    <div>🧪 Tests: ${cycle.total_tests}</div>
+                    <div>✅ Passing: ${cycle.passing_tests}</div>
+                    <div>📊 Coverage: ${coveragePercent.toFixed(1)}%</div>
+                </div>
+                ${cycle.status === 'completed' && cycle.completed_date ? 
+                    `<div class="text-sm text-green-600">✅ Completed: ${new Date(cycle.completed_date).toLocaleDateString()}</div>` : 
+                    ''
+                }
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function updateStats(data) {
+    document.getElementById('totalCycles').textContent = data.total_cycles || 0;
+    document.getElementById('activeCycles').textContent = data.active_cycles || 0;
+    document.getElementById('completedCycles').textContent = data.completed_cycles || 0;
+    
+    // Calculate average coverage
+    const cycles = data.cycles || [];
+    const totalCoverage = cycles.reduce((sum, cycle) => sum + (cycle.coverage_percentage || 0), 0);
+    const avgCoverage = cycles.length > 0 ? totalCoverage / cycles.length : 0;
+    document.getElementById('testCoverage').textContent = `${avgCoverage.toFixed(1)}%`;
+}
+
+function loadStats() {
+    fetch('/api/tdd/health')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.health) {
+            const health = data.health;
+            if (health.total_cycles !== undefined) {
+                document.getElementById('totalCycles').textContent = health.total_cycles;
+                document.getElementById('activeCycles').textContent = health.active_cycles;
+                document.getElementById('completedCycles').textContent = health.completed_cycles;
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error loading stats:', error);
+    });
+}
+
+function viewCycleDetails(cycleId) {
+    // Load and show cycle details in modal
+    fetch(`/api/tdd/cycles/${cycleId}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showCycleModal(data);
+        } else {
+            alert(`Error loading cycle details: ${data.error}`);
+        }
+    })
+    .catch(error => {
+        alert(`Network error: ${error.message}`);
+    });
+}
+
+function showCycleModal(cycleData) {
+    const cycle = cycleData.cycle;
+    const testCases = cycleData.test_cases || [];
+    const implementations = cycleData.implementations || [];
+    const metrics = cycleData.metrics || {};
+    
+    document.getElementById('modalTitle').textContent = `TDD Cycle: ${cycle.name}`;
+    
+    let html = `
+        <div class="mb-4">
+            <h4 class="font-bold mb-2">Cycle Information</h4>
+            <div class="bg-gray-50 p-4 rounded">
+                <p><strong>Description:</strong> ${cycle.description || 'No description'}</p>
+                <p><strong>Status:</strong> <span class="status-${cycle.status}">${cycle.status.toUpperCase()}</span></p>
+                <p><strong>Created:</strong> ${new Date(cycle.created_date).toLocaleString()}</p>
+                ${cycle.completed_date ? `<p><strong>Completed:</strong> ${new Date(cycle.completed_date).toLocaleString()}</p>` : ''}
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <h4 class="font-bold mb-2">Metrics</h4>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="bg-blue-50 p-3 rounded text-center">
+                    <div class="text-2xl font-bold text-blue-600">${metrics.total_tests || 0}</div>
+                    <div class="text-sm text-gray-600">Total Tests</div>
+                </div>
+                <div class="bg-green-50 p-3 rounded text-center">
+                    <div class="text-2xl font-bold text-green-600">${cycle.passing_tests || 0}</div>
+                    <div class="text-sm text-gray-600">Passing</div>
+                </div>
+                <div class="bg-red-50 p-3 rounded text-center">
+                    <div class="text-2xl font-bold text-red-600">${cycle.failing_tests || 0}</div>
+                    <div class="text-sm text-gray-600">Failing</div>
+                </div>
+                <div class="bg-purple-50 p-3 rounded text-center">
+                    <div class="text-2xl font-bold text-purple-600">${(cycle.coverage_percentage || 0).toFixed(1)}%</div>
+                    <div class="text-sm text-gray-600">Coverage</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    if (testCases.length > 0) {
+        html += `
+            <div class="mb-4">
+                <h4 class="font-bold mb-2">Test Cases</h4>
+                <div class="space-y-2">
+        `;
+        
+        testCases.forEach(testCase => {
+            const statusIcon = testCase.status === 'green' ? '✅' : testCase.status === 'red' ? '❌' : '⏳';
+            html += `
+                <div class="border p-3 rounded">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">${statusIcon} ${testCase.name}</span>
+                        <span class="text-sm text-gray-500">${testCase.status.toUpperCase()}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">${testCase.description}</p>
+                    ${testCase.last_run_date ? `<p class="text-xs text-gray-500">Last run: ${new Date(testCase.last_run_date).toLocaleString()}</p>` : ''}
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+    
+    if (implementations.length > 0) {
+        html += `
+            <div class="mb-4">
+                <h4 class="font-bold mb-2">Implementations</h4>
+                <div class="space-y-2">
+        `;
+        
+        implementations.forEach(impl => {
+            html += `
+                <div class="border p-3 rounded">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">${impl.function_name}</span>
+                        <span class="text-sm text-gray-500">Iteration ${impl.iteration}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">${impl.file_path}</p>
+                    <p class="text-xs text-gray-500">Status: ${impl.status} | Created: ${new Date(impl.created_date).toLocaleString()}</p>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+    
+    document.getElementById('modalContent').innerHTML = html;
+    document.getElementById('cycleModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('cycleModal').classList.add('hidden');
+}
+
+function showResult(elementId, type, message) {
+    const element = document.getElementById(elementId);
+    element.className = `result-${type}`;
+    element.innerHTML = message;
+    element.style.display = 'block';
+}
+
+// Close modal when clicking outside
+document.getElementById('cycleModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

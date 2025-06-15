@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Upload - Vanlife & RC Automation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .drop-zone {
+            border: 3px dashed #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        .drop-zone.dragover {
+            border-color: #4299e1;
+            background-color: #f7fafc;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen py-8">
+        <div class="max-w-4xl mx-auto px-4">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    <i class="fas fa-upload mr-3 text-blue-600"></i>
+                    Content Upload & Analysis
+                </h1>
+                <p class="text-gray-600">Upload your vanlife and RC truck photos/videos for AI-powered content optimization</p>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div id="drop-zone" class="drop-zone rounded-lg p-12 text-center cursor-pointer">
+                    <div id="upload-content">
+                        <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Drag & Drop Your Files Here</h3>
+                        <p class="text-gray-500 mb-4">or click to browse</p>
+                        <p class="text-sm text-gray-400">Supports: JPG, PNG, MP4, MOV (max 100MB)</p>
+                    </div>
+                    <input type="file" id="file-input" class="hidden" accept=".jpg,.jpeg,.png,.gif,.mp4,.mov,.avi,.mkv">
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="upload-progress" class="hidden mt-6">
+                    <div class="bg-gray-200 rounded-full h-3">
+                        <div id="progress-bar" class="progress-bar bg-blue-600 h-3 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text" class="text-sm text-gray-600 mt-2">Uploading...</p>
+                </div>
+            </div>
+
+            <!-- Analysis Results -->
+            <div id="analysis-results" class="hidden">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-brain mr-3 text-purple-600"></i>
+                        AI Content Analysis
+                    </h2>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Content Preview -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Content Preview</h3>
+                            <div id="content-preview" class="border rounded-lg p-4 bg-gray-50">
+                                <div id="file-info" class="text-sm text-gray-600 mb-3"></div>
+                                <div id="content-type-badge" class="inline-block px-3 py-1 rounded-full text-sm font-medium"></div>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Details -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Analysis Summary</h3>
+                            <div id="analysis-details" class="space-y-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-tag mr-2 text-blue-600"></i>
+                                    <span class="text-sm">Content Type: <span id="content-type-text" class="font-medium"></span></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt mr-2 text-green-600"></i>
+                                    <span class="text-sm">Location: <span id="location-text" class="font-medium"></span></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-truck mr-2 text-orange-600"></i>
+                                    <span class="text-sm">Detected Brands: <span id="brands-text" class="font-medium"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Caption & Hashtags -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-edit mr-3 text-green-600"></i>
+                        Generated Content
+                    </h2>
+
+                    <!-- Caption Editor -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Caption</label>
+                        <textarea id="caption-editor" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                  rows="4" 
+                                  placeholder="AI-generated caption will appear here..."></textarea>
+                        <div class="text-sm text-gray-500 mt-1">
+                            <span id="caption-count">0</span> characters
+                        </div>
+                    </div>
+
+                    <!-- Hashtags Editor -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hashtags</label>
+                        <div id="hashtags-container" class="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg min-h-[60px] bg-gray-50">
+                            <!-- Hashtags will be dynamically added here -->
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">
+                            <span id="hashtag-count">0</span> hashtags selected
+                        </div>
+                    </div>
+
+                    <!-- Platform Selection -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Publishing Platforms</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="platform-checkbox mr-2" value="youtube" checked>
+                                <i class="fab fa-youtube text-red-600 mr-2"></i>
+                                YouTube
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="platform-checkbox mr-2" value="instagram" checked>
+                                <i class="fab fa-instagram text-pink-600 mr-2"></i>
+                                Instagram
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4">
+                        <button id="save-draft-btn" 
+                                class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-save mr-2"></i>Save Draft
+                        </button>
+                        <button id="schedule-post-btn" 
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-clock mr-2"></i>Schedule Post
+                        </button>
+                        <button id="post-now-btn" 
+                                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                            <i class="fas fa-paper-plane mr-2"></i>Post Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Posting Recommendations -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-lightbulb mr-3 text-yellow-600"></i>
+                        Posting Recommendations
+                    </h2>
+                    <div id="recommendations-content" class="space-y-4">
+                        <!-- Recommendations will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <span id="error-text"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPostId = null;
+        let currentHashtags = [];
+
+        // DOM Elements
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const uploadProgress = document.getElementById('upload-progress');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const analysisResults = document.getElementById('analysis-results');
+        const errorMessage = document.getElementById('error-message');
+
+        // File Upload Handling
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+        dropZone.addEventListener('drop', handleDrop);
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFile(file) {
+            hideError();
+            showUploadProgress();
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/social-media/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideUploadProgress();
+                if (data.success) {
+                    displayAnalysisResults(data);
+                } else {
+                    showError(data.error || 'Upload failed');
+                }
+            })
+            .catch(error => {
+                hideUploadProgress();
+                showError('Upload error: ' + error.message);
+            });
+        }
+
+        function displayAnalysisResults(data) {
+            currentPostId = data.post_id;
+            currentHashtags = data.hashtags;
+
+            // Update content type badge
+            const contentTypeBadge = document.getElementById('content-type-badge');
+            const typeColors = {
+                'vanlife': 'bg-blue-100 text-blue-800',
+                'rc_truck': 'bg-orange-100 text-orange-800',
+                'trail_exploration': 'bg-green-100 text-green-800',
+                'mixed': 'bg-purple-100 text-purple-800'
+            };
+            contentTypeBadge.className = `inline-block px-3 py-1 rounded-full text-sm font-medium ${typeColors[data.content_type] || 'bg-gray-100 text-gray-800'}`;
+            contentTypeBadge.textContent = data.content_type.replace('_', ' ').toUpperCase();
+
+            // Update analysis details
+            document.getElementById('file-info').textContent = `${data.file_info.filename} (${(data.file_info.size / 1024 / 1024).toFixed(2)} MB)`;
+            document.getElementById('content-type-text').textContent = data.content_type.replace('_', ' ');
+            document.getElementById('location-text').textContent = data.analysis.location_context || 'Southern BC';
+            document.getElementById('brands-text').textContent = data.analysis.detected_brands?.join(', ') || 'None detected';
+
+            // Update caption
+            const captionEditor = document.getElementById('caption-editor');
+            captionEditor.value = data.caption;
+            updateCaptionCount();
+
+            // Update hashtags
+            displayHashtags(data.hashtags);
+
+            // Update recommendations
+            displayRecommendations(data.posting_recommendations);
+
+            // Show results
+            analysisResults.classList.remove('hidden');
+        }
+
+        function displayHashtags(hashtags) {
+            const container = document.getElementById('hashtags-container');
+            container.innerHTML = '';
+            
+            hashtags.forEach(hashtag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm';
+                tagElement.innerHTML = `
+                    ${hashtag}
+                    <button onclick="removeHashtag('${hashtag}')" class="ml-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(tagElement);
+            });
+
+            updateHashtagCount();
+        }
+
+        function removeHashtag(hashtag) {
+            currentHashtags = currentHashtags.filter(tag => tag !== hashtag);
+            displayHashtags(currentHashtags);
+        }
+
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('recommendations-content');
+            container.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Best Platforms</h4>
+                        <p class="text-gray-600">${recommendations.best_platforms?.join(', ') || 'Instagram, YouTube'}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Optimal Posting Times</h4>
+                        <p class="text-gray-600">${recommendations.optimal_times?.join(', ') || '6:00 AM, 7:00 PM'}</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <h4 class="font-semibold text-gray-800 mb-2">Content Strategy</h4>
+                        <p class="text-gray-600">${recommendations.content_strategy || 'Focus on adventure and exploration themes'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateCaptionCount() {
+            const caption = document.getElementById('caption-editor').value;
+            document.getElementById('caption-count').textContent = caption.length;
+        }
+
+        function updateHashtagCount() {
+            document.getElementById('hashtag-count').textContent = currentHashtags.length;
+        }
+
+        function showUploadProgress() {
+            uploadProgress.classList.remove('hidden');
+            analysisResults.classList.add('hidden');
+        }
+
+        function hideUploadProgress() {
+            uploadProgress.classList.add('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('error-text').textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
+        // Caption editor event listener
+        document.getElementById('caption-editor').addEventListener('input', updateCaptionCount);
+
+        // Button event listeners
+        document.getElementById('save-draft-btn').addEventListener('click', saveDraft);
+        document.getElementById('schedule-post-btn').addEventListener('click', schedulePost);
+        document.getElementById('post-now-btn').addEventListener('click', postNow);
+
+        function saveDraft() {
+            if (!currentPostId) return;
+            
+            const caption = document.getElementById('caption-editor').value;
+            
+            fetch(`/social-media/edit/${currentPostId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    caption: caption,
+                    hashtags: currentHashtags
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Draft saved successfully!');
+                } else {
+                    showError(data.error);
+                }
+            });
+        }
+
+        function schedulePost() {
+            const selectedPlatforms = Array.from(document.querySelectorAll('.platform-checkbox:checked')).map(cb => cb.value);
+            
+            if (selectedPlatforms.length === 0) {
+                showError('Please select at least one platform');
+                return;
+            }
+
+            // For now, schedule for next hour
+            const scheduledTime = new Date();
+            scheduledTime.setHours(scheduledTime.getHours() + 1);
+
+            fetch(`/social-media/schedule/${currentPostId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    platforms: selectedPlatforms,
+                    scheduled_time: scheduledTime.toISOString()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Post scheduled successfully!');
+                    window.location.href = '/social-media';
+                } else {
+                    showError(data.error);
+                }
+            });
+        }
+
+        function postNow() {
+            alert('Direct posting will be implemented with API integrations');
+        }
+    </script>
+</body>
+</html>

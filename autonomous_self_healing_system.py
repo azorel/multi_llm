@@ -861,7 +861,7 @@ class AutonomousSelfHealingSystem:
             - Total Cycles: {len(self.self_improvement_prompts)}
             - Issues Auto-Fixed: {len(self.fixes_applied)}
             - Learning Events: {len(self.learning_history)}
-            - Current Health Score: {sum(self.health_metrics.values()) / len(self.health_metrics) * 100:.1f}%
+            - Current Health Score: {sum(v for v in self.health_metrics.values() if v is not None) / max(len([v for v in self.health_metrics.values() if v is not None]), 1) * 100:.1f}%
             
             Generate next-level self-feeding prompts that:
             1. Build on previous learning and improvements

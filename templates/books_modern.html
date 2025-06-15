@@ -1,0 +1,845 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Books - LifeOS{% endblock %}
+{% block header_title %}Books{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📚 Book Library</h1>
+    <p class="page-subtitle">Track your reading progress, organize your library, and discover new books</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ books|length or 0 }}</div>
+        <div class="stat-label">Total Books</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ books|selectattr('status', 'equalto', 'reading')|list|length or 0 }}</div>
+        <div class="stat-label">Currently Reading</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ books|selectattr('status', 'equalto', 'completed')|list|length or 0 }}</div>
+        <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ books|selectattr('status', 'equalto', 'want_to_read')|list|length or 0 }}</div>
+        <div class="stat-label">Want to Read</div>
+    </div>
+</div>
+
+<!-- Add Book Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">📖 Add New Book</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="form-group">
+                <label class="form-label">Book Title</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newBookTitle" 
+                       placeholder="Enter book title">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Author</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newBookAuthor" 
+                       placeholder="Enter author name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Genre</label>
+                <select id="newBookGenre" class="form-input">
+                    <option value="">Select genre...</option>
+                    <option value="fiction">Fiction</option>
+                    <option value="non-fiction">Non-Fiction</option>
+                    <option value="biography">Biography</option>
+                    <option value="history">History</option>
+                    <option value="science">Science</option>
+                    <option value="technology">Technology</option>
+                    <option value="business">Business</option>
+                    <option value="self-help">Self-Help</option>
+                    <option value="philosophy">Philosophy</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="mystery">Mystery</option>
+                    <option value="romance">Romance</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid grid-cols-4 gap-4 mb-4">
+            <div class="form-group">
+                <label class="form-label">ISBN</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newBookISBN" 
+                       placeholder="ISBN (optional)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Pages</label>
+                <input type="number" 
+                       class="form-input" 
+                       id="newBookPages" 
+                       placeholder="Total pages" 
+                       min="1">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Publication Year</label>
+                <input type="number" 
+                       class="form-input" 
+                       id="newBookYear" 
+                       placeholder="Year" 
+                       min="1000" 
+                       max="2030">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Rating (1-5)</label>
+                <select id="newBookRating" class="form-input">
+                    <option value="">Not rated</option>
+                    <option value="1">⭐ 1 Star</option>
+                    <option value="2">⭐⭐ 2 Stars</option>
+                    <option value="3">⭐⭐⭐ 3 Stars</option>
+                    <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                    <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select id="newBookStatus" class="form-input">
+                    <option value="want_to_read">Want to Read</option>
+                    <option value="reading">Currently Reading</option>
+                    <option value="completed">Completed</option>
+                    <option value="paused">Paused</option>
+                    <option value="abandoned">Abandoned</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Current Page</label>
+                <input type="number" 
+                       class="form-input" 
+                       id="newBookCurrentPage" 
+                       placeholder="Current page" 
+                       min="0">
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary w-full" onclick="addBook()">
+                    <span id="addBtnText">Add Book</span>
+                    <span id="addLoader" class="loading" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+        <div class="form-group mt-4">
+            <label class="form-label">Notes</label>
+            <textarea class="form-input" 
+                      id="newBookNotes" 
+                      rows="2" 
+                      placeholder="Personal notes, thoughts, or quotes..."></textarea>
+        </div>
+        <div id="addResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="card mb-8">
+    <div class="card-content">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="form-group">
+                <label class="form-label">Search Books</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="searchBooks" 
+                       placeholder="Search by title or author..."
+                       onkeyup="filterBooks()">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Filter by Status</label>
+                <select id="filterStatus" class="form-input" onchange="filterBooks()">
+                    <option value="">All Statuses</option>
+                    <option value="want_to_read">Want to Read</option>
+                    <option value="reading">Currently Reading</option>
+                    <option value="completed">Completed</option>
+                    <option value="paused">Paused</option>
+                    <option value="abandoned">Abandoned</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Filter by Genre</label>
+                <select id="filterGenre" class="form-input" onchange="filterBooks()">
+                    <option value="">All Genres</option>
+                    <option value="fiction">Fiction</option>
+                    <option value="non-fiction">Non-Fiction</option>
+                    <option value="biography">Biography</option>
+                    <option value="history">History</option>
+                    <option value="science">Science</option>
+                    <option value="technology">Technology</option>
+                    <option value="business">Business</option>
+                    <option value="self-help">Self-Help</option>
+                    <option value="philosophy">Philosophy</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="mystery">Mystery</option>
+                    <option value="romance">Romance</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Filter by Rating</label>
+                <select id="filterRating" class="form-input" onchange="filterBooks()">
+                    <option value="">All Ratings</option>
+                    <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                    <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                    <option value="3">⭐⭐⭐ 3 Stars</option>
+                    <option value="2">⭐⭐ 2 Stars</option>
+                    <option value="1">⭐ 1 Star</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Books Table -->
+<div class="table-container">
+    <table class="table" id="booksTable">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Genre</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Rating</th>
+                <th>Added</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr class="book-row {% if book.status == 'reading' %}reading{% endif %}" 
+                data-title="{{ book.title|lower }}" 
+                data-author="{{ book.author|lower }}"
+                data-status="{{ book.status }}"
+                data-genre="{{ book.genre }}"
+                data-rating="{{ book.rating }}">
+                <td>
+                    <div>
+                        <div class="font-semibold text-gray-900">{{ book.title }}</div>
+                        <div class="text-sm text-gray-500">by {{ book.author }}</div>
+                        {% if book.publication_year %}
+                        <div class="text-xs text-gray-400">({{ book.publication_year }})</div>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                    <span class="badge badge-info">{{ book.genre|title }}</span>
+                </td>
+                <td>
+                    <span class="badge badge-{% if book.status == 'completed' %}success{% elif book.status == 'reading' %}warning{% elif book.status == 'abandoned' %}danger{% else %}info{% endif %}">
+                        {{ book.status|title|replace('_', ' ') }}
+                    </span>
+                </td>
+                <td>
+                    {% if book.pages and book.current_page %}
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            {% set progress = (book.current_page / book.pages * 100)|round|int %}
+                            <div class="progress-fill" style="width: {{ progress }}%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 ml-2">{{ book.current_page }}/{{ book.pages }}</span>
+                    </div>
+                    {% else %}
+                        <span class="text-gray-400 text-sm">No progress data</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if book.rating %}
+                        <div class="text-yellow-500">
+                            {% for i in range(book.rating) %}⭐{% endfor %}
+                        </div>
+                    {% else %}
+                        <span class="text-gray-400 text-sm">Not rated</span>
+                    {% endif %}
+                </td>
+                <td class="text-sm text-gray-500">
+                    {% if book.date_added %}
+                        {{ book.date_added.split(' ')[0] }}
+                    {% else %}
+                        <span class="text-gray-400">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary btn-sm" onclick="updateProgress({{ book.id }})">
+                            📖 Progress
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="editBook({{ book.id }})">
+                            ✏️ Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteBook({{ book.id }})">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit Book Modal -->
+<div id="editBookModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Book</h3>
+            <button class="modal-close" onclick="closeEditModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="editBookForm">
+                <input type="hidden" id="editBookId">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" id="editBookTitle" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Author</label>
+                        <input type="text" id="editBookAuthor" class="form-input" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Genre</label>
+                        <select id="editBookGenre" class="form-input">
+                            <option value="fiction">Fiction</option>
+                            <option value="non-fiction">Non-Fiction</option>
+                            <option value="biography">Biography</option>
+                            <option value="history">History</option>
+                            <option value="science">Science</option>
+                            <option value="technology">Technology</option>
+                            <option value="business">Business</option>
+                            <option value="self-help">Self-Help</option>
+                            <option value="philosophy">Philosophy</option>
+                            <option value="fantasy">Fantasy</option>
+                            <option value="mystery">Mystery</option>
+                            <option value="romance">Romance</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="editBookStatus" class="form-input">
+                            <option value="want_to_read">Want to Read</option>
+                            <option value="reading">Currently Reading</option>
+                            <option value="completed">Completed</option>
+                            <option value="paused">Paused</option>
+                            <option value="abandoned">Abandoned</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Total Pages</label>
+                        <input type="number" id="editBookPages" class="form-input" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Current Page</label>
+                        <input type="number" id="editBookCurrentPage" class="form-input" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rating</label>
+                        <select id="editBookRating" class="form-input">
+                            <option value="">Not rated</option>
+                            <option value="1">⭐ 1 Star</option>
+                            <option value="2">⭐⭐ 2 Stars</option>
+                            <option value="3">⭐⭐⭐ 3 Stars</option>
+                            <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">ISBN</label>
+                        <input type="text" id="editBookISBN" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Publication Year</label>
+                        <input type="number" id="editBookYear" class="form-input" min="1000" max="2030">
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label">Notes</label>
+                    <textarea id="editBookNotes" class="form-input" rows="4"></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Progress Modal -->
+<div id="progressModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Update Reading Progress</h3>
+            <button class="modal-close" onclick="closeProgressModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="progressForm">
+                <input type="hidden" id="progressBookId">
+                <div class="form-group mb-4">
+                    <label class="form-label">Book Title</label>
+                    <input type="text" id="progressBookTitle" class="form-input" readonly>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Current Page</label>
+                        <input type="number" id="progressCurrentPage" class="form-input" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total Pages</label>
+                        <input type="number" id="progressTotalPages" class="form-input" min="1">
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label">Update Status</label>
+                    <select id="progressStatus" class="form-input">
+                        <option value="want_to_read">Want to Read</option>
+                        <option value="reading">Currently Reading</option>
+                        <option value="completed">Completed</option>
+                        <option value="paused">Paused</option>
+                        <option value="abandoned">Abandoned</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeProgressModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Update Progress</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.reading {
+    background-color: #fef3c7;
+    border-left: 4px solid #f59e0b;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    min-width: 120px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+</style>
+
+<script>
+function addBook() {
+    const title = document.getElementById('newBookTitle').value.trim();
+    const author = document.getElementById('newBookAuthor').value.trim();
+    const genre = document.getElementById('newBookGenre').value;
+    const isbn = document.getElementById('newBookISBN').value.trim();
+    const pages = parseInt(document.getElementById('newBookPages').value) || null;
+    const year = parseInt(document.getElementById('newBookYear').value) || null;
+    const rating = parseInt(document.getElementById('newBookRating').value) || null;
+    const status = document.getElementById('newBookStatus').value;
+    const currentPage = parseInt(document.getElementById('newBookCurrentPage').value) || 0;
+    const notes = document.getElementById('newBookNotes').value.trim();
+    const btnText = document.getElementById('addBtnText');
+    const loader = document.getElementById('addLoader');
+    
+    if (!title || !author || !genre) {
+        showResult('addResult', 'Please fill in title, author, and genre', 'error');
+        return;
+    }
+    
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'books',
+            data: {
+                title: title,
+                author: author,
+                genre: genre,
+                isbn: isbn,
+                pages: pages,
+                publication_year: year,
+                rating: rating,
+                status: status,
+                current_page: currentPage,
+                notes: notes,
+                date_added: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('addResult', `✅ Successfully added book: ${title}`, 'success');
+            // Clear form
+            document.getElementById('newBookTitle').value = '';
+            document.getElementById('newBookAuthor').value = '';
+            document.getElementById('newBookGenre').value = '';
+            document.getElementById('newBookISBN').value = '';
+            document.getElementById('newBookPages').value = '';
+            document.getElementById('newBookYear').value = '';
+            document.getElementById('newBookRating').value = '';
+            document.getElementById('newBookStatus').value = 'want_to_read';
+            document.getElementById('newBookCurrentPage').value = '';
+            document.getElementById('newBookNotes').value = '';
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('addResult', '❌ Failed to add book', 'error');
+        }
+    })
+    .catch(error => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        showResult('addResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function filterBooks() {
+    const searchTerm = document.getElementById('searchBooks').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const genreFilter = document.getElementById('filterGenre').value;
+    const ratingFilter = document.getElementById('filterRating').value;
+    
+    const rows = document.querySelectorAll('.book-row');
+    
+    rows.forEach(row => {
+        const title = row.getAttribute('data-title');
+        const author = row.getAttribute('data-author');
+        const status = row.getAttribute('data-status');
+        const genre = row.getAttribute('data-genre');
+        const rating = row.getAttribute('data-rating');
+        
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || author.includes(searchTerm);
+        const matchesStatus = !statusFilter || status === statusFilter;
+        const matchesGenre = !genreFilter || genre === genreFilter;
+        const matchesRating = !ratingFilter || rating === ratingFilter;
+        
+        if (matchesSearch && matchesStatus && matchesGenre && matchesRating) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function updateProgress(bookId) {
+    fetch(`/get-item?table=books&id=${bookId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const book = data.item;
+                
+                document.getElementById('progressBookId').value = bookId;
+                document.getElementById('progressBookTitle').value = book.title;
+                document.getElementById('progressCurrentPage').value = book.current_page || 0;
+                document.getElementById('progressTotalPages').value = book.pages || '';
+                document.getElementById('progressStatus').value = book.status || 'reading';
+                
+                document.getElementById('progressModal').style.display = 'flex';
+            } else {
+                alert('Failed to load book data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading book data');
+        });
+}
+
+function editBook(bookId) {
+    fetch(`/get-item?table=books&id=${bookId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const book = data.item;
+                
+                document.getElementById('editBookId').value = bookId;
+                document.getElementById('editBookTitle').value = book.title || '';
+                document.getElementById('editBookAuthor').value = book.author || '';
+                document.getElementById('editBookGenre').value = book.genre || '';
+                document.getElementById('editBookStatus').value = book.status || 'want_to_read';
+                document.getElementById('editBookPages').value = book.pages || '';
+                document.getElementById('editBookCurrentPage').value = book.current_page || 0;
+                document.getElementById('editBookRating').value = book.rating || '';
+                document.getElementById('editBookISBN').value = book.isbn || '';
+                document.getElementById('editBookYear').value = book.publication_year || '';
+                document.getElementById('editBookNotes').value = book.notes || '';
+                
+                document.getElementById('editBookModal').style.display = 'flex';
+            } else {
+                alert('Failed to load book data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading book data');
+        });
+}
+
+function deleteBook(bookId) {
+    if (confirm('Are you sure you want to delete this book? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'books',
+                id: bookId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete book');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting book');
+        });
+    }
+}
+
+function closeEditModal() {
+    document.getElementById('editBookModal').style.display = 'none';
+}
+
+function closeProgressModal() {
+    document.getElementById('progressModal').style.display = 'none';
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Handle edit form submission
+document.getElementById('editBookForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const bookId = document.getElementById('editBookId').value;
+    const title = document.getElementById('editBookTitle').value;
+    const author = document.getElementById('editBookAuthor').value;
+    const genre = document.getElementById('editBookGenre').value;
+    const status = document.getElementById('editBookStatus').value;
+    const pages = parseInt(document.getElementById('editBookPages').value) || null;
+    const currentPage = parseInt(document.getElementById('editBookCurrentPage').value) || 0;
+    const rating = parseInt(document.getElementById('editBookRating').value) || null;
+    const isbn = document.getElementById('editBookISBN').value;
+    const year = parseInt(document.getElementById('editBookYear').value) || null;
+    const notes = document.getElementById('editBookNotes').value;
+    
+    if (!title.trim() || !author.trim()) {
+        alert('Title and author are required');
+        return;
+    }
+    
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'books',
+            id: parseInt(bookId),
+            data: {
+                title: title,
+                author: author,
+                genre: genre,
+                status: status,
+                pages: pages,
+                current_page: currentPage,
+                rating: rating,
+                isbn: isbn,
+                publication_year: year,
+                notes: notes
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeEditModal();
+            location.reload();
+        } else {
+            alert('Failed to update book');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating book');
+    });
+});
+
+// Handle progress form submission
+document.getElementById('progressForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const bookId = document.getElementById('progressBookId').value;
+    const currentPage = parseInt(document.getElementById('progressCurrentPage').value) || 0;
+    const totalPages = parseInt(document.getElementById('progressTotalPages').value) || null;
+    const status = document.getElementById('progressStatus').value;
+    
+    // Auto-complete if current page equals total pages
+    let finalStatus = status;
+    if (totalPages && currentPage >= totalPages && status !== 'abandoned') {
+        finalStatus = 'completed';
+    }
+    
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'books',
+            id: parseInt(bookId),
+            data: {
+                current_page: currentPage,
+                pages: totalPages,
+                status: finalStatus,
+                last_read: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeProgressModal();
+            location.reload();
+        } else {
+            alert('Failed to update progress');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating progress');
+    });
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const editModal = document.getElementById('editBookModal');
+        const progressModal = document.getElementById('progressModal');
+        
+        if (event.target === editModal) {
+            closeEditModal();
+        }
+        if (event.target === progressModal) {
+            closeProgressModal();
+        }
+    }
+    
+    // Handle enter key
+    document.getElementById('newBookTitle').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addBook();
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Dashboard - Vanlife & RC Automation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                            <i class="fas fa-chart-line mr-3 text-blue-600"></i>
+                            Social Media Dashboard
+                        </h1>
+                        <p class="text-gray-600">Vanlife & RC Truck Content Automation Analytics</p>
+                    </div>
+                    <a href="/social-media/upload" 
+                       class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Upload Content
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <i class="fas fa-photo-video text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Posts</p>
+                            <p id="total-posts" class="text-2xl font-bold text-gray-900">{{ stats.get('social_media_posts', 0) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <i class="fas fa-eye text-green-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Views</p>
+                            <p id="total-views" class="text-2xl font-bold text-gray-900">{{ revenue_data[2] if revenue_data else 0 }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-purple-100 rounded-full">
+                            <i class="fas fa-heart text-purple-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Engagement</p>
+                            <p id="total-engagement" class="text-2xl font-bold text-gray-900">8.5%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <i class="fas fa-dollar-sign text-yellow-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Revenue (CAD)</p>
+                            <p id="total-revenue" class="text-2xl font-bold text-gray-900">${{ "%.2f"|format(revenue_data[0] if revenue_data else 0) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid lg:grid-cols-2 gap-6 mb-8">
+                <!-- Content Performance Chart -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">
+                        <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
+                        Content Performance
+                    </h2>
+                    <canvas id="contentChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Revenue Trend Chart -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">
+                        <i class="fas fa-line-chart mr-2 text-green-600"></i>
+                        Revenue Trend
+                    </h2>
+                    <canvas id="revenueChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Posts & Quick Actions -->
+            <div class="grid lg:grid-cols-3 gap-6 mb-8">
+                <!-- Recent Posts -->
+                <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">
+                        <i class="fas fa-clock mr-2 text-purple-600"></i>
+                        Recent Posts
+                    </h2>
+                    <div class="space-y-4">
+                        {% if recent_posts %}
+                            {% for post in recent_posts %}
+                            <div class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                                <div class="flex items-center">
+                                    <div class="p-2 bg-gray-100 rounded-lg mr-4">
+                                        {% if post[2] == 'vanlife' %}
+                                        <i class="fas fa-route text-blue-600"></i>
+                                        {% elif post[2] == 'rc_truck' %}
+                                        <i class="fas fa-truck text-orange-600"></i>
+                                        {% else %}
+                                        <i class="fas fa-mountain text-green-600"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{{ post[1] }}</p>
+                                        <p class="text-sm text-gray-600">{{ post[3][:60] }}...</p>
+                                        <p class="text-xs text-gray-500">{{ post[5] }} • {{ post[6] }} views • {{ post[7] }} likes</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    {% if post[4] == 'posted' %}
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Posted</span>
+                                    {% elif post[4] == 'scheduled' %}
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Scheduled</span>
+                                    {% else %}
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">Draft</span>
+                                    {% endif %}
+                                    <button onclick="viewPost({{ post[0] }})" class="p-1 text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-inbox text-gray-300 text-4xl mb-4"></i>
+                            <p class="text-gray-500">No posts yet. Upload your first content!</p>
+                            <a href="/social-media/upload" class="inline-block mt-2 text-blue-600 hover:text-blue-700">
+                                Start Creating →
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions & System Status -->
+                <div class="space-y-6">
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <a href="/social-media/upload" 
+                               class="flex items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                <i class="fas fa-upload text-blue-600 mr-3"></i>
+                                <span class="text-blue-700 font-medium">Upload Content</span>
+                            </a>
+                            <a href="/social-media/analytics" 
+                               class="flex items-center p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                                <i class="fas fa-chart-line text-green-600 mr-3"></i>
+                                <span class="text-green-700 font-medium">View Analytics</span>
+                            </a>
+                            <a href="#" onclick="generateReport()" 
+                               class="flex items-center p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                                <i class="fas fa-file-download text-purple-600 mr-3"></i>
+                                <span class="text-purple-700 font-medium">Export Report</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- System Status -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">System Status</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Database</span>
+                                <span class="flex items-center text-green-600">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Online
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">AI Analysis</span>
+                                <span class="flex items-center text-green-600">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Ready
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">YouTube API</span>
+                                <span class="flex items-center text-yellow-600">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Setup Needed
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Instagram API</span>
+                                <span class="flex items-center text-yellow-600">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Setup Needed
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trail & Brand Stats -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Content Database</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">BC Trails</span>
+                                <span class="font-medium text-gray-900">{{ stats.get('trail_locations', 0) }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">RC Brands</span>
+                                <span class="font-medium text-gray-900">{{ stats.get('rc_brands', 0) }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Hashtag Records</span>
+                                <span class="font-medium text-gray-900">{{ stats.get('hashtag_performance', 0) }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Revenue Entries</span>
+                                <span class="font-medium text-gray-900">{{ stats.get('revenue_tracking', 0) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Content Performance Chart
+        const contentCtx = document.getElementById('contentChart').getContext('2d');
+        new Chart(contentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Vanlife', 'RC Trucks', 'Trail Exploration', 'Mixed'],
+                datasets: [{
+                    data: [40, 35, 15, 10],
+                    backgroundColor: [
+                        '#3B82F6',
+                        '#F97316', 
+                        '#10B981',
+                        '#8B5CF6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Revenue Trend Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Revenue (CAD)',
+                    data: [120, 250, 380, 420, 680, 850],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Functions
+        function viewPost(postId) {
+            window.location.href = `/social-media/preview/${postId}`;
+        }
+
+        function generateReport() {
+            // Placeholder for report generation
+            alert('Report generation feature coming soon!');
+        }
+
+        // Auto-refresh stats every 30 seconds
+        setInterval(refreshStats, 30000);
+
+        function refreshStats() {
+            fetch('/social-media/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('total-posts').textContent = data.performance.total_posts;
+                        document.getElementById('total-views').textContent = data.performance.total_views.toLocaleString();
+                        document.getElementById('total-revenue').textContent = '$' + data.performance.total_revenue.toFixed(2);
+                    }
+                })
+                .catch(error => console.error('Stats refresh failed:', error));
+        }
+    </script>
+</body>
+</html>

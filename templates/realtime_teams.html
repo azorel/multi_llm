@@ -1,15 +1,16 @@
-{% extends "base.html" %}
+{% extends "base_modern.html" %}
 
 {% block title %}Real-Time Autonomous Teams - LifeOS{% endblock %}
+{% block header_title %}Real-Time Autonomous Teams Monitor{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">🤖 Real-Time Autonomous Teams Monitor</h1>
     <p class="page-subtitle">
         Live monitoring of autonomous project managers and workers executing tasks independently.
-        <span style="float: right; color: var(--notion-text-light); font-size: 12px;">
+        <span style="float: right; color: var(--text-tertiary); font-size: 12px;">
             🔄 Auto-updating every 5 seconds
-            <button onclick="toggleAutoRefresh()" id="autoRefreshBtn" style="margin-left: 8px; background: var(--notion-green); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+            <button onclick="toggleAutoRefresh()" id="autoRefreshBtn" class="btn btn-success btn-sm">
                 🔄 Auto-Refresh: ON
             </button>
         </span>
@@ -17,8 +18,10 @@
 </div>
 
 <!-- Live Team Status -->
-<div class="notion-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-    <div class="card-title" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">⚡ Live Team Status</div>
+<div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="card-header" style="color: white; border-bottom: 1px solid rgba(255,255,255,0.2);">
+        <h3 class="card-title" style="color: white;">⚡ Live Team Status</h3>
+    </div>
     <div class="card-content" style="color: white;">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
             <div>
@@ -48,27 +51,30 @@
 </div>
 
 <!-- Real-Time Task Activity -->
-<div class="database-container">
-    <div class="database-header">
-        <span class="database-title">🔄 Real-Time Task Activity</span>
-        <span style="color: var(--notion-text-light); font-size: 12px;" id="lastUpdate">Loading...</span>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">🔄 Real-Time Task Activity</h3>
+        <span style="color: var(--text-tertiary); font-size: 12px;" id="lastUpdate">Loading...</span>
     </div>
-    
-    <div id="liveTaskFeed" style="max-height: 400px; overflow-y: auto;">
-        <div style="padding: 20px; text-align: center; color: var(--notion-text-light);">
-            🔄 Loading real-time task data...
+    <div class="card-content">
+        <div id="liveTaskFeed" style="max-height: 400px; overflow-y: auto;">
+            <div style="padding: 20px; text-align: center; color: var(--text-tertiary);">
+                🔄 Loading real-time task data...
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Project Managers Dashboard -->
-<div class="database-container" style="margin-top: 32px;">
-    <div class="database-header">
-        <span class="database-title">👔 Project Managers Performance</span>
-        <button onclick="refreshManagers()" class="add-button">🔄 Refresh</button>
+<div class="card" style="margin-top: 32px;">
+    <div class="card-header">
+        <h3 class="card-title">👔 Project Managers Performance</h3>
+        <button onclick="refreshManagers()" class="btn btn-secondary">🔄 Refresh</button>
     </div>
+    <div class="card-content">
+        <div class="table-container">
     
-    <table class="database-table">
+    <table class="table">
         <thead>
             <tr>
                 <th>Manager</th>
@@ -85,18 +91,22 @@
                     🔄 Loading manager data...
                 </td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Workers Performance -->
-<div class="database-container" style="margin-top: 32px;">
-    <div class="database-header">
-        <span class="database-title">🔧 Workers Performance</span>
-        <button onclick="refreshWorkers()" class="add-button">🔄 Refresh</button>
+<div class="card" style="margin-top: 32px;">
+    <div class="card-header">
+        <h3 class="card-title">🔧 Workers Performance</h3>
+        <button onclick="refreshWorkers()" class="btn btn-secondary">🔄 Refresh</button>
     </div>
+    <div class="card-content">
+        <div class="table-container">
     
-    <table class="database-table">
+    <table class="table">
         <thead>
             <tr>
                 <th>Worker</th>
@@ -113,8 +123,10 @@
                     🔄 Loading worker data...
                 </td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -126,11 +138,11 @@ function toggleAutoRefresh() {
     const btn = document.getElementById('autoRefreshBtn');
     if (autoRefreshEnabled) {
         btn.textContent = '🔄 Auto-Refresh: ON';
-        btn.style.background = 'var(--notion-green)';
+        btn.style.background = 'var(--color-secondary)';
         startAutoRefresh();
     } else {
         btn.textContent = '🔄 Auto-Refresh: OFF';
-        btn.style.background = 'var(--notion-gray)';
+        btn.style.background = 'var(--color-gray-500)';
         stopAutoRefresh();
     }
 }
@@ -230,14 +242,14 @@ function updateTaskFeed(teams) {
         html += `
             <div style="padding: 12px; border-bottom: 1px solid var(--notion-border); display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div style="font-weight: 600; color: var(--notion-text);">${statusIcon} ${team.worker}</div>
-                    <div style="font-size: 12px; color: var(--notion-text-light); margin-top: 2px;">${team.task.substring(0, 80)}...</div>
-                    <div style="font-size: 11px; color: var(--notion-text-light); margin-top: 2px;">Manager: ${team.manager}</div>
+                    <div style="font-weight: 600; color: var(--notion-text);">${statusIcon} ${team.worker || 'Unknown Worker'}</div>
+                    <div style="font-size: 12px; color: var(--notion-text-light); margin-top: 2px;">${(team.task || 'No task assigned').substring(0, 80)}...</div>
+                    <div style="font-size: 11px; color: var(--notion-text-light); margin-top: 2px;">Manager: ${team.manager || 'No manager'}</div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="color: ${statusColor}; font-weight: 600; font-size: 12px;">${team.status.toUpperCase()}</div>
-                    <div style="font-size: 11px; color: var(--notion-text-light);">${team.progress}%</div>
-                    <div style="font-size: 11px; color: var(--notion-blue);">${team.priority}</div>
+                    <div style="color: ${statusColor}; font-weight: 600; font-size: 12px;">${(team.status || 'unknown').toUpperCase()}</div>
+                    <div style="font-size: 11px; color: var(--notion-text-light);">${team.progress || 0}%</div>
+                    <div style="font-size: 11px; color: var(--notion-blue);">${team.priority || 'normal'}</div>
                 </div>
             </div>
         `;
@@ -258,8 +270,8 @@ function updateManagersTable(managers) {
     managers.forEach(manager => {
         html += `
             <tr>
-                <td style="font-weight: 600;">${manager.name}</td>
-                <td style="font-size: 12px;">${manager.specialization}</td>
+                <td style="font-weight: 600;">${manager.name || 'Unknown Manager'}</td>
+                <td style="font-size: 12px;">${manager.specialization || 'General'}</td>
                 <td style="text-align: center; color: var(--notion-orange);">${manager.active_tasks || 0}</td>
                 <td style="text-align: center; color: var(--notion-green);">${manager.completed_tasks || 0}</td>
                 <td style="text-align: center;">${manager.team_size || 0}</td>
@@ -286,7 +298,7 @@ function updateWorkersTable(workers) {
         
         html += `
             <tr>
-                <td style="font-weight: 600;">${worker.name}</td>
+                <td style="font-weight: 600;">${worker.name || 'Unknown Worker'}</td>
                 <td style="font-size: 12px;">${currentTask}</td>
                 <td style="text-align: center;">
                     <div style="background: var(--notion-bg-light); border-radius: 10px; height: 8px; width: 60px; margin: 0 auto;">
@@ -294,7 +306,7 @@ function updateWorkersTable(workers) {
                     </div>
                     <div style="font-size: 10px; margin-top: 2px;">${worker.progress || 0}%</div>
                 </td>
-                <td style="font-size: 12px;">${worker.manager}</td>
+                <td style="font-size: 12px;">${worker.manager || 'No manager'}</td>
                 <td style="text-align: center; color: var(--notion-green);">${worker.completed_tasks || 0}</td>
                 <td style="text-align: center; color: ${efficiency >= 4.5 ? 'var(--notion-green)' : 'var(--notion-orange)'};">${efficiency.toFixed(1)}/5.0</td>
             </tr>

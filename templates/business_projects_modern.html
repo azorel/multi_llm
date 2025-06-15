@@ -1,0 +1,607 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Business Projects - LifeOS{% endblock %}
+{% block header_title %}Business Projects{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📈 Business Projects</h1>
+    <p class="page-subtitle">Manage business projects, track progress, and monitor ROI</p>
+</div>
+
+<!-- Project Overview -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ projects|length|default(0) }}</div>
+        <div class="stat-label">Total Projects</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ projects|selectattr('status', 'equalto', 'active')|list|length|default(0) }}</div>
+        <div class="stat-label">Active Projects</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">${{ total_budget|default(0) }}</div>
+        <div class="stat-label">Total Budget</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ avg_progress|default(0) }}%</div>
+        <div class="stat-label">Avg Progress</div>
+    </div>
+</div>
+
+<!-- Project Status Overview -->
+<div class="grid grid-cols-2 gap-6 mb-8">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Project Status Breakdown</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                {% for status in project_status_stats|default([]) %}
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-4 h-4 rounded-full {% if status.name == 'active' %}bg-green-500{% elif status.name == 'planning' %}bg-blue-500{% elif status.name == 'on_hold' %}bg-yellow-500{% elif status.name == 'completed' %}bg-purple-500{% else %}bg-gray-500{% endif %}"></div>
+                        <span class="font-medium">{{ status.name|replace('_', ' ')|title|default('Unknown') }}</span>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold">{{ status.count|default(0) }}</div>
+                        <div class="text-sm text-gray-500">{{ status.percentage|default(0) }}%</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-gray-500">
+                    No project status data available
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">💰 Budget vs Spending</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium">Total Budget</span>
+                        <span class="text-sm">${{ total_budget|default(0) }}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-blue-500" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium">Total Spent</span>
+                        <span class="text-sm">${{ total_spent|default(0) }}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-blue-500" style="width: {{ spent_percentage|default(0) }}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">{{ spent_percentage|default(0) }}% Spent</div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">Remaining:</span>
+                        <span class="font-medium">${{ (total_budget|default(0) - total_spent|default(0)) }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">ROI:</span>
+                        <span class="font-medium text-blue-600">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Project -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">➕ New Business Project</h3>
+    </div>
+    <div class="card-content">
+        <form id="projectForm">
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Project Name</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="projectName" 
+                           placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-input" id="projectCategory">
+                        <option value="">Select category</option>
+                        <option value="product_development">🚀 Product Development</option>
+                        <option value="marketing">📢 Marketing</option>
+                        <option value="operations">⚙️ Operations</option>
+                        <option value="research">🔬 Research</option>
+                        <option value="infrastructure">🏗️ Infrastructure</option>
+                        <option value="sales">💼 Sales</option>
+                        <option value="other">📦 Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-input" id="projectPriority">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="high">🔴 High</option>
+                        <option value="critical">🚨 Critical</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-input" 
+                          id="projectDescription" 
+                          rows="3" 
+                          placeholder="Describe the project goals and scope..."></textarea>
+            </div>
+            <div class="grid grid-cols-4 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Budget ($)</label>
+                    <input type="number" 
+                           class="form-input" 
+                           id="projectBudget" 
+                           step="0.01"
+                           min="0"
+                           placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" 
+                           class="form-input" 
+                           id="projectStartDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">End Date</label>
+                    <input type="date" 
+                           class="form-input" 
+                           id="projectEndDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-input" id="projectStatus">
+                        <option value="planning">📋 Planning</option>
+                        <option value="active">🟢 Active</option>
+                        <option value="on_hold">⏸️ On Hold</option>
+                        <option value="completed">✅ Completed</option>
+                        <option value="cancelled">❌ Cancelled</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Team Members</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="projectTeam" 
+                           placeholder="Comma-separated list of team members">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="projectTags" 
+                           placeholder="project tags, comma separated">
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button type="submit" class="btn btn-primary">
+                    💾 Create Project
+                    <span id="projectLoader" class="loading" style="display: none;"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="clearProjectForm()">
+                    🗑️ Clear
+                </button>
+            </div>
+        </form>
+        <div id="projectResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Projects List -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📋 Business Projects</h3>
+        <div class="flex gap-2">
+            <input type="text" 
+                   class="form-input" 
+                   id="searchProjects" 
+                   placeholder="Search projects..."
+                   style="width: 200px;">
+            <select class="form-input" id="filterStatus" style="width: 120px;">
+                <option value="">All Status</option>
+                <option value="planning">Planning</option>
+                <option value="active">Active</option>
+                <option value="on_hold">On Hold</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select class="form-input" id="filterCategory" style="width: 150px;">
+                <option value="">All Categories</option>
+                <option value="product_development">Product Development</option>
+                <option value="marketing">Marketing</option>
+                <option value="operations">Operations</option>
+                <option value="research">Research</option>
+                <option value="infrastructure">Infrastructure</option>
+                <option value="sales">Sales</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-1 gap-4">
+            {% for project in projects|default([]) %}
+            <div class="project-card border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h4 class="text-xl font-semibold text-gray-900">{{ project.name|default('Unnamed Project') }}</h4>
+                            <span class="badge badge-{% if project.priority == 'critical' %}danger{% elif project.priority == 'high' %}warning{% elif project.priority == 'medium' %}info{% else %}secondary{% endif %}">
+                                {% if project.priority == 'critical' %}🚨{% elif project.priority == 'high' %}🔴{% elif project.priority == 'medium' %}🟡{% else %}🟢{% endif %}
+                                {{ project.priority|title|default('Medium') }}
+                            </span>
+                            <span class="badge badge-{% if project.status == 'active' %}success{% elif project.status == 'completed' %}info{% elif project.status == 'on_hold' %}warning{% elif project.status == 'cancelled' %}danger{% else %}secondary{% endif %}">
+                                {% if project.status == 'active' %}🟢{% elif project.status == 'completed' %}✅{% elif project.status == 'on_hold' %}⏸️{% elif project.status == 'cancelled' %}❌{% else %}📋{% endif %}
+                                {{ project.status|replace('_', ' ')|title|default('Planning') }}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 mb-3">{{ project.description|default('No description provided') }}</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-medium">Category:</span>
+                                    <span class="badge badge-info">
+                                        {% if project.category == 'product_development' %}🚀{% elif project.category == 'marketing' %}📢{% elif project.category == 'operations' %}⚙️{% elif project.category == 'research' %}🔬{% elif project.category == 'infrastructure' %}🏗️{% elif project.category == 'sales' %}💼{% else %}📦{% endif %}
+                                        {{ project.category|replace('_', ' ')|title|default('Other') }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-medium">Budget:</span>
+                                    <span>${{ project.budget|default(0) }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium">Spent:</span>
+                                    <span>${{ project.spent|default(0) }}</span>
+                                </div>
+                            </div>
+                            <div class="text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-medium">Start:</span>
+                                    <span>{{ project.start_date|default('Not set') }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-medium">End:</span>
+                                    <span>{{ project.end_date|default('Not set') }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium">Team:</span>
+                                    <span>{{ project.team_size|default(0) }} members</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium">Progress</span>
+                                <span class="text-sm">{{ project.get('progress', 0) }}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-blue-500" style="width: {{ project.get('progress', 0) }}%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tags -->
+                        {% if project.tags %}
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {% for tag in (project.tags|default('')).split(',') %}
+                            {% if tag.strip() %}
+                            <span class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
+                                #{{ tag.strip() }}
+                            </span>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex flex-col gap-2 ml-4">
+                        <button class="btn btn-primary btn-sm" onclick="viewProject({{ project.id }})">
+                            👁️ View
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="editProject({{ project.id }})">
+                            ✏️ Edit
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="updateProgress({{ project.id }})">
+                            📊 Progress
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProject({{ project.id }})">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats Row -->
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="grid grid-cols-4 gap-4 text-center text-sm">
+                        <div>
+                            <div class="font-semibold text-blue-600">0%</div>
+                            <div class="text-gray-500">ROI</div>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-green-600">{{ project.milestones_completed|default(0) }}/{{ project.total_milestones|default(0) }}</div>
+                            <div class="text-gray-500">Milestones</div>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-purple-600">{{ project.days_remaining|default(0) }}</div>
+                            <div class="text-gray-500">Days Left</div>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-orange-600">{{ project.tasks_completed|default(0) }}/{{ project.total_tasks|default(0) }}</div>
+                            <div class="text-gray-500">Tasks</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-12 text-gray-500">
+                <div class="text-6xl mb-4">📈</div>
+                <h3 class="text-xl font-semibold mb-2">No business projects yet</h3>
+                <p class="mb-4">Create your first project to start tracking business initiatives</p>
+                <button class="btn btn-primary" onclick="document.getElementById('projectName').focus()">
+                    ➕ Create First Project
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.project-card {
+    transition: all 0.2s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-2px);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.space-y-3 > * + * {
+    margin-top: 0.75rem;
+}
+
+.space-y-4 > * + * {
+    margin-top: 1rem;
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+</style>
+
+<script>
+// Create project
+document.getElementById('projectForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('projectName').value.trim();
+    const category = document.getElementById('projectCategory').value;
+    const priority = document.getElementById('projectPriority').value;
+    const description = document.getElementById('projectDescription').value.trim();
+    const budget = document.getElementById('projectBudget').value;
+    const startDate = document.getElementById('projectStartDate').value;
+    const endDate = document.getElementById('projectEndDate').value;
+    const status = document.getElementById('projectStatus').value;
+    const team = document.getElementById('projectTeam').value.trim();
+    const tags = document.getElementById('projectTags').value.trim();
+    const loader = document.getElementById('projectLoader');
+    
+    if (!name) {
+        showResult('projectResult', 'Project name is required', 'error');
+        return;
+    }
+    
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'business_projects',
+            data: {
+                name: name,
+                category: category,
+                priority: priority,
+                description: description,
+                budget: budget ? parseFloat(budget) : 0,
+                start_date: startDate,
+                end_date: endDate,
+                status: status,
+                team_members: team,
+                tags: tags,
+                progress: 0,
+                spent: 0,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('projectResult', '✅ Project created successfully!', 'success');
+            clearProjectForm();
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('projectResult', '❌ Failed to create project', 'error');
+        }
+    })
+    .catch(error => {
+        loader.style.display = 'none';
+        showResult('projectResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+});
+
+function clearProjectForm() {
+    document.getElementById('projectForm').reset();
+    document.getElementById('projectPriority').value = 'medium';
+    document.getElementById('projectStatus').value = 'planning';
+}
+
+function viewProject(projectId) {
+    // This would open a detailed project view modal
+    alert('Project details view would be implemented here');
+}
+
+function editProject(projectId) {
+    // This would open an edit modal
+    alert('Edit project functionality would be implemented here');
+}
+
+function updateProgress(projectId) {
+    const newProgress = prompt('Enter new progress percentage (0-100):');
+    if (newProgress !== null && !isNaN(newProgress) && newProgress >= 0 && newProgress <= 100) {
+        fetch('/edit-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'business_projects',
+                id: projectId,
+                data: {
+                    progress: parseInt(newProgress)
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to update progress');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating progress');
+        });
+    }
+}
+
+function deleteProject(projectId) {
+    if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'business_projects',
+                id: projectId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete project');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting project');
+        });
+    }
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Search and filter functionality
+document.getElementById('searchProjects').addEventListener('input', filterProjects);
+document.getElementById('filterStatus').addEventListener('change', filterProjects);
+document.getElementById('filterCategory').addEventListener('change', filterProjects);
+
+function filterProjects() {
+    const searchTerm = document.getElementById('searchProjects').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const projects = document.querySelectorAll('.project-card');
+    
+    projects.forEach(project => {
+        const name = project.querySelector('h4').textContent.toLowerCase();
+        const description = project.querySelector('p').textContent.toLowerCase();
+        const status = project.querySelector('.badge').textContent.toLowerCase();
+        const category = project.querySelector('.badge-info').textContent.toLowerCase();
+        
+        const matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+        const matchesStatus = !statusFilter || status.includes(statusFilter.replace('_', ' '));
+        const matchesCategory = !categoryFilter || category.includes(categoryFilter.replace('_', ' '));
+        
+        project.style.display = (matchesSearch && matchesStatus && matchesCategory) ? 'block' : 'none';
+    });
+}
+
+// Set default dates
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const futureDate = new Date();
+    futureDate.setMonth(futureDate.getMonth() + 3);
+    const future = futureDate.toISOString().split('T')[0];
+    
+    document.getElementById('projectStartDate').value = today;
+    document.getElementById('projectEndDate').value = future;
+});
+</script>
+{% endblock %}

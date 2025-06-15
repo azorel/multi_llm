@@ -31,8 +31,6 @@ async def process_videos_with_ai():
 # NOTION_REMOVED:     channels_db_id = os.getenv('NOTION_CHANNELS_DATABASE_ID', '203ec31c-9de2-8079-ae4e-ed754d474888')
 # NOTION_REMOVED:     knowledge_db_id = os.getenv('NOTION_KNOWLEDGE_DATABASE_ID', '20bec31c-9de2-814e-80db-d13d0c27d869')
     
-        return
-    
     print(f"🔑 OpenAI API Key: {'✅ Available' if openai_api_key and openai_api_key != 'your_openai_api_key_here' else '⚠️ Not set - will use local analysis'}")
     
     headers = {

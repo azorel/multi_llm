@@ -1,0 +1,803 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Agent Results - LifeOS{% endblock %}
+{% block header_title %}Agent Results{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🤖 Agent Execution Results</h1>
+    <p class="page-subtitle">Monitor, analyze, and review AI agent execution results and performance</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ results|length|default(0) }}</div>
+        <div class="stat-label">Total Executions</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ results|selectattr('status', 'equalto', 'success')|list|length|default(0) }}</div>
+        <div class="stat-label">Successful</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ results|selectattr('status', 'equalto', 'running')|list|length|default(0) }}</div>
+        <div class="stat-label">Running</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ "%.1f"|format((results|selectattr('execution_time')|map(attribute='execution_time')|sum / (results|selectattr('execution_time')|list|length or 1))|default(0)) }}s</div>
+        <div class="stat-label">Avg Duration</div>
+    </div>
+</div>
+
+<!-- Performance Overview -->
+<div class="grid grid-cols-2 gap-6 mb-8">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Success Rate by Agent</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                {% for agent in agent_stats|default([]) %}
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm">
+                            🤖
+                        </div>
+                        <div>
+                            <div class="font-semibold">{{ agent.name|default('Unknown Agent') }}</div>
+                            <div class="text-sm text-gray-500">{{ agent.total_executions|default(0) }} executions</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold {% if (agent.success_rate|default(0)) >= 80 %}text-green-600{% elif (agent.success_rate|default(0)) >= 60 %}text-yellow-600{% else %}text-red-600{% endif %}">
+                            {{ agent.success_rate|default(0) }}%
+                        </div>
+                        <div class="w-20 h-2 bg-gray-200 rounded-full">
+                            <div class="h-2 rounded-full {% if (agent.success_rate|default(0)) >= 80 %}bg-green-500{% elif (agent.success_rate|default(0)) >= 60 %}bg-yellow-500{% else %}bg-red-500{% endif %}" 
+                                 style="width: {{ agent.success_rate|default(0) }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-gray-500">
+                    No agent statistics available
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">⏱️ Recent Performance</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                {% for metric in recent_metrics|default([]) %}
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="font-semibold">{{ metric.metric_name|default('Unknown Metric') }}</div>
+                        <div class="text-sm text-gray-500">{{ metric.timeframe|default('Unknown timeframe') }}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold">{{ metric.value|default('N/A') }}</div>
+                        <div class="text-sm {% if (metric.trend|default('')) == 'up' %}text-green-600{% elif metric.trend == 'down' %}text-red-600{% else %}text-gray-500{% endif %}">
+                            {% if metric.trend == 'up' %}📈 +{{ metric.change|default(0) }}%{% elif metric.trend == 'down' %}📉 {{ metric.change|default(0) }}%{% else %}➖ No change{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-gray-500">
+                    No performance metrics available
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Executions -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">⏳ Active Executions</h3>
+        <button class="btn btn-secondary" onclick="refreshActiveExecutions()">
+            🔄 Refresh
+        </button>
+    </div>
+    <div class="card-content">
+        <div id="activeExecutionsList">
+            {% for result in results|selectattr('status', 'equalto', 'running')|default([]) %}
+            <div class="execution-item border border-blue-200 bg-blue-50 rounded-lg p-4 mb-4">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h4 class="font-semibold">{{ result.agent_name|default('Unknown Agent') }}</h4>
+                            <span class="badge badge-info">Running</span>
+                            <span class="text-sm text-gray-600">{{ result.task_type|default('Unknown Task') }}</span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-2">{{ result.task_description|default('No description') }}</p>
+                        <div class="text-xs text-gray-500">
+                            Started: {{ result.started_at|default('Unknown time') }} | 
+                            Elapsed: {{ result.elapsed_time|default('Unknown') }}
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary btn-sm" onclick="pauseExecution({{ result.id }})">
+                            ⏸️ Pause
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="stopExecution({{ result.id }})">
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ result.progress_percentage|default(0) }}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Progress: {{ result.progress_percentage|default(0) }}% | 
+                        Current step: {{ result.current_step|default('Unknown') }}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-500">
+                <div class="text-4xl mb-2">⏸️</div>
+                <div>No agents currently running</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Results Filter and Search -->
+<div class="card mb-6">
+    <div class="card-content">
+        <div class="grid grid-cols-5 gap-4">
+            <div class="form-group">
+                <input type="text" 
+                       class="form-input" 
+                       id="searchResults" 
+                       placeholder="🔍 Search results...">
+            </div>
+            <div class="form-group">
+                <select class="form-input" id="filterAgent">
+                    <option value="">All Agents</option>
+                    {% for agent in unique_agents|default([]) %}
+                    <option value="{{ agent }}">{{ agent }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-input" id="filterStatus">
+                    <option value="">All Statuses</option>
+                    <option value="success">Success</option>
+                    <option value="failed">Failed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="timeout">Timeout</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-input" id="filterTaskType">
+                    <option value="">All Task Types</option>
+                    <option value="analysis">Analysis</option>
+                    <option value="generation">Generation</option>
+                    <option value="processing">Processing</option>
+                    <option value="automation">Automation</option>
+                    <option value="monitoring">Monitoring</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-input" id="sortBy">
+                    <option value="created_desc">Newest First</option>
+                    <option value="created_asc">Oldest First</option>
+                    <option value="duration_desc">Longest Duration</option>
+                    <option value="duration_asc">Shortest Duration</option>
+                    <option value="status">By Status</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results List -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📋 Execution Results</h3>
+        <div class="flex gap-2">
+            <button class="btn btn-secondary" onclick="exportResults()">
+                📤 Export
+            </button>
+            <button class="btn btn-secondary" onclick="clearOldResults()">
+                🗑️ Clear Old
+            </button>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Agent & Task</th>
+                        <th>Status</th>
+                        <th>Duration</th>
+                        <th>Result Summary</th>
+                        <th>Timestamp</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results|selectattr('status', 'in', ['success', 'failed', 'cancelled', 'timeout'])|default([]) %}
+                    <tr class="result-row">
+                        <td>
+                            <div>
+                                <div class="font-semibold flex items-center gap-2">
+                                    🤖 {{ result.agent_name|default('Unknown Agent') }}
+                                    {% if result.agent_version %}
+                                    <span class="text-xs bg-gray-100 px-2 py-1 rounded">v{{ result.agent_version }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-sm text-gray-600">{{ result.task_type|default('Unknown Task') }}</div>
+                                <div class="text-xs text-gray-500">ID: {{ result.execution_id|default(result.id) }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-{% if result.status == 'success' %}success{% elif result.status == 'failed' %}danger{% elif result.status == 'cancelled' %}warning{% else %}info{% endif %}">
+                                {% if result.status == 'success' %}✅{% elif result.status == 'failed' %}❌{% elif result.status == 'cancelled' %}⏸️{% else %}⏰{% endif %}
+                                {{ result.status|title|default('Unknown') }}
+                            </span>
+                            {% if result.error_code %}
+                            <div class="text-xs text-red-600 mt-1">{{ result.error_code }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="text-sm">
+                                <div class="font-semibold">{{ result.execution_time|default('N/A') }}</div>
+                                {% if result.cpu_time %}
+                                <div class="text-xs text-gray-500">CPU: {{ result.cpu_time }}</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-sm">
+                                <div class="max-w-xs truncate">{{ result.result_summary|default('No summary available') }}</div>
+                                {% if result.output_size %}
+                                <div class="text-xs text-gray-500">Output: {{ result.output_size }} chars</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="text-sm">
+                            <div>{{ result.created_at|default('Unknown') }}</div>
+                            {% if result.completed_at %}
+                            <div class="text-xs text-gray-500">Completed: {{ result.completed_at }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm" onclick="viewResultDetails({{ result.id }})">
+                                    👁️ View
+                                </button>
+                                {% if result.status == 'success' %}
+                                <button class="btn btn-primary btn-sm" onclick="rerunExecution({{ result.id }})">
+                                    🔄 Rerun
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-secondary btn-sm" onclick="downloadResult({{ result.id }})">
+                                    📥 Download
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteResult({{ result.id }})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">🤖</div>
+                            <div>No execution results yet</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Result Details Modal -->
+<div id="resultDetailsModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 1000px;">
+        <div class="modal-header">
+            <h3 class="modal-title">🔍 Execution Result Details</h3>
+            <button class="modal-close" onclick="closeResultDetailsModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="resultDetailsContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.execution-item {
+    transition: all 0.2s ease;
+}
+
+.execution-item:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.space-y-3 > * + * {
+    margin-top: 0.75rem;
+}
+
+.result-row:hover {
+    background-color: var(--color-gray-50);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+</style>
+
+<script>
+function refreshActiveExecutions() {
+    location.reload();
+}
+
+function pauseExecution(executionId) {
+    fetch('/pause-agent-execution', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            execution_id: executionId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to pause execution');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error pausing execution');
+    });
+}
+
+function stopExecution(executionId) {
+    if (confirm('Stop this agent execution?')) {
+        fetch('/stop-agent-execution', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                execution_id: executionId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to stop execution');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error stopping execution');
+        });
+    }
+}
+
+function viewResultDetails(resultId) {
+    fetch(`/get-item?table=agent_results&id=${resultId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const result = data.item;
+                
+                const detailsHtml = `
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold mb-3">📋 Execution Information</h4>
+                                <div class="text-sm space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Agent:</span>
+                                        <span class="font-medium">${result.agent_name || 'N/A'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Task Type:</span>
+                                        <span class="font-medium">${result.task_type || 'N/A'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Status:</span>
+                                        <span class="badge badge-${result.status === 'success' ? 'success' : result.status === 'failed' ? 'danger' : 'warning'}">
+                                            ${result.status || 'Unknown'}
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Duration:</span>
+                                        <span class="font-medium">${result.execution_time || 'N/A'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Started:</span>
+                                        <span class="font-medium">${result.created_at || 'N/A'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Completed:</span>
+                                        <span class="font-medium">${result.completed_at || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-3">📊 Performance Metrics</h4>
+                                <div class="text-sm space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">CPU Time:</span>
+                                        <span class="font-medium">${result.cpu_time || 'N/A'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Memory Usage:</span>
+                                        <span class="font-medium">${result.memory_usage || 'N/A'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Output Size:</span>
+                                        <span class="font-medium">${result.output_size || 'N/A'} chars</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Token Usage:</span>
+                                        <span class="font-medium">${result.token_usage || 'N/A'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Cost:</span>
+                                        <span class="font-medium">$${result.cost || '0.00'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${result.task_description ? `
+                        <div>
+                            <h4 class="font-semibold mb-2">📝 Task Description</h4>
+                            <div class="bg-gray-50 p-3 rounded text-sm">
+                                ${result.task_description}
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${result.input_data ? `
+                        <div>
+                            <h4 class="font-semibold mb-2">📥 Input Data</h4>
+                            <div class="bg-gray-50 p-3 rounded text-sm max-h-40 overflow-y-auto">
+                                <pre>${result.input_data}</pre>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${result.output_data ? `
+                        <div>
+                            <h4 class="font-semibold mb-2">📤 Output Data</h4>
+                            <div class="bg-gray-50 p-3 rounded text-sm max-h-40 overflow-y-auto">
+                                <pre>${result.output_data}</pre>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${result.error_message ? `
+                        <div>
+                            <h4 class="font-semibold mb-2 text-red-600">❌ Error Details</h4>
+                            <div class="bg-red-50 p-3 rounded text-sm text-red-700">
+                                ${result.error_message}
+                            </div>
+                            ${result.error_stack ? `
+                            <details class="mt-2">
+                                <summary class="cursor-pointer text-sm text-red-600">Stack Trace</summary>
+                                <div class="bg-red-50 p-3 rounded text-xs text-red-700 mt-2">
+                                    <pre>${result.error_stack}</pre>
+                                </div>
+                            </details>
+                            ` : ''}
+                        </div>
+                        ` : ''}
+                        
+                        ${result.logs ? `
+                        <div>
+                            <h4 class="font-semibold mb-2">📋 Execution Logs</h4>
+                            <div class="bg-gray-50 p-3 rounded text-sm max-h-60 overflow-y-auto">
+                                <pre>${result.logs}</pre>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                document.getElementById('resultDetailsContent').innerHTML = detailsHtml;
+                document.getElementById('resultDetailsModal').style.display = 'flex';
+            } else {
+                alert('Failed to load result details');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading result details');
+        });
+}
+
+function closeResultDetailsModal() {
+    document.getElementById('resultDetailsModal').style.display = 'none';
+}
+
+function rerunExecution(resultId) {
+    if (confirm('Rerun this agent execution with the same parameters?')) {
+        fetch('/rerun-agent-execution', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                result_id: resultId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✅ Agent execution restarted!');
+                location.reload();
+            } else {
+                alert(`❌ Failed to rerun execution: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rerunning execution');
+        });
+    }
+}
+
+function downloadResult(resultId) {
+    fetch(`/download-result?id=${resultId}`)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `agent_result_${resultId}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error downloading result');
+        });
+}
+
+function deleteResult(resultId) {
+    if (confirm('Are you sure you want to delete this result? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'agent_results',
+                id: resultId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete result');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting result');
+        });
+    }
+}
+
+function exportResults() {
+    const filters = {
+        agent: document.getElementById('filterAgent').value,
+        status: document.getElementById('filterStatus').value,
+        task_type: document.getElementById('filterTaskType').value
+    };
+    
+    const queryParams = new URLSearchParams(filters).toString();
+    
+    fetch(`/export-agent-results?${queryParams}`)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'agent_results.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error exporting results');
+        });
+}
+
+function clearOldResults() {
+    const days = prompt('Delete results older than how many days?', '30');
+    if (days && !isNaN(days) && parseInt(days) > 0) {
+        if (confirm(`Delete all results older than ${days} days? This action cannot be undone.`)) {
+            fetch('/clear-old-results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    days: parseInt(days)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`✅ Deleted ${data.deleted_count} old results`);
+                    location.reload();
+                } else {
+                    alert('Failed to clear old results');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error clearing old results');
+            });
+        }
+    }
+}
+
+// Search and filter functionality
+document.getElementById('searchResults').addEventListener('input', filterResults);
+document.getElementById('filterAgent').addEventListener('change', filterResults);
+document.getElementById('filterStatus').addEventListener('change', filterResults);
+document.getElementById('filterTaskType').addEventListener('change', filterResults);
+document.getElementById('sortBy').addEventListener('change', sortResults);
+
+function filterResults() {
+    const searchTerm = document.getElementById('searchResults').value.toLowerCase();
+    const agentFilter = document.getElementById('filterAgent').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+    const taskTypeFilter = document.getElementById('filterTaskType').value;
+    const rows = document.querySelectorAll('.result-row');
+    
+    rows.forEach(row => {
+        const agentName = row.cells[0].textContent.toLowerCase();
+        const status = row.cells[1].textContent.toLowerCase();
+        const taskType = row.cells[0].textContent.toLowerCase();
+        const summary = row.cells[3].textContent.toLowerCase();
+        
+        const matchesSearch = agentName.includes(searchTerm) || summary.includes(searchTerm);
+        const matchesAgent = !agentFilter || agentName.includes(agentFilter.toLowerCase());
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        const matchesTaskType = !taskTypeFilter || taskType.includes(taskTypeFilter);
+        
+        row.style.display = (matchesSearch && matchesAgent && matchesStatus && matchesTaskType) ? '' : 'none';
+    });
+}
+
+function sortResults() {
+    const sortBy = document.getElementById('sortBy').value;
+    const tbody = document.querySelector('.table tbody');
+    const rows = Array.from(document.querySelectorAll('.result-row'));
+    
+    rows.sort((a, b) => {
+        switch (sortBy) {
+            case 'created_asc':
+                return new Date(a.cells[4].textContent) - new Date(b.cells[4].textContent);
+            case 'created_desc':
+                return new Date(b.cells[4].textContent) - new Date(a.cells[4].textContent);
+            case 'duration_asc':
+                return parseFloat(a.cells[2].textContent) - parseFloat(b.cells[2].textContent);
+            case 'duration_desc':
+                return parseFloat(b.cells[2].textContent) - parseFloat(a.cells[2].textContent);
+            case 'status':
+                return a.cells[1].textContent.localeCompare(b.cells[1].textContent);
+            default:
+                return 0;
+        }
+    });
+    
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const detailsModal = document.getElementById('resultDetailsModal');
+    
+    if (event.target === detailsModal) {
+        closeResultDetailsModal();
+    }
+}
+</script>
+{% endblock %}

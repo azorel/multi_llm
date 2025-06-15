@@ -1,0 +1,632 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Notes - LifeOS{% endblock %}
+{% block header_title %}Notes{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📝 Notes</h1>
+    <p class="page-subtitle">Organize your thoughts, ideas, and important information</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ notes|length|default(0) }}</div>
+        <div class="stat-label">Total Notes</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ notes|selectattr('category')|groupby('category')|list|length|default(0) }}</div>
+        <div class="stat-label">Categories</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ notes|selectattr('is_pinned', 'equalto', true)|list|length|default(0) }}</div>
+        <div class="stat-label">Pinned</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ notes|selectattr('created_at')|list|length|default(0) }}</div>
+        <div class="stat-label">Today's Notes</div>
+    </div>
+</div>
+
+<!-- New Note Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">📝 Quick Note</h3>
+    </div>
+    <div class="card-content">
+        <form id="noteForm">
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="noteTitle" 
+                           placeholder="Note title">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-input" id="noteCategory">
+                        <option value="">Select category</option>
+                        <option value="work">💼 Work</option>
+                        <option value="personal">👤 Personal</option>
+                        <option value="ideas">💡 Ideas</option>
+                        <option value="research">🔬 Research</option>
+                        <option value="meeting">🤝 Meeting</option>
+                        <option value="todo">✅ Todo</option>
+                        <option value="reference">📚 Reference</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-input" id="notePriority">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="high">🔴 High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Content</label>
+                <textarea class="form-input" 
+                          id="noteContent" 
+                          rows="4" 
+                          placeholder="Write your note here..."></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Tags (comma-separated)</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="noteTags" 
+                           placeholder="urgent, project, reminder">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Options</label>
+                    <div class="flex items-center gap-4 mt-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="notePinned" class="form-checkbox">
+                            <span class="text-sm">📌 Pin Note</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="notePrivate" class="form-checkbox">
+                            <span class="text-sm">🔒 Private</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button type="submit" class="btn btn-primary">
+                    💾 Save Note
+                    <span id="saveLoader" class="loading" style="display: none;"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                    🗑️ Clear
+                </button>
+            </div>
+        </form>
+        <div id="noteResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="card mb-6">
+    <div class="card-content">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="form-group">
+                <input type="text" 
+                       class="form-input" 
+                       id="searchNotes" 
+                       placeholder="🔍 Search notes...">
+            </div>
+            <div class="form-group">
+                <select class="form-input" id="filterCategory">
+                    <option value="">All Categories</option>
+                    <option value="work">💼 Work</option>
+                    <option value="personal">👤 Personal</option>
+                    <option value="ideas">💡 Ideas</option>
+                    <option value="research">🔬 Research</option>
+                    <option value="meeting">🤝 Meeting</option>
+                    <option value="todo">✅ Todo</option>
+                    <option value="reference">📚 Reference</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-input" id="filterPriority">
+                    <option value="">All Priorities</option>
+                    <option value="high">🔴 High</option>
+                    <option value="medium">🟡 Medium</option>
+                    <option value="low">🟢 Low</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-input" id="sortBy">
+                    <option value="created_desc">Newest First</option>
+                    <option value="created_asc">Oldest First</option>
+                    <option value="title_asc">Title A-Z</option>
+                    <option value="title_desc">Title Z-A</option>
+                    <option value="priority">Priority</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notes Grid -->
+<div id="notesGrid" class="grid grid-cols-3 gap-6">
+    {% for note in notes|default([]) %}
+    <div class="note-card card hover:shadow-lg transition-shadow" data-category="{{ note.category|default('') }}" data-priority="{{ note.priority|default('medium') }}">
+        {% if note.is_pinned %}
+        <div class="absolute top-3 right-3 text-yellow-500">📌</div>
+        {% endif %}
+        <div class="card-content">
+            <div class="flex justify-between items-start mb-3">
+                <div class="flex-1">
+                    <h4 class="font-semibold text-lg text-gray-900 mb-1">{{ note.title|default('Untitled Note') }}</h4>
+                    <div class="flex items-center gap-2 mb-2">
+                        {% if note.category %}
+                        <span class="badge badge-info">
+                            {% if note.category == 'work' %}💼{% elif note.category == 'personal' %}👤{% elif note.category == 'ideas' %}💡{% elif note.category == 'research' %}🔬{% elif note.category == 'meeting' %}🤝{% elif note.category == 'todo' %}✅{% elif note.category == 'reference' %}📚{% endif %}
+                            {{ note.category|title }}
+                        </span>
+                        {% endif %}
+                        <span class="badge badge-{% if note.priority == 'high' %}danger{% elif note.priority == 'low' %}success{% else %}warning{% endif %}">
+                            {% if note.priority == 'high' %}🔴{% elif note.priority == 'low' %}🟢{% else %}🟡{% endif %}
+                            {{ note.priority|title|default('Medium') }}
+                        </span>
+                    </div>
+                </div>
+                <div class="flex gap-1">
+                    <button class="btn btn-secondary btn-sm" onclick="editNote({{ note.id }})">
+                        ✏️
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteNote({{ note.id }})">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="note-content text-gray-700 mb-3" style="min-height: 60px;">
+                <p>{{ (note.content|default('No content'))[0:150] }}{% if (note.content|default('')|length > 150) %}...{% endif %}</p>
+            </div>
+            
+            {% if note.tags %}
+            <div class="note-tags mb-3">
+                {% for tag in (note.tags|default('')).split(',') %}
+                {% if tag.strip() %}
+                <span class="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full mr-1 mb-1">
+                    #{{ tag.strip() }}
+                </span>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="flex justify-between items-center text-xs text-gray-500">
+                <span>📅 {{ note.created_at|default('Unknown date') }}</span>
+                {% if note.is_private %}
+                <span class="text-red-500">🔒 Private</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-span-3 text-center py-12 text-gray-500">
+        <div class="text-6xl mb-4">📝</div>
+        <h3 class="text-xl font-semibold mb-2">No notes yet</h3>
+        <p>Create your first note to get started</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Edit Note Modal -->
+<div id="editNoteModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">✏️ Edit Note</h3>
+            <button class="modal-close" onclick="closeEditModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="editNoteForm">
+                <input type="hidden" id="editNoteId">
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" id="editNoteTitle" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="editNoteCategory" class="form-input">
+                            <option value="">Select category</option>
+                            <option value="work">💼 Work</option>
+                            <option value="personal">👤 Personal</option>
+                            <option value="ideas">💡 Ideas</option>
+                            <option value="research">🔬 Research</option>
+                            <option value="meeting">🤝 Meeting</option>
+                            <option value="todo">✅ Todo</option>
+                            <option value="reference">📚 Reference</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select id="editNotePriority" class="form-input">
+                            <option value="low">🟢 Low</option>
+                            <option value="medium">🟡 Medium</option>
+                            <option value="high">🔴 High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea id="editNoteContent" class="form-input" rows="6" required></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Tags</label>
+                        <input type="text" id="editNoteTags" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Options</label>
+                        <div class="flex items-center gap-4 mt-2">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="editNotePinned" class="form-checkbox">
+                                <span class="text-sm">📌 Pin Note</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="editNotePrivate" class="form-checkbox">
+                                <span class="text-sm">🔒 Private</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.note-card {
+    position: relative;
+    min-height: 200px;
+}
+
+.note-card:hover {
+    transform: translateY(-2px);
+}
+
+.form-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    accent-color: var(--color-primary);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+    #notesGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    #notesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+
+<script>
+// Add new note
+document.getElementById('noteForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const title = document.getElementById('noteTitle').value.trim();
+    const category = document.getElementById('noteCategory').value;
+    const priority = document.getElementById('notePriority').value;
+    const content = document.getElementById('noteContent').value.trim();
+    const tags = document.getElementById('noteTags').value.trim();
+    const isPinned = document.getElementById('notePinned').checked;
+    const isPrivate = document.getElementById('notePrivate').checked;
+    const loader = document.getElementById('saveLoader');
+    
+    if (!title || !content) {
+        showResult('noteResult', 'Title and content are required', 'error');
+        return;
+    }
+    
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'notes',
+            data: {
+                title: title,
+                content: content,
+                category: category,
+                priority: priority,
+                tags: tags,
+                is_pinned: isPinned,
+                is_private: isPrivate,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('noteResult', '✅ Note saved successfully!', 'success');
+            clearForm();
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('noteResult', '❌ Failed to save note', 'error');
+        }
+    })
+    .catch(error => {
+        loader.style.display = 'none';
+        showResult('noteResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+});
+
+function clearForm() {
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteCategory').value = '';
+    document.getElementById('notePriority').value = 'medium';
+    document.getElementById('noteContent').value = '';
+    document.getElementById('noteTags').value = '';
+    document.getElementById('notePinned').checked = false;
+    document.getElementById('notePrivate').checked = false;
+}
+
+function editNote(noteId) {
+    fetch(`/get-item?table=notes&id=${noteId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const note = data.item;
+                
+                document.getElementById('editNoteId').value = noteId;
+                document.getElementById('editNoteTitle').value = note.title || '';
+                document.getElementById('editNoteCategory').value = note.category || '';
+                document.getElementById('editNotePriority').value = note.priority || 'medium';
+                document.getElementById('editNoteContent').value = note.content || '';
+                document.getElementById('editNoteTags').value = note.tags || '';
+                document.getElementById('editNotePinned').checked = note.is_pinned || false;
+                document.getElementById('editNotePrivate').checked = note.is_private || false;
+                
+                document.getElementById('editNoteModal').style.display = 'flex';
+            } else {
+                alert('Failed to load note data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading note data');
+        });
+}
+
+function closeEditModal() {
+    document.getElementById('editNoteModal').style.display = 'none';
+}
+
+function deleteNote(noteId) {
+    if (confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'notes',
+                id: noteId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete note');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting note');
+        });
+    }
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Handle edit form submission
+document.getElementById('editNoteForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const noteId = document.getElementById('editNoteId').value;
+    const title = document.getElementById('editNoteTitle').value.trim();
+    const category = document.getElementById('editNoteCategory').value;
+    const priority = document.getElementById('editNotePriority').value;
+    const content = document.getElementById('editNoteContent').value.trim();
+    const tags = document.getElementById('editNoteTags').value.trim();
+    const isPinned = document.getElementById('editNotePinned').checked;
+    const isPrivate = document.getElementById('editNotePrivate').checked;
+    
+    if (!title || !content) {
+        alert('Title and content are required');
+        return;
+    }
+    
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'notes',
+            id: parseInt(noteId),
+            data: {
+                title: title,
+                category: category,
+                priority: priority,
+                content: content,
+                tags: tags,
+                is_pinned: isPinned,
+                is_private: isPrivate
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeEditModal();
+            location.reload();
+        } else {
+            alert('Failed to update note');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating note');
+    });
+});
+
+// Search and filter functionality
+document.getElementById('searchNotes').addEventListener('input', filterNotes);
+document.getElementById('filterCategory').addEventListener('change', filterNotes);
+document.getElementById('filterPriority').addEventListener('change', filterNotes);
+document.getElementById('sortBy').addEventListener('change', sortNotes);
+
+function filterNotes() {
+    const searchTerm = document.getElementById('searchNotes').value.toLowerCase();
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const priorityFilter = document.getElementById('filterPriority').value;
+    const notes = document.querySelectorAll('.note-card');
+    
+    notes.forEach(note => {
+        const title = note.querySelector('h4').textContent.toLowerCase();
+        const content = note.querySelector('.note-content').textContent.toLowerCase();
+        const category = note.dataset.category;
+        const priority = note.dataset.priority;
+        
+        const matchesSearch = title.includes(searchTerm) || content.includes(searchTerm);
+        const matchesCategory = !categoryFilter || category === categoryFilter;
+        const matchesPriority = !priorityFilter || priority === priorityFilter;
+        
+        note.style.display = (matchesSearch && matchesCategory && matchesPriority) ? 'block' : 'none';
+    });
+}
+
+function sortNotes() {
+    const sortBy = document.getElementById('sortBy').value;
+    const notesGrid = document.getElementById('notesGrid');
+    const notes = Array.from(document.querySelectorAll('.note-card'));
+    
+    notes.sort((a, b) => {
+        const aTitle = a.querySelector('h4').textContent;
+        const bTitle = b.querySelector('h4').textContent;
+        
+        switch (sortBy) {
+            case 'title_asc':
+                return aTitle.localeCompare(bTitle);
+            case 'title_desc':
+                return bTitle.localeCompare(aTitle);
+            case 'priority':
+                const priorityOrder = { high: 3, medium: 2, low: 1 };
+                return priorityOrder[b.dataset.priority] - priorityOrder[a.dataset.priority];
+            default:
+                return 0; // Keep original order for date sorting
+        }
+    });
+    
+    notes.forEach(note => notesGrid.appendChild(note));
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const editModal = document.getElementById('editNoteModal');
+    
+    if (event.target === editModal) {
+        closeEditModal();
+    }
+}
+</script>
+{% endblock %}

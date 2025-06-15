@@ -1,0 +1,722 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Shopping List - LifeOS{% endblock %}
+{% block header_title %}Shopping List{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🛒 Shopping List</h1>
+    <p class="page-subtitle">Organize your shopping items by store and category for efficient trips</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ items|length or 0 }}</div>
+        <div class="stat-label">Total Items</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ items|selectattr('purchased', 'equalto', False)|list|length or 0 }}</div>
+        <div class="stat-label">Remaining</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ items|selectattr('purchased', 'equalto', True)|list|length or 0 }}</div>
+        <div class="stat-label">Purchased</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">${{ "%.2f"|format(items|sum(attribute='estimated_cost')|default(0)) }}</div>
+        <div class="stat-label">Estimated Total</div>
+    </div>
+</div>
+
+<!-- Add Item Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">🛍️ Add Shopping Item</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="form-group">
+                <label class="form-label">Item Name</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newItemName" 
+                       placeholder="Enter item name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="newItemCategory" class="form-input">
+                    <option value="">Select category...</option>
+                    <option value="produce">Produce</option>
+                    <option value="dairy">Dairy</option>
+                    <option value="meat">Meat & Seafood</option>
+                    <option value="pantry">Pantry</option>
+                    <option value="frozen">Frozen</option>
+                    <option value="bakery">Bakery</option>
+                    <option value="household">Household</option>
+                    <option value="personal">Personal Care</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Store</label>
+                <select id="newItemStore" class="form-input">
+                    <option value="">Select store...</option>
+                    <option value="grocery">Grocery Store</option>
+                    <option value="walmart">Walmart</option>
+                    <option value="target">Target</option>
+                    <option value="costco">Costco</option>
+                    <option value="pharmacy">Pharmacy</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quantity & Price</label>
+                <div class="flex gap-2">
+                    <input type="number" 
+                           class="form-input" 
+                           id="newItemQuantity" 
+                           placeholder="Qty" 
+                           value="1" 
+                           min="1" 
+                           style="width: 80px;">
+                    <input type="number" 
+                           class="form-input" 
+                           id="newItemPrice" 
+                           placeholder="$0.00" 
+                           step="0.01" 
+                           min="0">
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-4 gap-4 mt-4">
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newItemNotes" 
+                       placeholder="Brand, size, etc.">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select id="newItemPriority" class="form-input">
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="newItemUrgent" class="form-checkbox">
+                    <span class="text-sm">Urgent</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary w-full" onclick="addItem()">
+                    <span id="addBtnText">Add Item</span>
+                    <span id="addLoader" class="loading" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+        <div id="addResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Filter and Actions -->
+<div class="card mb-8">
+    <div class="card-content">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="form-group">
+                <label class="form-label">Filter by Store</label>
+                <select id="filterStore" class="form-input" onchange="filterItems()">
+                    <option value="">All Stores</option>
+                    <option value="grocery">Grocery Store</option>
+                    <option value="walmart">Walmart</option>
+                    <option value="target">Target</option>
+                    <option value="costco">Costco</option>
+                    <option value="pharmacy">Pharmacy</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Filter by Category</label>
+                <select id="filterCategory" class="form-input" onchange="filterItems()">
+                    <option value="">All Categories</option>
+                    <option value="produce">Produce</option>
+                    <option value="dairy">Dairy</option>
+                    <option value="meat">Meat & Seafood</option>
+                    <option value="pantry">Pantry</option>
+                    <option value="frozen">Frozen</option>
+                    <option value="bakery">Bakery</option>
+                    <option value="household">Household</option>
+                    <option value="personal">Personal Care</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Show Status</label>
+                <select id="filterStatus" class="form-input" onchange="filterItems()">
+                    <option value="all">All Items</option>
+                    <option value="pending">Not Purchased</option>
+                    <option value="purchased">Purchased</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quick Actions</label>
+                <div class="flex gap-2">
+                    <button class="btn btn-secondary btn-sm" onclick="clearPurchased()">Clear Purchased</button>
+                    <button class="btn btn-primary btn-sm" onclick="printList()">🖨️ Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shopping Items Table -->
+<div class="table-container">
+    <table class="table" id="itemsTable">
+        <thead>
+            <tr>
+                <th>✓</th>
+                <th>Item</th>
+                <th>Store</th>
+                <th>Category</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Priority</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr class="item-row {% if item.purchased %}purchased{% endif %} {% if item.urgent %}urgent{% endif %}" 
+                data-store="{{ item.store }}" 
+                data-category="{{ item.category }}"
+                data-purchased="{{ item.purchased }}">
+                <td>
+                    <input type="checkbox" 
+                           class="form-checkbox" 
+                           {% if item.purchased %}checked{% endif %}
+                           onchange="togglePurchased({{ item.id }}, this.checked)">
+                </td>
+                <td>
+                    <div>
+                        <div class="font-semibold text-gray-900 {% if item.purchased %}line-through{% endif %}">
+                            {% if item.urgent %}🔥{% endif %}
+                            {{ item.name }}
+                        </div>
+                        {% if item.notes %}
+                        <div class="text-sm text-gray-500">{{ item.notes }}</div>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                    <span class="badge badge-info">{{ item.store|title }}</span>
+                </td>
+                <td>
+                    <span class="badge badge-secondary">{{ item.category|title }}</span>
+                </td>
+                <td class="text-center">{{ item.quantity or 1 }}</td>
+                <td class="text-center">
+                    {% if item.estimated_price %}
+                        ${{ "%.2f"|format(item.estimated_price) }}
+                    {% else %}
+                        <span class="text-gray-400">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge badge-{% if item.priority == 'high' %}danger{% elif item.priority == 'medium' %}warning{% else %}success{% endif %}">
+                        {{ item.priority|title }}
+                    </span>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary btn-sm" onclick="editItem({{ item.id }})">
+                            ✏️ Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteItem({{ item.id }})">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit Item Modal -->
+<div id="editItemModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Shopping Item</h3>
+            <button class="modal-close" onclick="closeEditModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="editItemForm">
+                <input type="hidden" id="editItemId">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Item Name</label>
+                        <input type="text" id="editItemName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="editItemCategory" class="form-input">
+                            <option value="produce">Produce</option>
+                            <option value="dairy">Dairy</option>
+                            <option value="meat">Meat & Seafood</option>
+                            <option value="pantry">Pantry</option>
+                            <option value="frozen">Frozen</option>
+                            <option value="bakery">Bakery</option>
+                            <option value="household">Household</option>
+                            <option value="personal">Personal Care</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Store</label>
+                        <select id="editItemStore" class="form-input">
+                            <option value="grocery">Grocery Store</option>
+                            <option value="walmart">Walmart</option>
+                            <option value="target">Target</option>
+                            <option value="costco">Costco</option>
+                            <option value="pharmacy">Pharmacy</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select id="editItemPriority" class="form-input">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" id="editItemQuantity" class="form-input" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Estimated Price</label>
+                        <input type="number" id="editItemPrice" class="form-input" step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label">Notes</label>
+                    <input type="text" id="editItemNotes" class="form-input">
+                </div>
+                <div class="flex items-center gap-4 mb-4">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" id="editItemUrgent" class="form-checkbox">
+                        <span class="text-sm">Mark as urgent</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" id="editItemPurchased" class="form-checkbox">
+                        <span class="text-sm">Already purchased</span>
+                    </label>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.purchased {
+    background-color: #f0f9ff;
+    opacity: 0.7;
+}
+
+.urgent {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+}
+
+.form-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    accent-color: var(--color-primary);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+
+.badge-secondary {
+    background: var(--color-gray-100);
+    color: var(--text-primary);
+}
+
+.line-through {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+}
+</style>
+
+<script>
+function addItem() {
+    const name = document.getElementById('newItemName').value.trim();
+    const category = document.getElementById('newItemCategory').value;
+    const store = document.getElementById('newItemStore').value;
+    const quantity = parseInt(document.getElementById('newItemQuantity').value) || 1;
+    const price = parseFloat(document.getElementById('newItemPrice').value) || 0;
+    const notes = document.getElementById('newItemNotes').value.trim();
+    const priority = document.getElementById('newItemPriority').value;
+    const urgent = document.getElementById('newItemUrgent').checked;
+    const btnText = document.getElementById('addBtnText');
+    const loader = document.getElementById('addLoader');
+    
+    if (!name || !category || !store) {
+        showResult('addResult', 'Please fill in name, category, and store', 'error');
+        return;
+    }
+    
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'shopping_items',
+            data: {
+                name: name,
+                category: category,
+                store: store,
+                quantity: quantity,
+                estimated_price: price,
+                notes: notes,
+                priority: priority,
+                urgent: urgent,
+                purchased: false,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('addResult', `✅ Successfully added item: ${name}`, 'success');
+            // Clear form
+            document.getElementById('newItemName').value = '';
+            document.getElementById('newItemCategory').value = '';
+            document.getElementById('newItemStore').value = '';
+            document.getElementById('newItemQuantity').value = '1';
+            document.getElementById('newItemPrice').value = '';
+            document.getElementById('newItemNotes').value = '';
+            document.getElementById('newItemPriority').value = 'medium';
+            document.getElementById('newItemUrgent').checked = false;
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('addResult', '❌ Failed to add item', 'error');
+        }
+    })
+    .catch(error => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        showResult('addResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function filterItems() {
+    const storeFilter = document.getElementById('filterStore').value;
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+    
+    const rows = document.querySelectorAll('.item-row');
+    
+    rows.forEach(row => {
+        const store = row.getAttribute('data-store');
+        const category = row.getAttribute('data-category');
+        const purchased = row.getAttribute('data-purchased') === 'True';
+        
+        const matchesStore = !storeFilter || store === storeFilter;
+        const matchesCategory = !categoryFilter || category === categoryFilter;
+        const matchesStatus = statusFilter === 'all' || 
+                             (statusFilter === 'purchased' && purchased) ||
+                             (statusFilter === 'pending' && !purchased);
+        
+        if (matchesStore && matchesCategory && matchesStatus) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function togglePurchased(itemId, purchased) {
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'shopping_items',
+            id: itemId,
+            data: {
+                purchased: purchased,
+                purchased_at: purchased ? new Date().toISOString() : null
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to update item status');
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating item status');
+    });
+}
+
+function editItem(itemId) {
+    fetch(`/get-item?table=shopping_items&id=${itemId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const item = data.item;
+                
+                document.getElementById('editItemId').value = itemId;
+                document.getElementById('editItemName').value = item.name || '';
+                document.getElementById('editItemCategory').value = item.category || '';
+                document.getElementById('editItemStore').value = item.store || '';
+                document.getElementById('editItemPriority').value = item.priority || 'medium';
+                document.getElementById('editItemQuantity').value = item.quantity || 1;
+                document.getElementById('editItemPrice').value = item.estimated_price || '';
+                document.getElementById('editItemNotes').value = item.notes || '';
+                document.getElementById('editItemUrgent').checked = item.urgent || false;
+                document.getElementById('editItemPurchased').checked = item.purchased || false;
+                
+                document.getElementById('editItemModal').style.display = 'flex';
+            } else {
+                alert('Failed to load item data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading item data');
+        });
+}
+
+function deleteItem(itemId) {
+    if (confirm('Are you sure you want to delete this item?')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'shopping_items',
+                id: itemId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete item');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting item');
+        });
+    }
+}
+
+function clearPurchased() {
+    if (confirm('Clear all purchased items? This action cannot be undone.')) {
+        fetch('/clear-purchased-items', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to clear purchased items');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error clearing purchased items');
+        });
+    }
+}
+
+function printList() {
+    window.print();
+}
+
+function closeEditModal() {
+    document.getElementById('editItemModal').style.display = 'none';
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Handle edit form submission
+document.getElementById('editItemForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const itemId = document.getElementById('editItemId').value;
+    const name = document.getElementById('editItemName').value;
+    const category = document.getElementById('editItemCategory').value;
+    const store = document.getElementById('editItemStore').value;
+    const priority = document.getElementById('editItemPriority').value;
+    const quantity = parseInt(document.getElementById('editItemQuantity').value) || 1;
+    const price = parseFloat(document.getElementById('editItemPrice').value) || 0;
+    const notes = document.getElementById('editItemNotes').value;
+    const urgent = document.getElementById('editItemUrgent').checked;
+    const purchased = document.getElementById('editItemPurchased').checked;
+    
+    if (!name.trim()) {
+        alert('Item name is required');
+        return;
+    }
+    
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'shopping_items',
+            id: parseInt(itemId),
+            data: {
+                name: name,
+                category: category,
+                store: store,
+                priority: priority,
+                quantity: quantity,
+                estimated_price: price,
+                notes: notes,
+                urgent: urgent,
+                purchased: purchased
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeEditModal();
+            location.reload();
+        } else {
+            alert('Failed to update item');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating item');
+    });
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const editModal = document.getElementById('editItemModal');
+        
+        if (event.target === editModal) {
+            closeEditModal();
+        }
+    }
+    
+    // Handle enter key
+    document.getElementById('newItemName').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addItem();
+    });
+});
+</script>
+{% endblock %}

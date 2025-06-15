@@ -1,0 +1,628 @@
+{% extends "base_modern.html" %}
+
+{% block title %}GitHub Users - LifeOS{% endblock %}
+{% block header_title %}GitHub Users{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🐙 GitHub Users</h1>
+    <p class="page-subtitle">Manage GitHub users and process their repositories automatically</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ users|length }}</div>
+        <div class="stat-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ users|selectattr('process_user')|list|length }}</div>
+        <div class="stat-label">Active Processing</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ users|sum(attribute='repos_analyzed')|default(0) }}</div>
+        <div class="stat-label">Total Repos Analyzed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ users|selectattr('last_processed')|list|length }}</div>
+        <div class="stat-label">Processed Users</div>
+    </div>
+</div>
+
+<!-- Add User Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">➕ Add New GitHub User</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+                <label class="form-label">GitHub Username</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newUsername" 
+                       placeholder="Enter GitHub username">
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary w-full" onclick="addNewUser()">
+                    <span id="addBtnText">Add User</span>
+                    <span id="addLoader" class="loading" style="display: none;"></span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-secondary w-full" onclick="showBulkAdd()">
+                    📋 Bulk Add
+                </button>
+            </div>
+        </div>
+        <div id="addResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="table-container">
+    <table class="table" id="usersTable">
+        <thead>
+            <tr>
+                <th>Process</th>
+                <th>User</th>
+                <th>Repository Stats</th>
+                <th>Last Processed</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr class="user-row {% if user.process_user %}auto-processing{% endif %}">
+                <td>
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               class="form-checkbox" 
+                               {% if user.process_user %}checked{% endif %}
+                               onchange="toggleProcessing({{ user.id }}, this.checked)">
+                        <span class="ml-2 text-sm text-gray-600">Auto Process</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            🐙
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900">{{ user.username }}</div>
+                            <div class="text-sm text-gray-500">
+                                <a href="{{ user.github_url }}" target="_blank" class="hover:text-blue-600">
+                                    {{ user.github_url.replace('https://github.com/', '@') if user.github_url }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="text-sm">
+                        <div class="font-semibold">{{ user.repos_analyzed or 0 }} repositories analyzed</div>
+                        <div class="text-gray-500">{{ user.repo_count or 0 }} total repositories</div>
+                    </div>
+                </td>
+                <td class="text-sm text-gray-500">
+                    {% if user.last_processed %}
+                        {{ user.last_processed.split(' ')[0] }}
+                    {% else %}
+                        <span class="text-gray-400">Never</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge badge-{% if user.status == 'Active' %}success{% elif user.status == 'Inactive' %}danger{% else %}info{% endif %}">
+                        {{ user.status or 'Active' }}
+                    </span>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary btn-sm" onclick="editUser({{ user.id }})">
+                            ✏️ Edit
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="processUser({{ user.id }})">
+                            🔄 Process
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteUser({{ user.id }})">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit User Modal -->
+<div id="editUserModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit GitHub User</h3>
+            <button class="modal-close" onclick="closeEditModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="editUsername" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">GitHub URL</label>
+                    <input type="url" id="editGithubUrl" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="editStatus" class="form-input">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Repositories Analyzed</label>
+                    <input type="number" id="editReposAnalyzed" class="form-input" min="0">
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Add Modal -->
+<div id="bulkAddModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📋 Bulk Add GitHub Users</h3>
+            <button class="modal-close" onclick="closeBulkAdd()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">GitHub Usernames (one per line)</label>
+                <textarea class="form-input" 
+                          id="bulkUsernames" 
+                          rows="10" 
+                          placeholder="username1&#10;username2&#10;username3"></textarea>
+            </div>
+            <div class="flex gap-3">
+                <button class="btn btn-primary flex-1" onclick="processBulkAdd()">
+                    <span id="bulkBtnText">Add All Users</span>
+                    <span id="bulkLoader" class="loading" style="display: none;"></span>
+                </button>
+                <button class="btn btn-secondary" onclick="closeBulkAdd()">Cancel</button>
+            </div>
+            <div id="bulkProgress" class="mt-4" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="text-sm text-gray-600 mt-2" id="progressText">Processing...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.auto-processing {
+    background-color: #f0f9ff;
+    border-left: 4px solid #0ea5e9;
+}
+
+.form-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    accent-color: var(--color-primary);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+</style>
+
+<script>
+function addNewUser() {
+    const username = document.getElementById('newUsername').value.trim();
+    const btnText = document.getElementById('addBtnText');
+    const loader = document.getElementById('addLoader');
+    
+    if (!username) {
+        showResult('addResult', 'Please enter a GitHub username', 'error');
+        return;
+    }
+    
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    
+    const githubUrl = `https://github.com/${username}`;
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'github_users',
+            data: {
+                username: username,
+                github_url: githubUrl,
+                process_user: false,
+                repos_analyzed: 0,
+                status: 'Active'
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('addResult', `✅ Successfully added user: ${username}`, 'success');
+            document.getElementById('newUsername').value = '';
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('addResult', '❌ Failed to add user', 'error');
+        }
+    })
+    .catch(error => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        showResult('addResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function toggleProcessing(userId, enabled) {
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'github_users',
+            id: userId,
+            data: {
+                process_user: enabled
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            alert('Failed to update processing status');
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating processing status');
+    });
+}
+
+function editUser(userId) {
+    fetch(`/get-item?table=github_users&id=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const user = data.item;
+                
+                document.getElementById('editUserId').value = userId;
+                document.getElementById('editUsername').value = user.username || '';
+                document.getElementById('editGithubUrl').value = user.github_url || '';
+                document.getElementById('editStatus').value = user.status || 'Active';
+                document.getElementById('editReposAnalyzed').value = user.repos_analyzed || 0;
+                
+                document.getElementById('editUserModal').style.display = 'flex';
+            } else {
+                alert('Failed to load user data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading user data');
+        });
+}
+
+function closeEditModal() {
+    document.getElementById('editUserModal').style.display = 'none';
+}
+
+function processUser(userId) {
+    if (confirm('Process this user\\'s repositories now?')) {
+        fetch('/process-github-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Processing completed: ${data.message}`);
+                location.reload();
+            } else {
+                alert(`Processing failed: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error processing user');
+        });
+    }
+}
+
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this GitHub user? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'github_users',
+                id: userId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete user');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting user');
+        });
+    }
+}
+
+function showBulkAdd() {
+    document.getElementById('bulkAddModal').style.display = 'flex';
+}
+
+function closeBulkAdd() {
+    document.getElementById('bulkAddModal').style.display = 'none';
+    document.getElementById('bulkUsernames').value = '';
+    document.getElementById('bulkProgress').style.display = 'none';
+}
+
+async function processBulkAdd() {
+    const usernames = document.getElementById('bulkUsernames').value
+        .split('\\n')
+        .map(username => username.trim())
+        .filter(username => username);
+    
+    if (usernames.length === 0) {
+        alert('Please enter at least one username');
+        return;
+    }
+    
+    const btnText = document.getElementById('bulkBtnText');
+    const loader = document.getElementById('bulkLoader');
+    const progress = document.getElementById('bulkProgress');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    progress.style.display = 'block';
+    
+    let completed = 0;
+    let successful = 0;
+    
+    for (let i = 0; i < usernames.length; i++) {
+        const username = usernames[i];
+        progressText.textContent = `Adding ${i + 1}/${usernames.length}: ${username}`;
+        
+        try {
+            const response = await fetch('/add-item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    table: 'github_users',
+                    data: {
+                        username: username,
+                        github_url: `https://github.com/${username}`,
+                        process_user: false,
+                        repos_analyzed: 0,
+                        status: 'Active'
+                    }
+                })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                successful++;
+            }
+        } catch (error) {
+            console.error('Error adding:', username, error);
+        }
+        
+        completed++;
+        const percentage = (completed / usernames.length) * 100;
+        progressFill.style.width = percentage + '%';
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    btnText.style.display = 'inline';
+    loader.style.display = 'none';
+    progressText.textContent = `Completed! Successfully added ${successful}/${usernames.length} users.`;
+    
+    setTimeout(() => {
+        closeBulkAdd();
+        location.reload();
+    }, 3000);
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Handle edit form submission
+document.getElementById('editUserForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const userId = document.getElementById('editUserId').value;
+    const username = document.getElementById('editUsername').value;
+    const githubUrl = document.getElementById('editGithubUrl').value;
+    const status = document.getElementById('editStatus').value;
+    const reposAnalyzed = parseInt(document.getElementById('editReposAnalyzed').value) || 0;
+    
+    if (!username.trim()) {
+        alert('Username is required');
+        return;
+    }
+    
+    if (!githubUrl.trim()) {
+        alert('GitHub URL is required');
+        return;
+    }
+    
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'github_users',
+            id: parseInt(userId),
+            data: {
+                username: username,
+                github_url: githubUrl,
+                status: status,
+                repos_analyzed: reposAnalyzed
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeEditModal();
+            location.reload();
+        } else {
+            alert('Failed to update user');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating user');
+    });
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle Enter key
+    document.getElementById('newUsername').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addNewUser();
+    });
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const editModal = document.getElementById('editUserModal');
+        const bulkModal = document.getElementById('bulkAddModal');
+        
+        if (event.target === editModal) {
+            closeEditModal();
+        }
+        if (event.target === bulkModal) {
+            closeBulkAdd();
+        }
+    }
+});
+</script>
+{% endblock %}

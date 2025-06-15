@@ -1,0 +1,688 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Tasks - LifeOS{% endblock %}
+{% block header_title %}Tasks{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📋 Task Management</h1>
+    <p class="page-subtitle">Organize and track your tasks with priorities, due dates, and progress tracking</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ tasks|length or 0 }}</div>
+        <div class="stat-label">Total Tasks</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ tasks|selectattr('status', 'equalto', 'pending')|list|length or 0 }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ tasks|selectattr('status', 'equalto', 'in_progress')|list|length or 0 }}</div>
+        <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ tasks|selectattr('status', 'equalto', 'completed')|list|length or 0 }}</div>
+        <div class="stat-label">Completed</div>
+    </div>
+</div>
+
+<!-- Add Task Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">➕ Add New Task</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+                <label class="form-label">Task Title</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newTaskTitle" 
+                       placeholder="Enter task title">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="newTaskCategory" class="form-input">
+                    <option value="">Select category...</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="health">Health</option>
+                    <option value="learning">Learning</option>
+                    <option value="finance">Finance</option>
+                    <option value="home">Home</option>
+                    <option value="social">Social</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group mb-4">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" 
+                      id="newTaskDescription" 
+                      rows="3" 
+                      placeholder="Enter task description..."></textarea>
+        </div>
+        <div class="grid grid-cols-4 gap-4">
+            <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select id="newTaskPriority" class="form-input">
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                    <option value="urgent">Urgent</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" 
+                       class="form-input" 
+                       id="newTaskDueDate">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Estimated Hours</label>
+                <input type="number" 
+                       class="form-input" 
+                       id="newTaskEstimatedHours" 
+                       placeholder="Hours" 
+                       step="0.5" 
+                       min="0">
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary w-full" onclick="addTask()">
+                    <span id="addBtnText">Add Task</span>
+                    <span id="addLoader" class="loading" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+        <div id="addResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="card mb-8">
+    <div class="card-content">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="form-group">
+                <label class="form-label">Search Tasks</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="searchTasks" 
+                       placeholder="Search by title or description..."
+                       onkeyup="filterTasks()">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Filter by Status</label>
+                <select id="filterStatus" class="form-input" onchange="filterTasks()">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Filter by Category</label>
+                <select id="filterCategory" class="form-input" onchange="filterTasks()">
+                    <option value="">All Categories</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="health">Health</option>
+                    <option value="learning">Learning</option>
+                    <option value="finance">Finance</option>
+                    <option value="home">Home</option>
+                    <option value="social">Social</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Filter by Priority</label>
+                <select id="filterPriority" class="form-input" onchange="filterTasks()">
+                    <option value="">All Priorities</option>
+                    <option value="urgent">Urgent</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tasks Table -->
+<div class="table-container">
+    <table class="table" id="tasksTable">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Progress</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr class="task-row {% if task.status == 'completed' %}completed{% endif %} {% if task.priority == 'urgent' %}urgent{% endif %}" 
+                data-title="{{ task.title|lower }}" 
+                data-description="{{ task.description|lower }}"
+                data-status="{{ task.status }}"
+                data-category="{{ task.category }}"
+                data-priority="{{ task.priority }}">
+                <td>
+                    <div>
+                        <div class="font-semibold text-gray-900 {% if task.status == 'completed' %}line-through{% endif %}">
+                            {% if task.priority == 'urgent' %}🔥{% endif %}
+                            {{ task.title }}
+                        </div>
+                        {% if task.description %}
+                        <div class="text-sm text-gray-500 mt-1" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            {{ task.description }}
+                        </div>
+                        {% endif %}
+                        {% if task.estimated_hours %}
+                        <div class="text-xs text-gray-400 mt-1">
+                            Est: {{ task.estimated_hours }}h
+                        </div>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                    <span class="badge badge-info">{{ task.category|title }}</span>
+                </td>
+                <td>
+                    <span class="badge badge-{% if task.priority == 'urgent' %}danger{% elif task.priority == 'high' %}warning{% elif task.priority == 'medium' %}info{% else %}success{% endif %}">
+                        {{ task.priority|title }}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge badge-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}warning{% elif task.status == 'cancelled' %}danger{% else %}info{% endif %}">
+                        {{ task.status|title|replace('_', ' ') }}
+                    </span>
+                </td>
+                <td class="text-sm">
+                    {% if task.due_date %}
+                        {% set due_date = task.due_date.split(' ')[0] %}
+                        {% set today = moment().format('YYYY-MM-DD') %}
+                        <span class="{% if due_date < today %}text-red-600 font-semibold{% elif due_date == today %}text-orange-600 font-semibold{% endif %}">
+                            {{ due_date }}
+                        </span>
+                    {% else %}
+                        <span class="text-gray-400">No due date</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ task.progress or 0 }}%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 ml-2">{{ task.progress or 0 }}%</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        {% if task.status != 'completed' %}
+                        <button class="btn btn-success btn-sm" onclick="markCompleted({{ task.id }})">
+                            ✅ Complete
+                        </button>
+                        {% endif %}
+                        <button class="btn btn-secondary btn-sm" onclick="editTask({{ task.id }})">
+                            ✏️ Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTask({{ task.id }})">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit Task Modal -->
+<div id="editTaskModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Task</h3>
+            <button class="modal-close" onclick="closeEditModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="editTaskForm">
+                <input type="hidden" id="editTaskId">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" id="editTaskTitle" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="editTaskCategory" class="form-input">
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="health">Health</option>
+                            <option value="learning">Learning</option>
+                            <option value="finance">Finance</option>
+                            <option value="home">Home</option>
+                            <option value="social">Social</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label">Description</label>
+                    <textarea id="editTaskDescription" class="form-input" rows="4"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select id="editTaskPriority" class="form-input">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="editTaskStatus" class="form-input">
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" id="editTaskDueDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Estimated Hours</label>
+                        <input type="number" id="editTaskEstimatedHours" class="form-input" step="0.5" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Progress (%)</label>
+                        <input type="number" id="editTaskProgress" class="form-input" min="0" max="100">
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.completed {
+    background-color: #f0f9ff;
+    opacity: 0.8;
+}
+
+.urgent {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    min-width: 120px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+
+.line-through {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+}
+</style>
+
+<script>
+function addTask() {
+    const title = document.getElementById('newTaskTitle').value.trim();
+    const category = document.getElementById('newTaskCategory').value;
+    const description = document.getElementById('newTaskDescription').value.trim();
+    const priority = document.getElementById('newTaskPriority').value;
+    const dueDate = document.getElementById('newTaskDueDate').value;
+    const estimatedHours = parseFloat(document.getElementById('newTaskEstimatedHours').value) || null;
+    const btnText = document.getElementById('addBtnText');
+    const loader = document.getElementById('addLoader');
+    
+    if (!title || !category) {
+        showResult('addResult', 'Please fill in title and category', 'error');
+        return;
+    }
+    
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'tasks',
+            data: {
+                title: title,
+                description: description,
+                category: category,
+                priority: priority,
+                status: 'pending',
+                due_date: dueDate || null,
+                estimated_hours: estimatedHours,
+                progress: 0,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('addResult', `✅ Successfully added task: ${title}`, 'success');
+            // Clear form
+            document.getElementById('newTaskTitle').value = '';
+            document.getElementById('newTaskCategory').value = '';
+            document.getElementById('newTaskDescription').value = '';
+            document.getElementById('newTaskPriority').value = 'medium';
+            document.getElementById('newTaskDueDate').value = '';
+            document.getElementById('newTaskEstimatedHours').value = '';
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('addResult', '❌ Failed to add task', 'error');
+        }
+    })
+    .catch(error => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        showResult('addResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function filterTasks() {
+    const searchTerm = document.getElementById('searchTasks').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const priorityFilter = document.getElementById('filterPriority').value;
+    
+    const rows = document.querySelectorAll('.task-row');
+    
+    rows.forEach(row => {
+        const title = row.getAttribute('data-title');
+        const description = row.getAttribute('data-description');
+        const status = row.getAttribute('data-status');
+        const category = row.getAttribute('data-category');
+        const priority = row.getAttribute('data-priority');
+        
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesStatus = !statusFilter || status === statusFilter;
+        const matchesCategory = !categoryFilter || category === categoryFilter;
+        const matchesPriority = !priorityFilter || priority === priorityFilter;
+        
+        if (matchesSearch && matchesStatus && matchesCategory && matchesPriority) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function markCompleted(taskId) {
+    if (confirm('Mark this task as completed?')) {
+        fetch('/edit-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'tasks',
+                id: taskId,
+                data: {
+                    status: 'completed',
+                    progress: 100,
+                    completed_at: new Date().toISOString()
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to update task status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating task status');
+        });
+    }
+}
+
+function editTask(taskId) {
+    fetch(`/get-item?table=tasks&id=${taskId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const task = data.item;
+                
+                document.getElementById('editTaskId').value = taskId;
+                document.getElementById('editTaskTitle').value = task.title || '';
+                document.getElementById('editTaskCategory').value = task.category || '';
+                document.getElementById('editTaskDescription').value = task.description || '';
+                document.getElementById('editTaskPriority').value = task.priority || 'medium';
+                document.getElementById('editTaskStatus').value = task.status || 'pending';
+                document.getElementById('editTaskDueDate').value = task.due_date ? task.due_date.split(' ')[0] : '';
+                document.getElementById('editTaskEstimatedHours').value = task.estimated_hours || '';
+                document.getElementById('editTaskProgress').value = task.progress || 0;
+                
+                document.getElementById('editTaskModal').style.display = 'flex';
+            } else {
+                alert('Failed to load task data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading task data');
+        });
+}
+
+function deleteTask(taskId) {
+    if (confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'tasks',
+                id: taskId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete task');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting task');
+        });
+    }
+}
+
+function closeEditModal() {
+    document.getElementById('editTaskModal').style.display = 'none';
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Handle edit form submission
+document.getElementById('editTaskForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const taskId = document.getElementById('editTaskId').value;
+    const title = document.getElementById('editTaskTitle').value;
+    const category = document.getElementById('editTaskCategory').value;
+    const description = document.getElementById('editTaskDescription').value;
+    const priority = document.getElementById('editTaskPriority').value;
+    const status = document.getElementById('editTaskStatus').value;
+    const dueDate = document.getElementById('editTaskDueDate').value;
+    const estimatedHours = parseFloat(document.getElementById('editTaskEstimatedHours').value) || null;
+    const progress = parseInt(document.getElementById('editTaskProgress').value) || 0;
+    
+    if (!title.trim()) {
+        alert('Task title is required');
+        return;
+    }
+    
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'tasks',
+            id: parseInt(taskId),
+            data: {
+                title: title,
+                description: description,
+                category: category,
+                priority: priority,
+                status: status,
+                due_date: dueDate || null,
+                estimated_hours: estimatedHours,
+                progress: progress
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeEditModal();
+            location.reload();
+        } else {
+            alert('Failed to update task');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating task');
+    });
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const editModal = document.getElementById('editTaskModal');
+        
+        if (event.target === editModal) {
+            closeEditModal();
+        }
+    }
+    
+    // Handle enter key
+    document.getElementById('newTaskTitle').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addTask();
+    });
+});
+</script>
+{% endblock %}

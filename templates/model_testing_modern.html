@@ -1,0 +1,690 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Model Testing - LifeOS{% endblock %}
+{% block header_title %}Model Testing{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🧪 AI Model Testing Dashboard</h1>
+    <p class="page-subtitle">Test, benchmark, and compare AI model performance across different tasks</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ test_runs|length|default(0) }}</div>
+        <div class="stat-label">Total Tests</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ models|length|default(0) }}</div>
+        <div class="stat-label">Models Tested</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ test_runs|selectattr('status', 'equalto', 'running')|list|length|default(0) }}</div>
+        <div class="stat-label">Running Tests</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ "%.1f"|format((test_runs|selectattr('score')|map(attribute='score')|sum / (test_runs|selectattr('score')|list|length or 1))|default(0)) }}%</div>
+        <div class="stat-label">Avg Score</div>
+    </div>
+</div>
+
+<!-- Quick Test Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">🚀 Quick Model Test</h3>
+    </div>
+    <div class="card-content">
+        <form id="quickTestForm">
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Model</label>
+                    <select class="form-input" id="testModel" required>
+                        <option value="">Select model</option>
+                        <option value="gpt-4">🤖 GPT-4</option>
+                        <option value="gpt-3.5-turbo">🤖 GPT-3.5 Turbo</option>
+                        <option value="claude-3-opus">🧠 Claude 3 Opus</option>
+                        <option value="claude-3-sonnet">🧠 Claude 3 Sonnet</option>
+                        <option value="claude-3-haiku">🧠 Claude 3 Haiku</option>
+                        <option value="gemini-pro">💎 Gemini Pro</option>
+                        <option value="llama-2-70b">🦙 Llama 2 70B</option>
+                        <option value="mistral-large">🌪️ Mistral Large</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Test Type</label>
+                    <select class="form-input" id="testType" required>
+                        <option value="">Select test type</option>
+                        <option value="reasoning">🧠 Reasoning</option>
+                        <option value="creativity">🎨 Creativity</option>
+                        <option value="coding">💻 Coding</option>
+                        <option value="summarization">📝 Summarization</option>
+                        <option value="translation">🌍 Translation</option>
+                        <option value="qa">❓ Q&A</option>
+                        <option value="classification">📊 Classification</option>
+                        <option value="custom">⚙️ Custom</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-input" id="testPriority">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="high">🔴 High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Test Prompt</label>
+                <textarea class="form-input" 
+                          id="testPrompt" 
+                          rows="4" 
+                          placeholder="Enter your test prompt here..."
+                          required></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Expected Output (Optional)</label>
+                    <textarea class="form-input" 
+                              id="expectedOutput" 
+                              rows="3" 
+                              placeholder="What output do you expect?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Test Parameters</label>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-4">
+                            <label class="text-sm">Temperature:</label>
+                            <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7" class="flex-1">
+                            <span id="tempValue" class="text-sm w-8">0.7</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <label class="text-sm">Max Tokens:</label>
+                            <input type="number" id="maxTokens" value="1000" min="1" max="4000" class="form-input w-20">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button type="submit" class="btn btn-primary">
+                    🧪 Run Test
+                    <span id="testLoader" class="loading" style="display: none;"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="runBenchmarkSuite()">
+                    📊 Benchmark Suite
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="clearTestForm()">
+                    🗑️ Clear
+                </button>
+            </div>
+        </form>
+        <div id="testResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Active Tests -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">⏳ Active Tests</h3>
+        <button class="btn btn-secondary" onclick="refreshActiveTests()">
+            🔄 Refresh
+        </button>
+    </div>
+    <div class="card-content">
+        <div id="activeTestsList">
+            {% for test in test_runs|selectattr('status', 'equalto', 'running')|default([]) %}
+            <div class="test-item border border-gray-200 rounded-lg p-4 mb-4">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h4 class="font-semibold">{{ test.model|default('Unknown Model') }}</h4>
+                            <span class="badge badge-info">{{ test.test_type|title|default('Unknown Type') }}</span>
+                            <span class="badge badge-warning">Running</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">{{ (test.prompt|default('No prompt'))[0:100] }}...</p>
+                        <div class="text-xs text-gray-500">
+                            Started: {{ test.started_at|default('Unknown time') }}
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-danger btn-sm" onclick="cancelTest({{ test.id }})">
+                            ⏹️ Cancel
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ test.progress|default(30) }}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Progress: {{ test.progress|default(30) }}%
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-500">
+                <div class="text-4xl mb-2">⏳</div>
+                <div>No active tests running</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Test Results -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📊 Test Results</h3>
+        <div class="flex gap-2">
+            <select class="form-input" id="filterModel" style="width: 150px;">
+                <option value="">All Models</option>
+                <option value="gpt-4">GPT-4</option>
+                <option value="claude-3-opus">Claude 3 Opus</option>
+                <option value="gemini-pro">Gemini Pro</option>
+            </select>
+            <select class="form-input" id="filterTestType" style="width: 150px;">
+                <option value="">All Types</option>
+                <option value="reasoning">Reasoning</option>
+                <option value="creativity">Creativity</option>
+                <option value="coding">Coding</option>
+                <option value="summarization">Summarization</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Test Details</th>
+                        <th>Model</th>
+                        <th>Type</th>
+                        <th>Score</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test in test_runs|selectattr('status', 'in', ['completed', 'failed'])|default([]) %}
+                    <tr class="test-result-row">
+                        <td>
+                            <div>
+                                <div class="text-sm text-gray-500">{{ test.created_at|default('Unknown date') }}</div>
+                                <div class="text-xs text-gray-400">{{ (test.prompt|default('No prompt'))[0:50] }}...</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-info">
+                                🤖 {{ test.model|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-secondary">
+                                {% if test.test_type == 'reasoning' %}🧠{% elif test.test_type == 'creativity' %}🎨{% elif test.test_type == 'coding' %}💻{% elif test.test_type == 'summarization' %}📝{% elif test.test_type == 'translation' %}🌍{% elif test.test_type == 'qa' %}❓{% elif test.test_type == 'classification' %}📊{% else %}⚙️{% endif %}
+                                {{ test.test_type|title|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if test.score is not none %}
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold {% if test.score >= 80 %}text-green-600{% elif test.score >= 60 %}text-yellow-600{% else %}text-red-600{% endif %}">
+                                    {{ test.score }}%
+                                </span>
+                                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                    <div class="h-2 rounded-full {% if test.score >= 80 %}bg-green-500{% elif test.score >= 60 %}bg-yellow-500{% else %}bg-red-500{% endif %}" 
+                                         style="width: {{ test.score }}%"></div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="text-gray-400">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-sm">{{ test.duration|default('N/A') }}</td>
+                        <td>
+                            <span class="badge badge-{% if test.status == 'completed' %}success{% elif test.status == 'failed' %}danger{% else %}warning{% endif %}">
+                                {{ test.status|title|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm" onclick="viewTestDetails({{ test.id }})">
+                                    👁️ View
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="rerunTest({{ test.id }})">
+                                    🔄 Rerun
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteTest({{ test.id }})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">📊</div>
+                            <div>No test results yet</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Test Details Modal -->
+<div id="testDetailsModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+            <h3 class="modal-title">🧪 Test Details</h3>
+            <button class="modal-close" onclick="closeTestDetailsModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="testDetailsContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.test-item {
+    transition: all 0.2s ease;
+}
+
+.test-item:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.space-y-2 > * + * {
+    margin-top: 0.5rem;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+</style>
+
+<script>
+// Update temperature display
+document.getElementById('temperature').addEventListener('input', function() {
+    document.getElementById('tempValue').textContent = this.value;
+});
+
+// Run quick test
+document.getElementById('quickTestForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const model = document.getElementById('testModel').value;
+    const testType = document.getElementById('testType').value;
+    const priority = document.getElementById('testPriority').value;
+    const prompt = document.getElementById('testPrompt').value.trim();
+    const expectedOutput = document.getElementById('expectedOutput').value.trim();
+    const temperature = document.getElementById('temperature').value;
+    const maxTokens = document.getElementById('maxTokens').value;
+    const loader = document.getElementById('testLoader');
+    
+    if (!model || !testType || !prompt) {
+        showResult('testResult', 'Model, test type, and prompt are required', 'error');
+        return;
+    }
+    
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'model_tests',
+            data: {
+                model: model,
+                test_type: testType,
+                priority: priority,
+                prompt: prompt,
+                expected_output: expectedOutput,
+                temperature: parseFloat(temperature),
+                max_tokens: parseInt(maxTokens),
+                status: 'queued',
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('testResult', '✅ Test queued successfully! Results will appear below when complete.', 'success');
+            clearTestForm();
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('testResult', '❌ Failed to queue test', 'error');
+        }
+    })
+    .catch(error => {
+        loader.style.display = 'none';
+        showResult('testResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+});
+
+function clearTestForm() {
+    document.getElementById('quickTestForm').reset();
+    document.getElementById('temperature').value = 0.7;
+    document.getElementById('tempValue').textContent = '0.7';
+}
+
+function runBenchmarkSuite() {
+    if (confirm('This will run a comprehensive benchmark suite across multiple models. This may take some time. Continue?')) {
+        fetch('/run-benchmark-suite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showResult('testResult', '✅ Benchmark suite started! Check the active tests section for progress.', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 3000);
+            } else {
+                showResult('testResult', '❌ Failed to start benchmark suite', 'error');
+            }
+        })
+        .catch(error => {
+            showResult('testResult', '❌ Connection error. Please try again.', 'error');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function refreshActiveTests() {
+    location.reload();
+}
+
+function cancelTest(testId) {
+    if (confirm('Cancel this running test?')) {
+        fetch('/edit-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'model_tests',
+                id: testId,
+                data: {
+                    status: 'cancelled',
+                    completed_at: new Date().toISOString()
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to cancel test');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error cancelling test');
+        });
+    }
+}
+
+function viewTestDetails(testId) {
+    fetch(`/get-item?table=model_tests&id=${testId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const test = data.item;
+                
+                const detailsHtml = `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-semibold mb-2">Test Information</h4>
+                                <div class="text-sm space-y-1">
+                                    <div><strong>Model:</strong> ${test.model || 'N/A'}</div>
+                                    <div><strong>Type:</strong> ${test.test_type || 'N/A'}</div>
+                                    <div><strong>Status:</strong> ${test.status || 'N/A'}</div>
+                                    <div><strong>Score:</strong> ${test.score ? test.score + '%' : 'N/A'}</div>
+                                    <div><strong>Duration:</strong> ${test.duration || 'N/A'}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Parameters</h4>
+                                <div class="text-sm space-y-1">
+                                    <div><strong>Temperature:</strong> ${test.temperature || 'N/A'}</div>
+                                    <div><strong>Max Tokens:</strong> ${test.max_tokens || 'N/A'}</div>
+                                    <div><strong>Created:</strong> ${test.created_at || 'N/A'}</div>
+                                    <div><strong>Completed:</strong> ${test.completed_at || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-2">Prompt</h4>
+                            <div class="bg-gray-50 p-3 rounded text-sm">
+                                ${test.prompt || 'No prompt'}
+                            </div>
+                        </div>
+                        
+                        ${test.expected_output ? `
+                        <div>
+                            <h4 class="font-semibold mb-2">Expected Output</h4>
+                            <div class="bg-gray-50 p-3 rounded text-sm">
+                                ${test.expected_output}
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${test.actual_output ? `
+                        <div>
+                            <h4 class="font-semibold mb-2">Actual Output</h4>
+                            <div class="bg-gray-50 p-3 rounded text-sm">
+                                ${test.actual_output}
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${test.error_message ? `
+                        <div>
+                            <h4 class="font-semibold mb-2 text-red-600">Error</h4>
+                            <div class="bg-red-50 p-3 rounded text-sm text-red-700">
+                                ${test.error_message}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                document.getElementById('testDetailsContent').innerHTML = detailsHtml;
+                document.getElementById('testDetailsModal').style.display = 'flex';
+            } else {
+                alert('Failed to load test details');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading test details');
+        });
+}
+
+function closeTestDetailsModal() {
+    document.getElementById('testDetailsModal').style.display = 'none';
+}
+
+function rerunTest(testId) {
+    if (confirm('Rerun this test with the same parameters?')) {
+        fetch(`/rerun-test`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                test_id: testId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Test queued for rerun!');
+                location.reload();
+            } else {
+                alert('Failed to rerun test');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rerunning test');
+        });
+    }
+}
+
+function deleteTest(testId) {
+    if (confirm('Are you sure you want to delete this test result? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'model_tests',
+                id: testId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete test');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting test');
+        });
+    }
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Filter functionality
+document.getElementById('filterModel').addEventListener('change', filterResults);
+document.getElementById('filterTestType').addEventListener('change', filterResults);
+
+function filterResults() {
+    const modelFilter = document.getElementById('filterModel').value.toLowerCase();
+    const typeFilter = document.getElementById('filterTestType').value.toLowerCase();
+    const rows = document.querySelectorAll('.test-result-row');
+    
+    rows.forEach(row => {
+        const model = row.cells[1].textContent.toLowerCase();
+        const type = row.cells[2].textContent.toLowerCase();
+        
+        const matchesModel = !modelFilter || model.includes(modelFilter);
+        const matchesType = !typeFilter || type.includes(typeFilter);
+        
+        row.style.display = (matchesModel && matchesType) ? '' : 'none';
+    });
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const detailsModal = document.getElementById('testDetailsModal');
+    
+    if (event.target === detailsModal) {
+        closeTestDetailsModal();
+    }
+}
+</script>
+{% endblock %}

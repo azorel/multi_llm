@@ -1,15 +1,16 @@
-{% extends "base.html" %}
+{% extends "base_modern.html" %}
 
 {% block title %}Autonomous System Monitor - LifeOS{% endblock %}
+{% block header_title %}Autonomous System Monitor{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">🤖 Autonomous System Monitor</h1>
     <p class="page-subtitle">
         Real-time monitoring of autonomous learning and self-healing activities.
-        <span style="float: right; color: var(--notion-text-light); font-size: 14px;">
-            Last updated: {{ now.strftime('%H:%M:%S') }}
-            <button onclick="location.reload()" style="margin-left: 8px; background: var(--notion-blue); color: white; border: none; padding: 2px 6px; border-radius: 3px; font-size: 13px; cursor: pointer;">
+        <span style="float: right; color: var(--text-tertiary); font-size: 14px;">
+            Last updated: {{ now.strftime('%H:%M:%S') if now else 'Unknown' }}
+            <button onclick="location.reload()" class="btn btn-secondary btn-sm">
                 🔄 Refresh
             </button>
         </span>
@@ -25,61 +26,48 @@
 </script>
 
 <!-- System Statistics -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
-    <div class="notion-card">
-        <div class="card-title">📊 Total Actions</div>
-        <div class="card-content">
-            <div style="font-size: 34px; font-weight: 600; color: var(--notion-blue);">{{ data.stats.total_actions or 0 }}</div>
-            <div style="font-size: 14px; color: var(--notion-text-light);">All autonomous actions</div>
-        </div>
+<div class="grid grid-cols-4 gap-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ data.get('stats', {}).get('total_actions', 0) }}</div>
+        <div class="stat-label">Total Actions</div>
     </div>
-    
-    <div class="notion-card">
-        <div class="card-title">✅ Success Rate</div>
-        <div class="card-content">
-            <div style="font-size: 34px; font-weight: 600; color: var(--notion-green);">{{ data.stats.success_rate or 0 }}%</div>
-            <div style="font-size: 14px; color: var(--notion-text-light);">{{ data.stats.successful_actions or 0 }} successful</div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ data.get('stats', {}).get('success_rate', 0) }}%</div>
+        <div class="stat-label">Success Rate</div>
     </div>
-    
-    <div class="notion-card">
-        <div class="card-title">🔄 Fix Sessions</div>
-        <div class="card-content">
-            <div style="font-size: 34px; font-weight: 600; color: var(--notion-purple);">{{ data.stats.total_sessions or 0 }}</div>
-            <div style="font-size: 14px; color: var(--notion-text-light);">Autonomous fix attempts</div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ data.get('stats', {}).get('total_sessions', 0) }}</div>
+        <div class="stat-label">Fix Sessions</div>
     </div>
-    
-    <div class="notion-card">
-        <div class="card-title">🧠 Solutions Learned</div>
-        <div class="card-content">
-            <div style="font-size: 34px; font-weight: 600; color: var(--notion-orange);">{{ data.stats.learned_solutions or 0 }}</div>
-            <div style="font-size: 14px; color: var(--notion-text-light);">Knowledge acquired</div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ data.get('stats', {}).get('learned_solutions', 0) }}</div>
+        <div class="stat-label">Solutions Learned</div>
     </div>
 </div>
 
 <!-- Real-time Activity Feed -->
-<div class="notion-card" style="margin-bottom: 24px;">
-    <div class="card-title">📡 Live Activity Feed</div>
+<div class="card" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <h3 class="card-title">📡 Live Activity Feed</h3>
+    </div>
     <div class="card-content">
-        {% if data.error %}
+        {% if data.get('error') %}
             <div style="color: var(--notion-red); padding: 16px; background: rgba(255, 59, 48, 0.1); border-radius: 6px;">
                 ❌ Database Error: {{ data.error }}
             </div>
         {% else %}
             <div style="max-height: 400px; overflow-y: auto; background: #1a1a1a; border-radius: 6px; padding: 16px; font-family: 'Monaco', 'Menlo', monospace; font-size: 15px;">
-                {% for action in data.actions %}
-                <div style="margin-bottom: 8px; color: {{ '#4CAF50' if action.success else '#FF5722' }};">
-                    <span style="color: #888;">[{{ action.time_ago }}]</span>
-                    <span style="color: #2196F3;">{{ action.session_id }}</span>
-                    <span style="color: {{ '#4CAF50' if action.success else '#FF5722' }};">
-                        {{ '✅' if action.success else '❌' }} {{ action.action_type }}
+                {% for action in data.get('actions', []) %}
+                <div style="margin-bottom: 8px; color: {{ '#4CAF50' if action.get('success') else '#FF5722' }};">
+                    <span style="color: #888;">[{{ action.get('time_ago', 'Unknown') }}]</span>
+                    <span style="color: #2196F3;">{{ action.get('session_id', 'N/A') }}</span>
+                    <span style="color: {{ '#4CAF50' if action.get('success') else '#FF5722' }};">
+                        {{ '✅' if action.get('success') else '❌' }} {{ action.get('action_type', 'Unknown') }}
                     </span>
-                    {% if action.details.step %}
+                    {% if action.get('details', {}).get('step') %}
                         <span style="color: #FFC107;">Step {{ action.details.step }}</span>
                     {% endif %}
-                    {% if action.details.command %}
+                    {% if action.get('details', {}).get('command') %}
                         <div style="margin-left: 20px; color: #9E9E9E; font-size: 13px;">
                             > {{ action.details.command[:80] }}{% if action.details.command|length > 80 %}...{% endif %}
                         </div>
@@ -87,7 +75,7 @@
                 </div>
                 {% endfor %}
                 
-                {% if data.actions|length == 0 %}
+                {% if data.get('actions', [])|length == 0 %}
                 <div style="color: #888; text-align: center; padding: 20px;">
                     No autonomous activity recorded yet
                 </div>
@@ -98,18 +86,20 @@
 </div>
 
 <!-- Recent Activity Chart -->
-{% if data.recent_activity %}
-<div class="notion-card" style="margin-bottom: 24px;">
-    <div class="card-title">📈 24-Hour Activity</div>
+{% if data.get('recent_activity') %}
+<div class="card" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <h3 class="card-title">📈 24-Hour Activity</h3>
+    </div>
     <div class="card-content">
         <div style="display: flex; align-items: end; height: 100px; gap: 4px;">
-            {% for hour_data in data.recent_activity %}
+            {% for hour_data in data.get('recent_activity', []) %}
             <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
                 {% set max_height = 60 %}
                 {% set bar_height = ((hour_data[1] / 20) * max_height) if hour_data[1] > 0 else 0 %}
                 {% set display_height = [bar_height, max_height] | min %}
                 <div style="background: var(--notion-blue); height: {{ display_height }}px; width: 100%; margin-bottom: 4px; border-radius: 2px;"></div>
-                <div style="font-size: 12px; color: var(--notion-text-light);">{{ hour_data[0] }}</div>
+                <div style="font-size: 12px; color: var(--notion-text-light);">{{ hour_data[0]|default('N/A') }}</div>
             </div>
             {% endfor %}
         </div>
@@ -118,18 +108,20 @@
 {% endif %}
 
 <!-- Learned Solutions -->
-{% if data.solutions %}
-<div class="notion-card">
-    <div class="card-title">🧠 Learned Solutions</div>
+{% if data.get('solutions') %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">🧠 Learned Solutions</h3>
+    </div>
     <div class="card-content">
-        {% for solution in data.solutions %}
+        {% for solution in data.get('solutions', []) %}
         <div style="border-left: 3px solid var(--notion-green); padding-left: 12px; margin-bottom: 16px;">
-            <div style="font-weight: 600;">{{ solution[1] }}</div>
+            <div style="font-weight: 600;">{{ solution[1]|default('Unknown Solution') }}</div>
             <div style="font-size: 15px; color: var(--notion-text-light); margin-top: 4px;">
-                {{ solution[2] }}
+                {{ solution[2]|default('No description') }}
             </div>
             <div style="font-size: 13px; color: var(--notion-text-light); margin-top: 4px;">
-                Success Rate: {{ ((solution[3]|float) * 100)|round(1) }}% | {{ solution[5] }}
+                Success Rate: {{ ((solution[3]|default(0)|float) * 100)|round(1) }}% | {{ solution[5]|default('Unknown time') }}
             </div>
         </div>
         {% endfor %}

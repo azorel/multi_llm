@@ -1,0 +1,646 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Prompt Library - LifeOS{% endblock %}
+{% block header_title %}Prompt Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📝 Prompt Library</h1>
+    <p class="page-subtitle">Manage and organize your AI prompts for various tasks and workflows</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ prompts|length or 0 }}</div>
+        <div class="stat-label">Total Prompts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ prompts|groupby('category')|list|length or 0 }}</div>
+        <div class="stat-label">Categories</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ prompts|selectattr('category', 'equalto', 'Favorite')|list|length or 0 }}</div>
+        <div class="stat-label">Favorites</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ prompts|length or 0 }}</div>
+        <div class="stat-label">Available</div>
+    </div>
+</div>
+
+<!-- Add Prompt Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">➕ Add New Prompt</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+                <label class="form-label">Prompt Title</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newPromptTitle" 
+                       placeholder="Enter prompt title">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="newPromptCategory" class="form-input">
+                    <option value="">Select category...</option>
+                    <option value="coding">Coding</option>
+                    <option value="writing">Writing</option>
+                    <option value="analysis">Analysis</option>
+                    <option value="research">Research</option>
+                    <option value="creative">Creative</option>
+                    <option value="business">Business</option>
+                    <option value="education">Education</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group mb-4">
+            <label class="form-label">Prompt Content</label>
+            <textarea class="form-input" 
+                      id="newPromptContent" 
+                      rows="6" 
+                      placeholder="Enter your prompt content here..."></textarea>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+                <label class="form-label">Tags (comma-separated)</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="newPromptTags" 
+                       placeholder="tag1, tag2, tag3">
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="newPromptFavorite" class="form-checkbox">
+                    <span class="text-sm">Mark as favorite</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary w-full" onclick="addPrompt()">
+                    <span id="addBtnText">Add Prompt</span>
+                    <span id="addLoader" class="loading" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+        <div id="addResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="card mb-8">
+    <div class="card-content">
+        <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+                <label class="form-label">Search Prompts</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="searchPrompts" 
+                       placeholder="Search by title or content..."
+                       onkeyup="filterPrompts()">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Filter by Category</label>
+                <select id="filterCategory" class="form-input" onchange="filterPrompts()">
+                    <option value="">All Categories</option>
+                    <option value="coding">Coding</option>
+                    <option value="writing">Writing</option>
+                    <option value="analysis">Analysis</option>
+                    <option value="research">Research</option>
+                    <option value="creative">Creative</option>
+                    <option value="business">Business</option>
+                    <option value="education">Education</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Show Favorites Only</label>
+                <label class="flex items-center gap-2 mt-2">
+                    <input type="checkbox" id="filterFavorites" class="form-checkbox" onchange="filterPrompts()">
+                    <span class="text-sm">Favorites only</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Prompts Table -->
+<div class="table-container">
+    <table class="table" id="promptsTable">
+        <thead>
+            <tr>
+                <th>Prompt</th>
+                <th>Category</th>
+                <th>Tags</th>
+                <th>Usage</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prompt in prompts %}
+            <tr class="prompt-row {% if prompt.is_favorite %}favorite{% endif %}" 
+                data-category="{{ prompt.category }}" 
+                data-title="{{ prompt.title|lower }}" 
+                data-content="{{ prompt.content|lower }}"
+                data-favorite="{{ prompt.is_favorite }}">
+                <td>
+                    <div>
+                        <div class="font-semibold text-gray-900 flex items-center gap-2">
+                            {% if prompt.is_favorite %}⭐{% endif %}
+                            {{ prompt.title }}
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            {{ prompt.content }}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge badge-info">{{ prompt.category|title }}</span>
+                </td>
+                <td>
+                    <div class="flex flex-wrap gap-1">
+                        {% for tag in (prompt.tags or '').split(',') %}
+                        {% if tag.strip() %}
+                        <span class="badge badge-secondary">{{ tag.strip() }}</span>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </td>
+                <td>
+                    <div class="text-sm">
+                        <div class="font-semibold">{{ prompt.usage_count or 0 }} uses</div>
+                        <div class="text-gray-500">
+                            {% if prompt.last_used %}
+                                Last: {{ prompt.last_used.split(' ')[0] }}
+                            {% else %}
+                                Never used
+                            {% endif %}
+                        </div>
+                    </div>
+                </td>
+                <td class="text-sm text-gray-500">
+                    {% if prompt.created_at %}
+                        {{ prompt.created_at.split(' ')[0] }}
+                    {% else %}
+                        <span class="text-gray-400">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary btn-sm" onclick="viewPrompt({{ prompt.id }})">
+                            👁️ View
+                        </button>
+                        <button class="btn btn-success btn-sm" onclick="usePrompt({{ prompt.id }})">
+                            📋 Use
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="editPrompt({{ prompt.id }})">
+                            ✏️ Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deletePrompt({{ prompt.id }})">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- View Prompt Modal -->
+<div id="viewPromptModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="viewPromptTitle">View Prompt</h3>
+            <button class="modal-close" onclick="closeViewModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Prompt Content</label>
+                <textarea id="viewPromptContent" class="form-input" rows="10" readonly></textarea>
+            </div>
+            <div class="flex gap-3">
+                <button class="btn btn-primary flex-1" onclick="copyPromptToClipboard()">📋 Copy to Clipboard</button>
+                <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Prompt Modal -->
+<div id="editPromptModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Prompt</h3>
+            <button class="modal-close" onclick="closeEditModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="editPromptForm">
+                <input type="hidden" id="editPromptId">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" id="editPromptTitle" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="editPromptCategory" class="form-input">
+                            <option value="coding">Coding</option>
+                            <option value="writing">Writing</option>
+                            <option value="analysis">Analysis</option>
+                            <option value="research">Research</option>
+                            <option value="creative">Creative</option>
+                            <option value="business">Business</option>
+                            <option value="education">Education</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label">Content</label>
+                    <textarea id="editPromptContent" class="form-input" rows="8" required></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Tags</label>
+                        <input type="text" id="editPromptTags" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="editPromptFavorite" class="form-checkbox">
+                            <span class="text-sm">Mark as favorite</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.favorite {
+    background-color: #fefce8;
+    border-left: 4px solid #eab308;
+}
+
+.form-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    accent-color: var(--color-primary);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+
+.badge-secondary {
+    background: var(--color-gray-100);
+    color: var(--text-primary);
+}
+</style>
+
+<script>
+function addPrompt() {
+    const title = document.getElementById('newPromptTitle').value.trim();
+    const category = document.getElementById('newPromptCategory').value;
+    const content = document.getElementById('newPromptContent').value.trim();
+    const tags = document.getElementById('newPromptTags').value.trim();
+    const isFavorite = document.getElementById('newPromptFavorite').checked;
+    const btnText = document.getElementById('addBtnText');
+    const loader = document.getElementById('addLoader');
+    
+    if (!title || !category || !content) {
+        showResult('addResult', 'Please fill in title, category, and content', 'error');
+        return;
+    }
+    
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'prompts',
+            data: {
+                title: title,
+                category: category,
+                content: content,
+                tags: tags,
+                is_favorite: isFavorite,
+                usage_count: 0,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('addResult', `✅ Successfully added prompt: ${title}`, 'success');
+            document.getElementById('newPromptTitle').value = '';
+            document.getElementById('newPromptCategory').value = '';
+            document.getElementById('newPromptContent').value = '';
+            document.getElementById('newPromptTags').value = '';
+            document.getElementById('newPromptFavorite').checked = false;
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('addResult', '❌ Failed to add prompt', 'error');
+        }
+    })
+    .catch(error => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        showResult('addResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function filterPrompts() {
+    const searchTerm = document.getElementById('searchPrompts').value.toLowerCase();
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const favoritesOnly = document.getElementById('filterFavorites').checked;
+    
+    const rows = document.querySelectorAll('.prompt-row');
+    
+    rows.forEach(row => {
+        const title = row.getAttribute('data-title');
+        const content = row.getAttribute('data-content');
+        const category = row.getAttribute('data-category');
+        const isFavorite = row.getAttribute('data-favorite') === 'True';
+        
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || content.includes(searchTerm);
+        const matchesCategory = !categoryFilter || category === categoryFilter;
+        const matchesFavorites = !favoritesOnly || isFavorite;
+        
+        if (matchesSearch && matchesCategory && matchesFavorites) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function viewPrompt(promptId) {
+    fetch(`/get-item?table=prompts&id=${promptId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const prompt = data.item;
+                
+                document.getElementById('viewPromptTitle').textContent = prompt.title;
+                document.getElementById('viewPromptContent').value = prompt.content;
+                document.getElementById('viewPromptModal').style.display = 'flex';
+            } else {
+                alert('Failed to load prompt');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading prompt');
+        });
+}
+
+function usePrompt(promptId) {
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'prompts',
+            id: promptId,
+            data: {
+                usage_count: 'INCREMENT',
+                last_used: new Date().toISOString()
+            }
+        })
+    })
+    .then(() => {
+        viewPrompt(promptId);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        viewPrompt(promptId);
+    });
+}
+
+function editPrompt(promptId) {
+    fetch(`/get-item?table=prompts&id=${promptId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.item) {
+                const prompt = data.item;
+                
+                document.getElementById('editPromptId').value = promptId;
+                document.getElementById('editPromptTitle').value = prompt.title || '';
+                document.getElementById('editPromptCategory').value = prompt.category || '';
+                document.getElementById('editPromptContent').value = prompt.content || '';
+                document.getElementById('editPromptTags').value = prompt.tags || '';
+                document.getElementById('editPromptFavorite').checked = prompt.is_favorite || false;
+                
+                document.getElementById('editPromptModal').style.display = 'flex';
+            } else {
+                alert('Failed to load prompt data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading prompt data');
+        });
+}
+
+function deletePrompt(promptId) {
+    if (confirm('Are you sure you want to delete this prompt? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'prompts',
+                id: promptId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete prompt');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting prompt');
+        });
+    }
+}
+
+function copyPromptToClipboard() {
+    const content = document.getElementById('viewPromptContent').value;
+    navigator.clipboard.writeText(content).then(() => {
+        alert('Prompt copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy prompt');
+    });
+}
+
+function closeViewModal() {
+    document.getElementById('viewPromptModal').style.display = 'none';
+}
+
+function closeEditModal() {
+    document.getElementById('editPromptModal').style.display = 'none';
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Handle edit form submission
+document.getElementById('editPromptForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const promptId = document.getElementById('editPromptId').value;
+    const title = document.getElementById('editPromptTitle').value;
+    const category = document.getElementById('editPromptCategory').value;
+    const content = document.getElementById('editPromptContent').value;
+    const tags = document.getElementById('editPromptTags').value;
+    const isFavorite = document.getElementById('editPromptFavorite').checked;
+    
+    if (!title.trim() || !content.trim()) {
+        alert('Title and content are required');
+        return;
+    }
+    
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'prompts',
+            id: parseInt(promptId),
+            data: {
+                title: title,
+                category: category,
+                content: content,
+                tags: tags,
+                is_favorite: isFavorite
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeEditModal();
+            location.reload();
+        } else {
+            alert('Failed to update prompt');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating prompt');
+    });
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const viewModal = document.getElementById('viewPromptModal');
+        const editModal = document.getElementById('editPromptModal');
+        
+        if (event.target === viewModal) {
+            closeViewModal();
+        }
+        if (event.target === editModal) {
+            closeEditModal();
+        }
+    }
+});
+</script>
+{% endblock %}

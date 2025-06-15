@@ -1,0 +1,713 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Voice Commands - LifeOS{% endblock %}
+{% block header_title %}Voice Commands{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🎤 Voice Commands</h1>
+    <p class="page-subtitle">Manage voice commands, triggers, and speech-to-text automation</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ commands|length|default(0) }}</div>
+        <div class="stat-label">Total Commands</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ commands|selectattr('is_active', 'equalto', true)|list|length|default(0) }}</div>
+        <div class="stat-label">Active Commands</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ voice_logs|length|default(0) }}</div>
+        <div class="stat-label">Executions Today</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="listeningStatus">
+            <span class="{% if is_listening %}text-green-600{% else %}text-red-600{% endif %}">
+                {% if is_listening %}🟢 Listening{% else %}🔴 Offline{% endif %}
+            </span>
+        </div>
+        <div class="stat-label">Voice Status</div>
+    </div>
+</div>
+
+<!-- Voice Control Panel -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">🎤 Voice Control Panel</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-3 gap-6">
+            <div class="text-center">
+                <button id="startListeningBtn" class="btn btn-success btn-lg w-full mb-4" onclick="startListening()">
+                    🎤 Start Listening
+                </button>
+                <div class="text-sm text-gray-600">
+                    Voice recognition status: <span id="recognitionStatus" class="font-semibold">Inactive</span>
+                </div>
+            </div>
+            <div class="text-center">
+                <button id="stopListeningBtn" class="btn btn-danger btn-lg w-full mb-4" onclick="stopListening()" disabled>
+                    ⏹️ Stop Listening
+                </button>
+                <div class="text-sm text-gray-600">
+                    Confidence: <span id="confidenceLevel" class="font-semibold">N/A</span>
+                </div>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-secondary btn-lg w-full mb-4" onclick="testVoiceCommand()">
+                    🧪 Test Command
+                </button>
+                <div class="text-sm text-gray-600">
+                    Last command: <span id="lastCommand" class="font-semibold">None</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h4 class="font-semibold mb-2">🎙️ Live Transcript</h4>
+            <div id="liveTranscript" class="min-h-16 p-3 bg-white border rounded text-sm">
+                Say something to see the live transcript...
+            </div>
+        </div>
+        
+        <div id="voiceResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Add Command Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">➕ Add Voice Command</h3>
+    </div>
+    <div class="card-content">
+        <form id="commandForm">
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Command Name</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="commandName" 
+                           placeholder="Turn on lights">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Trigger Phrase</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="triggerPhrase" 
+                           placeholder="turn on the lights">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-input" id="commandCategory">
+                        <option value="">Select category</option>
+                        <option value="home_automation">🏠 Home Automation</option>
+                        <option value="system_control">💻 System Control</option>
+                        <option value="media">🎵 Media Control</option>
+                        <option value="productivity">📋 Productivity</option>
+                        <option value="navigation">🧭 Navigation</option>
+                        <option value="communication">📞 Communication</option>
+                        <option value="custom">⚙️ Custom</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Action Type</label>
+                    <select class="form-input" id="actionType" onchange="updateActionFields()">
+                        <option value="">Select action</option>
+                        <option value="api_call">🌐 API Call</option>
+                        <option value="system_command">💻 System Command</option>
+                        <option value="script">📜 Run Script</option>
+                        <option value="webhook">🔗 Webhook</option>
+                        <option value="smart_home">🏠 Smart Home</option>
+                        <option value="text_response">💬 Text Response</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confidence Threshold</label>
+                    <div class="flex items-center gap-2">
+                        <input type="range" id="confidenceThreshold" min="0.1" max="1" step="0.1" value="0.7" class="flex-1">
+                        <span id="confidenceValue" class="text-sm w-8">0.7</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Action Details</label>
+                <textarea class="form-input" 
+                          id="actionDetails" 
+                          rows="3" 
+                          placeholder="Enter the action details (URL, command, script path, etc.)"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Response Message</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="responseMessage" 
+                           placeholder="Lights turned on successfully">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Options</label>
+                    <div class="flex items-center gap-4 mt-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="isActive" class="form-checkbox" checked>
+                            <span class="text-sm">✅ Active</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="requiresConfirmation" class="form-checkbox">
+                            <span class="text-sm">❓ Requires Confirmation</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button type="submit" class="btn btn-primary">
+                    💾 Add Command
+                    <span id="commandLoader" class="loading" style="display: none;"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="clearCommandForm()">
+                    🗑️ Clear
+                </button>
+            </div>
+        </form>
+        <div id="commandResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Commands List -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">📋 Voice Commands</h3>
+        <div class="flex gap-2">
+            <input type="text" 
+                   class="form-input" 
+                   id="searchCommands" 
+                   placeholder="Search commands..."
+                   style="width: 200px;">
+            <select class="form-input" id="filterCategory" style="width: 150px;">
+                <option value="">All Categories</option>
+                <option value="home_automation">Home Automation</option>
+                <option value="system_control">System Control</option>
+                <option value="media">Media Control</option>
+                <option value="productivity">Productivity</option>
+                <option value="navigation">Navigation</option>
+                <option value="communication">Communication</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Category</th>
+                        <th>Trigger</th>
+                        <th>Action</th>
+                        <th>Usage</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for command in commands|default([]) %}
+                    <tr class="command-row {% if command.is_active %}{% else %}opacity-50{% endif %}">
+                        <td>
+                            <div>
+                                <div class="font-semibold">{{ command.name|default('Unnamed Command') }}</div>
+                                <div class="text-sm text-gray-500">Confidence: {{ command.confidence_threshold|default(0.7) }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-info">
+                                {% if command.category == 'home_automation' %}🏠{% elif command.category == 'system_control' %}💻{% elif command.category == 'media' %}🎵{% elif command.category == 'productivity' %}📋{% elif command.category == 'navigation' %}🧭{% elif command.category == 'communication' %}📞{% else %}⚙️{% endif %}
+                                {{ command.category|replace('_', ' ')|title|default('Other') }}
+                            </span>
+                        </td>
+                        <td class="text-sm">"{{ command.trigger_phrase|default('No trigger') }}"</td>
+                        <td>
+                            <span class="badge badge-secondary">
+                                {% if command.action_type == 'api_call' %}🌐{% elif command.action_type == 'system_command' %}💻{% elif command.action_type == 'script' %}📜{% elif command.action_type == 'webhook' %}🔗{% elif command.action_type == 'smart_home' %}🏠{% elif command.action_type == 'text_response' %}💬{% else %}⚙️{% endif %}
+                                {{ command.action_type|replace('_', ' ')|title|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td class="text-sm">{{ command.usage_count|default(0) }} times</td>
+                        <td>
+                            <span class="badge badge-{% if command.is_active %}success{% else %}danger{% endif %}">
+                                {% if command.is_active %}✅ Active{% else %}❌ Inactive{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-primary btn-sm" onclick="testCommand({{ command.id }})">
+                                    🧪 Test
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="editCommand({{ command.id }})">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn btn-{% if command.is_active %}danger{% else %}success{% endif %} btn-sm" onclick="toggleCommand({{ command.id }})">
+                                    {% if command.is_active %}⏸️ Disable{% else %}▶️ Enable{% endif %}
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteCommand({{ command.id }})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">🎤</div>
+                            <div>No voice commands configured yet</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📊 Recent Voice Activity</h3>
+        <button class="btn btn-secondary" onclick="refreshActivity()">
+            🔄 Refresh
+        </button>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Recognized Text</th>
+                        <th>Command</th>
+                        <th>Confidence</th>
+                        <th>Status</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in voice_logs|default([]) %}
+                    <tr>
+                        <td class="text-sm">{{ log.timestamp|default('Unknown time') }}</td>
+                        <td class="text-sm">"{{ log.recognized_text|default('No text') }}"</td>
+                        <td class="text-sm">{{ log.command_name|default('No match') }}</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm">{{ (log.confidence * 100)|round|int if log.confidence else 0 }}%</span>
+                                <div class="w-12 h-2 bg-gray-200 rounded-full">
+                                    <div class="h-2 rounded-full {% if (log.confidence or 0) >= 0.8 %}bg-green-500{% elif (log.confidence or 0) >= 0.6 %}bg-yellow-500{% else %}bg-red-500{% endif %}" 
+                                         style="width: {{ (log.confidence * 100)|round if log.confidence else 0 }}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-{% if log.status == 'success' %}success{% elif log.status == 'failed' %}danger{% else %}warning{% endif %}">
+                                {{ log.status|title|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td class="text-sm">{{ log.response|default('No response') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">📊</div>
+                            <div>No voice activity recorded yet</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    accent-color: var(--color-primary);
+}
+
+.opacity-50 {
+    opacity: 0.5;
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+
+#liveTranscript {
+    transition: background-color 0.3s ease;
+}
+
+#liveTranscript.listening {
+    background-color: #f0f9ff;
+    border-color: var(--color-primary);
+}
+</style>
+
+<script>
+let recognition = null;
+let isListening = false;
+
+// Check for speech recognition support
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    
+    recognition.onstart = function() {
+        isListening = true;
+        document.getElementById('recognitionStatus').textContent = 'Listening...';
+        document.getElementById('startListeningBtn').disabled = true;
+        document.getElementById('stopListeningBtn').disabled = false;
+        document.getElementById('liveTranscript').classList.add('listening');
+        document.getElementById('liveTranscript').textContent = 'Listening for commands...';
+    };
+    
+    recognition.onresult = function(event) {
+        let finalTranscript = '';
+        let interimTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            const confidence = event.results[i][0].confidence;
+            
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript;
+                document.getElementById('confidenceLevel').textContent = (confidence * 100).toFixed(0) + '%';
+                
+                // Process the command
+                processVoiceCommand(transcript, confidence);
+            } else {
+                interimTranscript += transcript;
+            }
+        }
+        
+        document.getElementById('liveTranscript').textContent = finalTranscript + interimTranscript;
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        document.getElementById('recognitionStatus').textContent = 'Error: ' + event.error;
+        stopListening();
+    };
+    
+    recognition.onend = function() {
+        if (isListening) {
+            // Restart if we want to keep listening
+            recognition.start();
+        }
+    };
+} else {
+    document.getElementById('startListeningBtn').disabled = true;
+    document.getElementById('recognitionStatus').textContent = 'Not supported in this browser';
+}
+
+function startListening() {
+    if (recognition && !isListening) {
+        recognition.start();
+    }
+}
+
+function stopListening() {
+    if (recognition && isListening) {
+        isListening = false;
+        recognition.stop();
+        document.getElementById('recognitionStatus').textContent = 'Stopped';
+        document.getElementById('startListeningBtn').disabled = false;
+        document.getElementById('stopListeningBtn').disabled = true;
+        document.getElementById('liveTranscript').classList.remove('listening');
+        document.getElementById('liveTranscript').textContent = 'Say something to see the live transcript...';
+    }
+}
+
+function processVoiceCommand(text, confidence) {
+    document.getElementById('lastCommand').textContent = text;
+    
+    // Send to backend for processing
+    fetch('/process-voice-command', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            text: text,
+            confidence: confidence
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showResult('voiceResult', `✅ Command executed: ${data.response}`, 'success');
+            
+            // Update activity log
+            refreshActivity();
+        } else {
+            showResult('voiceResult', `❌ Command failed: ${data.message}`, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showResult('voiceResult', '❌ Error processing voice command', 'error');
+    });
+}
+
+function testVoiceCommand() {
+    const testText = prompt('Enter text to test:');
+    if (testText) {
+        processVoiceCommand(testText, 1.0);
+    }
+}
+
+// Update confidence display
+document.getElementById('confidenceThreshold').addEventListener('input', function() {
+    document.getElementById('confidenceValue').textContent = this.value;
+});
+
+function updateActionFields() {
+    const actionType = document.getElementById('actionType').value;
+    const actionDetails = document.getElementById('actionDetails');
+    
+    switch (actionType) {
+        case 'api_call':
+            actionDetails.placeholder = 'https://api.example.com/endpoint';
+            break;
+        case 'system_command':
+            actionDetails.placeholder = 'ls -la';
+            break;
+        case 'script':
+            actionDetails.placeholder = '/path/to/script.sh';
+            break;
+        case 'webhook':
+            actionDetails.placeholder = 'https://hooks.example.com/webhook';
+            break;
+        case 'smart_home':
+            actionDetails.placeholder = 'device_id:action (e.g., light_1:on)';
+            break;
+        case 'text_response':
+            actionDetails.placeholder = 'Hello! How can I help you?';
+            break;
+        default:
+            actionDetails.placeholder = 'Enter the action details...';
+    }
+}
+
+// Add command
+document.getElementById('commandForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('commandName').value.trim();
+    const triggerPhrase = document.getElementById('triggerPhrase').value.trim();
+    const category = document.getElementById('commandCategory').value;
+    const actionType = document.getElementById('actionType').value;
+    const actionDetails = document.getElementById('actionDetails').value.trim();
+    const responseMessage = document.getElementById('responseMessage').value.trim();
+    const confidenceThreshold = document.getElementById('confidenceThreshold').value;
+    const isActive = document.getElementById('isActive').checked;
+    const requiresConfirmation = document.getElementById('requiresConfirmation').checked;
+    const loader = document.getElementById('commandLoader');
+    
+    if (!name || !triggerPhrase || !actionType) {
+        showResult('commandResult', 'Name, trigger phrase, and action type are required', 'error');
+        return;
+    }
+    
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'voice_commands',
+            data: {
+                name: name,
+                trigger_phrase: triggerPhrase.toLowerCase(),
+                category: category,
+                action_type: actionType,
+                action_details: actionDetails,
+                response_message: responseMessage,
+                confidence_threshold: parseFloat(confidenceThreshold),
+                is_active: isActive,
+                requires_confirmation: requiresConfirmation,
+                usage_count: 0,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('commandResult', '✅ Voice command added successfully!', 'success');
+            clearCommandForm();
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('commandResult', '❌ Failed to add command', 'error');
+        }
+    })
+    .catch(error => {
+        loader.style.display = 'none';
+        showResult('commandResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+});
+
+function clearCommandForm() {
+    document.getElementById('commandForm').reset();
+    document.getElementById('confidenceThreshold').value = 0.7;
+    document.getElementById('confidenceValue').textContent = '0.7';
+    document.getElementById('isActive').checked = true;
+}
+
+function testCommand(commandId) {
+    if (confirm('Test this voice command?')) {
+        fetch('/test-voice-command', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                command_id: commandId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`✅ Command test successful: ${data.response}`);
+            } else {
+                alert(`❌ Command test failed: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error testing command');
+        });
+    }
+}
+
+function editCommand(commandId) {
+    // This would open an edit modal - simplified for now
+    alert('Edit command functionality would be implemented here');
+}
+
+function toggleCommand(commandId) {
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'voice_commands',
+            id: commandId,
+            action: 'toggle_active'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to toggle command');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error toggling command');
+    });
+}
+
+function deleteCommand(commandId) {
+    if (confirm('Are you sure you want to delete this voice command? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'voice_commands',
+                id: commandId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete command');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting command');
+        });
+    }
+}
+
+function refreshActivity() {
+    location.reload();
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Search and filter functionality
+document.getElementById('searchCommands').addEventListener('input', filterCommands);
+document.getElementById('filterCategory').addEventListener('change', filterCommands);
+
+function filterCommands() {
+    const searchTerm = document.getElementById('searchCommands').value.toLowerCase();
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const rows = document.querySelectorAll('.command-row');
+    
+    rows.forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        const trigger = row.cells[2].textContent.toLowerCase();
+        const category = row.cells[1].textContent.toLowerCase();
+        
+        const matchesSearch = name.includes(searchTerm) || trigger.includes(searchTerm);
+        const matchesCategory = !categoryFilter || category.includes(categoryFilter.replace('_', ' '));
+        
+        row.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}

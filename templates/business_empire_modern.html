@@ -1,0 +1,322 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Business Empire - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Business Empire Dashboard</h1>
+    <p class="page-subtitle">Manage your autonomous business ventures</p>
+</div>
+
+<div class="empire-stats">
+    <div class="empire-stat-card">
+        <div class="stat-icon green">
+            <i data-feather="dollar-sign"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">${{ "{:,.0f}".format(stats.total_revenue) }}/mo</div>
+            <div class="stat-label">Total Revenue</div>
+        </div>
+    </div>
+    <div class="empire-stat-card">
+        <div class="stat-icon blue">
+            <i data-feather="briefcase"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.active_projects }}</div>
+            <div class="stat-label">Active Projects</div>
+        </div>
+    </div>
+    <div class="empire-stat-card">
+        <div class="stat-icon purple">
+            <i data-feather="users"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.available_agents }}</div>
+            <div class="stat-label">Available Agents</div>
+        </div>
+    </div>
+</div>
+
+<div class="empire-grid">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Business Opportunities</h2>
+            <a href="/business-opportunities-modern" class="btn btn-sm btn-secondary">View All</a>
+        </div>
+        <div class="opportunity-list">
+            {% for opp in opportunities %}
+            <div class="opportunity-item">
+                <div class="opportunity-info">
+                    <h4>{{ opp.opportunity_name }}</h4>
+                    <p>{{ opp.description }}</p>
+                    <span class="value-tag">{{ opp.potential_value }}</span>
+                </div>
+                <div class="opportunity-actions">
+                    <span class="status-badge status-{{ opp.status|lower }}">{{ opp.status }}</span>
+                    {% if opp.status == 'Evaluating' %}
+                    <button class="btn btn-sm btn-primary" onclick="approveOpportunity({{ opp.id }})">
+                        Approve
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Active Projects</h2>
+            <a href="/business-projects-modern" class="btn btn-sm btn-secondary">View All</a>
+        </div>
+        <div class="project-list">
+            {% for project in projects %}
+            <div class="project-item">
+                <div class="project-info">
+                    <h4>{{ project.project_name }}</h4>
+                    <p>{{ project.description }}</p>
+                    <div class="project-metrics">
+                        <span class="roi-badge">ROI: {{ "%.1f"|format(project.roi_percentage or 0) }}%</span>
+                        <span class="status-badge status-{{ project.status|lower|replace(' ', '_') }}">{{ project.status }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Revenue Streams</h2>
+            <button class="btn btn-sm btn-secondary">Add Stream</button>
+        </div>
+        <div class="revenue-list">
+            {% for stream in revenue_streams %}
+            <div class="revenue-item">
+                <div class="revenue-info">
+                    <h4>{{ stream.stream_name }}</h4>
+                    <div class="revenue-metrics">
+                        <span class="revenue-amount">${{ "{:,.0f}".format(stream.monthly_revenue or 0) }}/mo</span>
+                        <span class="growth-rate {{ 'positive' if stream.growth_rate > 0 else 'negative' }}">
+                            <i data-feather="{{ 'trending-up' if stream.growth_rate > 0 else 'trending-down' }}"></i>
+                            {{ "%.1f"|format(stream.growth_rate or 0) }}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Business Agents</h2>
+            <button class="btn btn-sm btn-primary">Deploy Agent</button>
+        </div>
+        <div class="agent-list">
+            {% for agent in agents %}
+            <div class="agent-item">
+                <div class="agent-info">
+                    <h4>{{ agent.agent_name }}</h4>
+                    <p>{{ agent.role }} - {{ agent.expertise }}</p>
+                    <div class="agent-metrics">
+                        <span class="performance-score">Score: {{ "%.1f"|format(agent.performance_score or 0) }}</span>
+                        <span class="status-badge status-{{ agent.status|lower }}">{{ agent.status }}</span>
+                    </div>
+                </div>
+                {% if agent.status == 'Available' %}
+                <button class="btn btn-sm btn-primary" onclick="deployAgent({{ agent.id }})">
+                    Deploy
+                </button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.empire-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.empire-stat-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--color-gray-200);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.empire-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.opportunity-list, .project-list, .revenue-list, .agent-list {
+    padding: 0.5rem;
+}
+
+.opportunity-item, .project-item, .revenue-item, .agent-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.opportunity-item:last-child, .project-item:last-child, 
+.revenue-item:last-child, .agent-item:last-child {
+    border-bottom: none;
+}
+
+.opportunity-info h4, .project-info h4, .revenue-info h4, .agent-info h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.opportunity-info p, .project-info p, .agent-info p {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.value-tag {
+    background: var(--color-secondary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.opportunity-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.project-metrics, .revenue-metrics, .agent-metrics {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.roi-badge {
+    background: var(--color-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+}
+
+.revenue-amount {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.growth-rate {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.growth-rate.positive {
+    color: var(--color-secondary);
+}
+
+.growth-rate.negative {
+    color: var(--color-danger);
+}
+
+.growth-rate svg {
+    width: 16px;
+    height: 16px;
+}
+
+.performance-score {
+    background: var(--color-gray-100);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+}
+
+.status-evaluating {
+    background: var(--color-warning);
+    color: white;
+}
+
+.status-approved {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.status-planning {
+    background: var(--color-primary);
+    color: white;
+}
+
+.status-in_progress {
+    background: var(--color-warning);
+    color: white;
+}
+
+.status-available {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.status-deployed {
+    background: var(--color-primary);
+    color: white;
+}
+</style>
+
+<script>
+function approveOpportunity(oppId) {
+    fetch('/api/approve_business_opportunity', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            opportunity_id: oppId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Opportunity approved and converted to project!');
+            location.reload();
+        }
+    });
+}
+
+function deployAgent(agentId) {
+    fetch('/api/business_agent_command', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            agent_id: agentId,
+            command: 'deploy'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Agent deployed successfully!');
+            location.reload();
+        }
+    });
+}
+
+// Initialize feather icons
+feather.replace();
+</script>
+{% endblock %}

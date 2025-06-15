@@ -1,0 +1,547 @@
+{% extends "base_modern.html" %}
+
+{% block title %}GitHub Repositories - LifeOS{% endblock %}
+{% block header_title %}GitHub Repositories{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📦 GitHub Repositories</h1>
+    <p class="page-subtitle">Manage and analyze your imported GitHub repositories</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ repos|length }}</div>
+        <div class="stat-label">Total Repositories</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ repos|sum(attribute='stars')|default(0) }}</div>
+        <div class="stat-label">Total Stars</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ repos|map(attribute='language')|unique|list|length }}</div>
+        <div class="stat-label">Languages</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ repos|map(attribute='owner')|unique|list|length }}</div>
+        <div class="stat-label">Owners</div>
+    </div>
+</div>
+
+<!-- Add Repository Card -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">➕ Import New Repository</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-3 gap-4">
+            <div class="form-group">
+                <label class="form-label">Repository URL</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="repoUrl" 
+                       placeholder="https://github.com/owner/repository">
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary w-full" onclick="addRepository()">
+                    <span id="addBtnText">Import Repository</span>
+                    <span id="addLoader" class="loading" style="display: none;"></span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-secondary w-full" onclick="showBulkImport()">
+                    📋 Bulk Import
+                </button>
+            </div>
+        </div>
+        <div id="importResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="card mb-6">
+    <div class="card-content">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="form-group">
+                <label class="form-label">Search</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="searchInput" 
+                       placeholder="Search repositories..."
+                       onkeyup="filterRepositories()">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Language</label>
+                <select class="form-input" id="languageFilter" onchange="filterRepositories()">
+                    <option value="">All Languages</option>
+                    {% for language in repos|map(attribute='language')|unique|list %}
+                    <option value="{{ language }}">{{ language }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sort By</label>
+                <select class="form-input" id="sortSelect" onchange="sortRepositories()">
+                    <option value="stars">Stars (High to Low)</option>
+                    <option value="name">Name (A to Z)</option>
+                    <option value="date">Date Added (Newest)</option>
+                    <option value="forks">Forks (High to Low)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-secondary w-full" onclick="clearFilters()">
+                    🔄 Reset Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Repositories Table -->
+<div class="table-container">
+    <table class="table" id="reposTable">
+        <thead>
+            <tr>
+                <th>Repository</th>
+                <th>Language</th>
+                <th>Stars</th>
+                <th>Forks</th>
+                <th>Owner</th>
+                <th>Added</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="reposTableBody">
+            {% for repo in repos %}
+            <tr class="repo-row" 
+                data-name="{{ repo.name|lower }}" 
+                data-language="{{ repo.language|lower }}"
+                data-stars="{{ repo.stars|default(0) }}"
+                data-forks="{{ repo.forks|default(0) }}"
+                data-date="{{ repo.created_date }}">
+                <td>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                            📦
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900">
+                                <a href="{{ repo.source }}" target="_blank" class="hover:text-blue-600">
+                                    {{ repo.name }}
+                                </a>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                {{ repo.category }}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge language-{{ repo.language|lower if repo.language else 'unknown' }}">
+                        {{ repo.language|default('Unknown') }}
+                    </span>
+                </td>
+                <td class="text-center">
+                    <div class="flex items-center justify-center gap-1">
+                        <span class="text-yellow-500">⭐</span>
+                        <span class="font-semibold">{{ "{:,}".format(repo.stars) if repo.stars else '0' }}</span>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <div class="flex items-center justify-center gap-1">
+                        <span class="text-blue-500">🍴</span>
+                        <span class="font-semibold">{{ "{:,}".format(repo.forks) if repo.forks else '0' }}</span>
+                    </div>
+                </td>
+                <td>
+                    <a href="https://github.com/{{ repo.owner }}" target="_blank" class="text-gray-600 hover:text-gray-900">
+                        {{ repo.owner|default('Unknown') }}
+                    </a>
+                </td>
+                <td class="text-sm text-gray-500">
+                    {{ repo.created_date.split('T')[0] if repo.created_date else 'Unknown' }}
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary btn-sm" onclick="viewRepository({{ repo.id }})">
+                            👁️ View
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRepository({{ repo.id }})">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Bulk Import Modal -->
+<div id="bulkImportModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📋 Bulk Repository Import</h3>
+            <button class="modal-close" onclick="closeBulkImport()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Repository URLs (one per line)</label>
+                <textarea class="form-input" 
+                          id="bulkUrls" 
+                          rows="10" 
+                          placeholder="https://github.com/owner/repo1&#10;https://github.com/owner/repo2&#10;https://github.com/owner/repo3"></textarea>
+            </div>
+            <div class="flex gap-3">
+                <button class="btn btn-primary flex-1" onclick="processBulkImport()">
+                    <span id="bulkBtnText">Import All Repositories</span>
+                    <span id="bulkLoader" class="loading" style="display: none;"></span>
+                </button>
+                <button class="btn btn-secondary" onclick="closeBulkImport()">Cancel</button>
+            </div>
+            <div id="bulkProgress" class="mt-4" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="text-sm text-gray-600 mt-2" id="progressText">Processing...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Language badges */
+.language-python { background: #3776ab20; color: #3776ab; }
+.language-javascript { background: #f7df1e20; color: #8b7000; }
+.language-typescript { background: #3178c620; color: #3178c6; }
+.language-java { background: #ed8b0020; color: #ed8b00; }
+.language-go { background: #00add820; color: #00add8; }
+.language-rust { background: #ce422b20; color: #ce422b; }
+.language-cpp, .language-c++ { background: #00599c20; color: #00599c; }
+.language-c { background: #00599c20; color: #00599c; }
+.language-html { background: #e34c2620; color: #e34c26; }
+.language-css { background: #157925920; color: #1579259; }
+.language-php { background: #777bb420; color: #777bb4; }
+.language-ruby { background: #cc342d20; color: #cc342d; }
+.language-swift { background: #fa753720; color: #fa7537; }
+.language-kotlin { background: #a97bff20; color: #7f52ff; }
+.language-dart { background: #0175c220; color: #0175c2; }
+.language-unknown { background: var(--color-gray-100); color: var(--text-tertiary); }
+
+/* Modal styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.flex-1 { flex: 1; }
+
+.result-item {
+    padding: var(--space-3);
+    margin: var(--space-2) 0;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+}
+
+.result-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.result-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+</style>
+
+<script>
+let allRepos = {{ repos|tojson }};
+
+function addRepository() {
+    const url = document.getElementById('repoUrl').value.trim();
+    const result = document.getElementById('importResult');
+    const btnText = document.getElementById('addBtnText');
+    const loader = document.getElementById('addLoader');
+    
+    if (!url) {
+        showResult('importResult', 'Please enter a repository URL', 'error');
+        return;
+    }
+    
+    if (!url.includes('github.com')) {
+        showResult('importResult', 'Please enter a valid GitHub repository URL', 'error');
+        return;
+    }
+    
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-github-repo', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            repo_url: url
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('importResult', `✅ Successfully imported ${url.split('/').slice(-2).join('/')} (${data.stars || 0} stars)`, 'success');
+            document.getElementById('repoUrl').value = '';
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('importResult', `❌ Failed to import: ${data.message}`, 'error');
+        }
+    })
+    .catch(error => {
+        btnText.style.display = 'inline';
+        loader.style.display = 'none';
+        showResult('importResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function filterRepositories() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const languageFilter = document.getElementById('languageFilter').value.toLowerCase();
+    const rows = document.querySelectorAll('.repo-row');
+    
+    rows.forEach(row => {
+        const name = row.dataset.name;
+        const language = row.dataset.language;
+        
+        const matchesSearch = !searchTerm || name.includes(searchTerm);
+        const matchesLanguage = !languageFilter || language === languageFilter;
+        
+        row.style.display = matchesSearch && matchesLanguage ? '' : 'none';
+    });
+}
+
+function sortRepositories() {
+    const sortBy = document.getElementById('sortSelect').value;
+    const tbody = document.getElementById('reposTableBody');
+    const rows = Array.from(tbody.querySelectorAll('.repo-row'));
+    
+    rows.sort((a, b) => {
+        switch (sortBy) {
+            case 'stars':
+                return parseInt(b.dataset.stars) - parseInt(a.dataset.stars);
+            case 'forks':
+                return parseInt(b.dataset.forks) - parseInt(a.dataset.forks);
+            case 'name':
+                return a.dataset.name.localeCompare(b.dataset.name);
+            case 'date':
+                return new Date(b.dataset.date) - new Date(a.dataset.date);
+            default:
+                return 0;
+        }
+    });
+    
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('languageFilter').value = '';
+    document.getElementById('sortSelect').value = 'stars';
+    filterRepositories();
+    sortRepositories();
+}
+
+function viewRepository(repoId) {
+    window.open(`/knowledge-hub?id=${repoId}`, '_blank');
+}
+
+function deleteRepository(repoId) {
+    if (confirm('Are you sure you want to delete this repository from your knowledge hub? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'knowledge_hub',
+                id: repoId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete repository');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting repository');
+        });
+    }
+}
+
+function showBulkImport() {
+    document.getElementById('bulkImportModal').style.display = 'flex';
+}
+
+function closeBulkImport() {
+    document.getElementById('bulkImportModal').style.display = 'none';
+    document.getElementById('bulkUrls').value = '';
+    document.getElementById('bulkProgress').style.display = 'none';
+    document.getElementById('progressFill').style.width = '0%';
+}
+
+async function processBulkImport() {
+    const urls = document.getElementById('bulkUrls').value
+        .split('\n')
+        .map(url => url.trim())
+        .filter(url => url && url.includes('github.com'));
+    
+    if (urls.length === 0) {
+        alert('Please enter at least one valid GitHub repository URL');
+        return;
+    }
+    
+    const btnText = document.getElementById('bulkBtnText');
+    const loader = document.getElementById('bulkLoader');
+    const progress = document.getElementById('bulkProgress');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    btnText.style.display = 'none';
+    loader.style.display = 'inline-block';
+    progress.style.display = 'block';
+    
+    let completed = 0;
+    let successful = 0;
+    
+    for (let i = 0; i < urls.length; i++) {
+        const url = urls[i];
+        progressText.textContent = `Processing ${i + 1}/${urls.length}: ${url.split('/').slice(-2).join('/')}`;
+        
+        try {
+            const response = await fetch('/add-github-repo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    repo_url: url
+                })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                successful++;
+            }
+        } catch (error) {
+            console.error('Error processing:', url, error);
+        }
+        
+        completed++;
+        const percentage = (completed / urls.length) * 100;
+        progressFill.style.width = percentage + '%';
+        
+        // Small delay to prevent overwhelming the API
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    btnText.style.display = 'inline';
+    loader.style.display = 'none';
+    progressText.textContent = `Completed! Successfully imported ${successful}/${urls.length} repositories.`;
+    
+    setTimeout(() => {
+        closeBulkImport();
+        location.reload();
+    }, 3000);
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-item result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle Enter key
+    document.getElementById('repoUrl').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addRepository();
+    });
+    
+    // Initial sort
+    sortRepositories();
+});
+</script>
+{% endblock %}

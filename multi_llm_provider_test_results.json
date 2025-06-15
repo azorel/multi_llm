@@ -1,0 +1,33 @@
+{
+  "provider_results": {
+    "anthropic": {
+      "success": true,
+      "response_time": 6.706150531768799,
+      "tokens_used": 524,
+      "cost": 0.0046559999999999995,
+      "error": null
+    },
+    "openai": {
+      "success": true,
+      "response_time": 6.780598163604736,
+      "tokens_used": 639,
+      "cost": 0.006381,
+      "error": null
+    },
+    "gemini": {
+      "success": true,
+      "response_time": 18.291693449020386,
+      "tokens_used": 748,
+      "cost": 9.35e-05,
+      "error": null
+    }
+  },
+  "load_balance_results": {
+    "Unknown": 6
+  },
+  "total_cost": 0.0111305,
+  "total_tokens": 1911,
+  "successful_providers": 3,
+  "provider_success_rate": 100.0,
+  "overall_status": "EXCELLENT"
+}

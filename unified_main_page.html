@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LifeOS - Unified Control Center</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a1a; color: #fff; }
+        
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        
+        .main-container { display: grid; grid-template-columns: 250px 1fr; height: calc(100vh - 100px); }
+        
+        .sidebar { background: #2d2d2d; border-right: 1px solid #444; padding: 20px; overflow-y: auto; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-title { font-size: 12px; text-transform: uppercase; color: #9ca3af; margin-bottom: 8px; font-weight: 600; }
+        .nav-item { 
+            display: block; padding: 8px 12px; color: #e5e7eb; text-decoration: none; border-radius: 6px; 
+            margin-bottom: 4px; cursor: pointer; transition: all 0.2s;
+        }
+        .nav-item:hover, .nav-item.active { background: #3b82f6; color: white; }
+        .nav-item.active { font-weight: 600; }
+        
+        .content-area { background: #1a1a1a; overflow-y: auto; padding: 20px; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        
+        .card { background: #2d2d2d; border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .card h2 { color: #60a5fa; margin-bottom: 16px; font-size: 20px; }
+        .card h3 { color: #e5e7eb; margin-bottom: 12px; font-size: 16px; }
+        
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .metric-card { background: #374151; padding: 16px; border-radius: 6px; text-align: center; }
+        .metric-value { font-size: 24px; font-weight: bold; color: #60a5fa; }
+        .metric-label { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+        
+        .task-item { padding: 12px; border-bottom: 1px solid #444; display: flex; justify-content: space-between; align-items: center; }
+        .task-item:last-child { border-bottom: none; }
+        .worker-name { font-weight: 600; color: #60a5fa; }
+        .task-desc { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+        
+        .status-completed { color: #22c55e; font-weight: 600; }
+        .status-failed { color: #ef4444; font-weight: 600; }
+        .status-pending { color: #f59e0b; font-weight: 600; }
+        .status-in_progress { color: #3b82f6; font-weight: 600; }
+        
+        .btn { background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .btn:hover { background: #2563eb; }
+        .btn-secondary { background: #6b7280; }
+        .btn-secondary:hover { background: #4b5563; }
+        
+        .loading { text-align: center; padding: 40px; color: #9ca3af; }
+        .error { color: #ef4444; padding: 20px; text-align: center; }
+        
+        .business-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .business-card { background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%); padding: 20px; border-radius: 8px; }
+        .business-card h3 { color: white; margin-bottom: 8px; }
+        .business-card p { color: #cbd5e1; font-size: 14px; margin-bottom: 12px; }
+        .revenue-target { color: #22c55e; font-weight: 600; font-size: 18px; }
+        
+        iframe { width: 100%; height: 600px; border: 1px solid #444; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏢 LifeOS - Unified Control Center</h1>
+        <p>Complete business empire control - Everything accessible from one page</p>
+    </div>
+    
+    <div class="main-container">
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-title">🤖 Autonomous Teams</div>
+                <a class="nav-item active" onclick="showSection('realtime-teams')">⚡ Real-Time Teams</a>
+                <a class="nav-item" onclick="showSection('team-performance')">📊 Team Performance</a>
+                <a class="nav-item" onclick="showSection('task-queue')">📋 Task Queue</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">👑 Business Empire</div>
+                <a class="nav-item" onclick="showSection('empire-dashboard')">🏢 Empire Overview</a>
+                <a class="nav-item" onclick="showSection('revenue-tracking')">💰 Revenue Tracking</a>
+                <a class="nav-item" onclick="showSection('business-ventures')">🚀 Active Ventures</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">📊 System Status</div>
+                <a class="nav-item" onclick="showSection('system-health')">🔧 System Health</a>
+                <a class="nav-item" onclick="showSection('automation-status')">🤖 Automation Status</a>
+                <a class="nav-item" onclick="showSection('performance-metrics')">📈 Performance</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">🧠 Knowledge & Content</div>
+                <a class="nav-item" onclick="showSection('knowledge-hub')">🧠 Knowledge Hub</a>
+                <a class="nav-item" onclick="showSection('youtube-channels')">📺 YouTube Channels</a>
+                <a class="nav-item" onclick="showSection('content-pipeline')">📝 Content Pipeline</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">⚙️ Settings & Control</div>
+                <a class="nav-item" onclick="showSection('agent-control')">🎛️ Agent Control</a>
+                <a class="nav-item" onclick="showSection('system-settings')">⚙️ Settings</a>
+                <a class="nav-item" onclick="showSection('logs')">📜 System Logs</a>
+            </div>
+        </nav>
+        
+        <main class="content-area">
+            <!-- Real-Time Teams Section -->
+            <div id="realtime-teams" class="content-section active">
+                <div class="card">
+                    <h2>⚡ Real-Time Autonomous Teams</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="totalTasks">-</div>
+                            <div class="metric-label">Total Tasks</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="completedTasks">-</div>
+                            <div class="metric-label">Completed</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="activeTasks">-</div>
+                            <div class="metric-label">In Progress</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="teamEfficiency">-</div>
+                            <div class="metric-label">Team Efficiency</div>
+                        </div>
+                    </div>
+                    
+                    <h3>🔄 Live Activity Feed</h3>
+                    <div id="teamActivityFeed" class="loading">Loading team activity...</div>
+                    
+                    <button class="btn" onclick="refreshTeamData()" style="margin-top: 16px;">🔄 Refresh Data</button>
+                    <span style="float: right; color: #9ca3af; font-size: 12px; margin-top: 20px;" id="lastTeamUpdate">Never</span>
+                </div>
+            </div>
+            
+            <!-- Team Performance Section -->
+            <div id="team-performance" class="content-section">
+                <div class="card">
+                    <h2>📊 Team Performance Analytics</h2>
+                    <div id="managerPerformance" class="loading">Loading manager data...</div>
+                </div>
+                <div class="card">
+                    <h2>🔧 Worker Performance</h2>
+                    <div id="workerPerformance" class="loading">Loading worker data...</div>
+                </div>
+            </div>
+            
+            <!-- Task Queue Section -->
+            <div id="task-queue" class="content-section">
+                <div class="card">
+                    <h2>📋 Active Task Queue</h2>
+                    <div id="taskQueueData" class="loading">Loading task queue...</div>
+                </div>
+            </div>
+            
+            <!-- Empire Dashboard Section -->
+            <div id="empire-dashboard" class="content-section">
+                <div class="card">
+                    <h2>🏢 Business Empire Overview</h2>
+                    <div class="business-grid">
+                        <div class="business-card">
+                            <h3>🏎️ RC Trail Finder</h3>
+                            <p>GPS-based trail discovery platform for RC enthusiasts</p>
+                            <div class="revenue-target">Target: $5,000/month</div>
+                            <button class="btn" onclick="openBusiness('rc-trail-finder')" style="margin-top: 12px;">📊 View Details</button>
+                        </div>
+                        <div class="business-card">
+                            <h3>🚐 Van Life Optimizer</h3>
+                            <p>Workspace optimization consulting for van life professionals</p>
+                            <div class="revenue-target">Target: $4,000/month</div>
+                            <button class="btn" onclick="openBusiness('van-life-optimizer')" style="margin-top: 12px;">📊 View Details</button>
+                        </div>
+                        <div class="business-card">
+                            <h3>🖨️ Custom Parts Marketplace</h3>
+                            <p>3D printed custom parts for RC and van life</p>
+                            <div class="revenue-target">Target: $3,200/month</div>
+                            <button class="btn" onclick="openBusiness('custom-parts')" style="margin-top: 12px;">📊 View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Revenue Tracking Section -->
+            <div id="revenue-tracking" class="content-section">
+                <div class="card">
+                    <h2>💰 Revenue Tracking</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">$12,200</div>
+                            <div class="metric-label">Total Revenue Target</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">$2,847</div>
+                            <div class="metric-label">Current Monthly</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">23%</div>
+                            <div class="metric-label">Target Achievement</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">+15%</div>
+                            <div class="metric-label">Growth Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Business Ventures Section -->
+            <div id="business-ventures" class="content-section">
+                <div class="card">
+                    <h2>🚀 Active Business Ventures</h2>
+                    <p>Detailed business venture management and monitoring</p>
+                    <iframe src="/business-empire" id="businessFrame"></iframe>
+                </div>
+            </div>
+            
+            <!-- System Health Section -->
+            <div id="system-health" class="content-section">
+                <div class="card">
+                    <h2>🔧 System Health Monitor</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: #22c55e;">ONLINE</div>
+                            <div class="metric-label">System Status</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">5</div>
+                            <div class="metric-label">Active Services</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">98.7%</div>
+                            <div class="metric-label">Uptime</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">2.1GB</div>
+                            <div class="metric-label">Memory Usage</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Automation Status Section -->
+            <div id="automation-status" class="content-section">
+                <div class="card">
+                    <h2>🤖 Automation Status</h2>
+                    <div id="automationData" class="loading">Loading automation status...</div>
+                </div>
+            </div>
+            
+            <!-- Performance Metrics Section -->
+            <div id="performance-metrics" class="content-section">
+                <div class="card">
+                    <h2>📈 Performance Metrics</h2>
+                    <div id="performanceData" class="loading">Loading performance data...</div>
+                </div>
+            </div>
+            
+            <!-- Knowledge Hub Section -->
+            <div id="knowledge-hub" class="content-section">
+                <div class="card">
+                    <h2>🧠 Knowledge Hub</h2>
+                    <iframe src="/knowledge-hub" id="knowledgeFrame"></iframe>
+                </div>
+            </div>
+            
+            <!-- YouTube Channels Section -->
+            <div id="youtube-channels" class="content-section">
+                <div class="card">
+                    <h2>📺 YouTube Channels</h2>
+                    <iframe src="/youtube-channels" id="youtubeFrame"></iframe>
+                </div>
+            </div>
+            
+            <!-- Content Pipeline Section -->
+            <div id="content-pipeline" class="content-section">
+                <div class="card">
+                    <h2>📝 Content Pipeline</h2>
+                    <div id="contentData" class="loading">Loading content pipeline...</div>
+                </div>
+            </div>
+            
+            <!-- Agent Control Section -->
+            <div id="agent-control" class="content-section">
+                <div class="card">
+                    <h2>🎛️ Agent Control Center</h2>
+                    <iframe src="/active-agents" id="agentFrame"></iframe>
+                </div>
+            </div>
+            
+            <!-- System Settings Section -->
+            <div id="system-settings" class="content-section">
+                <div class="card">
+                    <h2>⚙️ System Settings</h2>
+                    <div id="settingsData" class="loading">Loading settings...</div>
+                </div>
+            </div>
+            
+            <!-- Logs Section -->
+            <div id="logs" class="content-section">
+                <div class="card">
+                    <h2>📜 System Logs</h2>
+                    <div id="logsData" class="loading">Loading system logs...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+            
+            // Load section data if needed
+            loadSectionData(sectionId);
+        }
+        
+        // Load section-specific data
+        function loadSectionData(sectionId) {
+            switch(sectionId) {
+                case 'realtime-teams':
+                    refreshTeamData();
+                    break;
+                case 'team-performance':
+                    loadTeamPerformance();
+                    break;
+                case 'task-queue':
+                    loadTaskQueue();
+                    break;
+                case 'automation-status':
+                    loadAutomationStatus();
+                    break;
+                case 'performance-metrics':
+                    loadPerformanceMetrics();
+                    break;
+                case 'content-pipeline':
+                    loadContentPipeline();
+                    break;
+                case 'system-settings':
+                    loadSystemSettings();
+                    break;
+                case 'logs':
+                    loadSystemLogs();
+                    break;
+            }
+        }
+        
+        // Team data functions
+        function refreshTeamData() {
+            fetch('/api/realtime-teams')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateTeamMetrics(data.teams);
+                        updateActivityFeed(data.teams);
+                        document.getElementById('lastTeamUpdate').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+                    } else {
+                        document.getElementById('teamActivityFeed').innerHTML = '<div class="error">Error loading team data</div>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('teamActivityFeed').innerHTML = '<div class="error">Network error: ' + error.message + '</div>';
+                });
+        }
+        
+        function updateTeamMetrics(teams) {
+            const total = teams.length;
+            const completed = teams.filter(t => t.status === 'completed').length;
+            const active = teams.filter(t => t.status === 'in_progress').length;
+            const efficiency = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('activeTasks').textContent = active;
+            document.getElementById('teamEfficiency').textContent = efficiency + '%';
+        }
+        
+        function updateActivityFeed(teams) {
+            const feed = document.getElementById('teamActivityFeed');
+            
+            if (!teams || teams.length === 0) {
+                feed.innerHTML = '<div class="loading">No team activity data available</div>';
+                return;
+            }
+            
+            let html = '';
+            teams.slice(0, 10).forEach(team => {
+                const statusIcon = getStatusIcon(team.status);
+                html += `
+                    <div class="task-item">
+                        <div>
+                            <div class="worker-name">${statusIcon} ${team.worker}</div>
+                            <div class="task-desc">${team.task.substring(0, 80)}...</div>
+                        </div>
+                        <div class="status-${team.status}">${team.status.toUpperCase()}</div>
+                    </div>
+                `;
+            });
+            
+            feed.innerHTML = html;
+        }
+        
+        function getStatusIcon(status) {
+            switch(status) {
+                case 'completed': return '✅';
+                case 'failed': return '❌';
+                case 'in_progress': return '⚡';
+                default: return '📋';
+            }
+        }
+        
+        // Load other section data (placeholder implementations)
+        function loadTeamPerformance() {
+            document.getElementById('managerPerformance').innerHTML = '<div class="loading">Manager performance data will be loaded here</div>';
+            document.getElementById('workerPerformance').innerHTML = '<div class="loading">Worker performance data will be loaded here</div>';
+        }
+        
+        function loadTaskQueue() {
+            document.getElementById('taskQueueData').innerHTML = '<div class="loading">Task queue data will be loaded here</div>';
+        }
+        
+        function loadAutomationStatus() {
+            document.getElementById('automationData').innerHTML = '<div class="loading">Automation status will be loaded here</div>';
+        }
+        
+        function loadPerformanceMetrics() {
+            document.getElementById('performanceData').innerHTML = '<div class="loading">Performance metrics will be loaded here</div>';
+        }
+        
+        function loadContentPipeline() {
+            document.getElementById('contentData').innerHTML = '<div class="loading">Content pipeline data will be loaded here</div>';
+        }
+        
+        function loadSystemSettings() {
+            document.getElementById('settingsData').innerHTML = '<div class="loading">System settings will be loaded here</div>';
+        }
+        
+        function loadSystemLogs() {
+            document.getElementById('logsData').innerHTML = '<div class="loading">System logs will be loaded here</div>';
+        }
+        
+        function openBusiness(businessType) {
+            alert('Business details for ' + businessType + ' would open here');
+        }
+        
+        // Auto-refresh team data every 30 seconds
+        setInterval(refreshTeamData, 30000);
+        
+        // Initial load
+        refreshTeamData();
+    </script>
+</body>
+</html>

@@ -52,10 +52,13 @@ except ImportError:
 class EnhancedYouTubeProcessor:
     """Enhanced YouTube processor with robust transcript fetching and OpenAI analysis."""
     
+    def __init__(self, notion_token, openai_key, channels_db_id, knowledge_db_id):
+        self.notion_token = notion_token
         self.openai_key = openai_key
         self.channels_db_id = channels_db_id
         self.knowledge_db_id = knowledge_db_id
         self.headers = {
+            'Authorization': f'Bearer {notion_token}',
             'Notion-Version': '2022-06-28',
             'Content-Type': 'application/json'
         }
@@ -73,7 +76,9 @@ class EnhancedYouTubeProcessor:
             }
             
             async with aiohttp.ClientSession() as session:
+                url = f"https://api.notion.com/v1/databases/{self.channels_db_id}/query"
                 async with session.post(
+                    url,
                     headers=self.headers,
                     json=query_data,
                     timeout=10
@@ -154,7 +159,7 @@ class LifeOSAutonomousSystem:
         self.background_tasks = []
         
         # Core components
-# NOTION_REMOVED:         self.notion_client = None
+        self.notion_client = None
         self.youtube_processor = None
         self.github_processor = None
         self.github_users_processor = None
@@ -176,6 +181,7 @@ class LifeOSAutonomousSystem:
         """Load configuration from environment and files."""
         return {
             'notion': {
+                'api_token': os.getenv('NOTION_API_TOKEN'),
                 'channels_database_id': os.getenv('NOTION_CHANNELS_DATABASE_ID', '203ec31c-9de2-8079-ae4e-ed754d474888'),
                 'github_users_database_id': os.getenv('NOTION_GITHUB_USERS_DATABASE_ID'),
                 'knowledge_database_id': os.getenv('NOTION_KNOWLEDGE_DATABASE_ID', '20bec31c-9de2-814e-80db-d13d0c27d869'),
@@ -239,16 +245,19 @@ class LifeOSAutonomousSystem:
         
         try:
             # Validate configuration
-            if not self.config['notion']['api_token']:
-                logger.error("❌ No Notion API token found in environment")
-                return False
-            
-            # Initialize Notion client
-            logger.info("🔗 Initializing Notion integration...")
-# NOTION_REMOVED:             success = await self._init_notion_client()
-            if not success:
-                logger.error("❌ Failed to initialize Notion client")
-                return False
+            api_token = self.config['notion'].get('api_token') or os.getenv('NOTION_API_TOKEN')
+            if not api_token:
+                logger.warning("⚠️ No Notion API token found - running without Notion integration")
+                self.notion_client = None
+                success = True
+            else:
+                # Initialize Notion client
+                logger.info("🔗 Initializing Notion integration...")
+                success = await self._init_notion_client()
+                if not success:
+                    logger.warning("⚠️ Failed to initialize Notion client - continuing without it")
+                    self.notion_client = None
+                    success = True
             
             # Initialize YouTube processor
             if self.config['features']['youtube_processing']:
@@ -307,7 +316,7 @@ class LifeOSAutonomousSystem:
             logger.error(f"❌ Initialization failed: {e}")
             return False
 
-# NOTION_REMOVED:     async def _init_notion_client(self) -> bool:
+    async def _init_notion_client(self) -> bool:
         """Initialize Notion client with connection test."""
         try:
             # Simple Notion client implementation
@@ -326,7 +335,9 @@ class LifeOSAutonomousSystem:
                     """Test Notion API connection."""
                     try:
                         async with aiohttp.ClientSession() as session:
+                            url = "https://api.notion.com/v1/search"
                             async with session.post(
+                                url,
                                 headers=self.headers,
                                 json={"page_size": 1},
                                 timeout=10
@@ -341,6 +352,7 @@ class LifeOSAutonomousSystem:
                         payload = filter_data or {"page_size": 100}
                         
                         async with aiohttp.ClientSession() as session:
+                            url = f"https://api.notion.com/v1/databases/{database_id}/query"
                             async with session.post(
                                 url, headers=self.headers, json=payload, timeout=15
                             ) as response:
@@ -359,6 +371,7 @@ class LifeOSAutonomousSystem:
                         payload = {"properties": properties}
                         
                         async with aiohttp.ClientSession() as session:
+                            url = f"https://api.notion.com/v1/pages/{page_id}"
                             async with session.patch(
                                 url, headers=self.headers, json=payload, timeout=10
                             ) as response:
@@ -377,7 +390,9 @@ class LifeOSAutonomousSystem:
                             payload["children"] = children
                         
                         async with aiohttp.ClientSession() as session:
+                            url = "https://api.notion.com/v1/pages"
                             async with session.post(
+                                url,
                                 headers=self.headers,
                                 json=payload,
                                 timeout=15
@@ -390,7 +405,8 @@ class LifeOSAutonomousSystem:
                         return ''
             
             # Create and test client
-# NOTION_REMOVED:             self.notion_client = SimpleNotionClient(self.config['notion']['api_token'])
+            api_token = self.config['notion'].get('api_token') or os.getenv('NOTION_API_TOKEN')
+            self.notion_client = SimpleNotionClient(api_token)
             
             # Test connection
             if await self.notion_client.test_connection():
@@ -468,7 +484,7 @@ class LifeOSAutonomousSystem:
         """Initialize GitHub Users processor for checkbox workflow."""
         try:
             # Check if GitHub Users database is configured
-# NOTION_REMOVED:             github_users_db_id = self.config['notion']['github_users_database_id']
+            github_users_db_id = self.config['notion']['github_users_database_id']
             if not github_users_db_id:
                 logger.warning("⚠️ No GitHub Users database ID configured - skipping")
                 return False
@@ -499,8 +515,8 @@ class LifeOSAutonomousSystem:
         """Initialize Today's CC monitor."""
         try:
             class TodaysCCMonitor:
-# NOTION_REMOVED:                 def __init__(self, notion_client, page_id):
-# NOTION_REMOVED:                     self.notion_client = notion_client
+                def __init__(self, notion_client, page_id):
+                    self.notion_client = notion_client
                     self.page_id = page_id
                     self.checkbox_states = {}
                 
@@ -541,7 +557,7 @@ class LifeOSAutonomousSystem:
                     try:
                         import aiohttp
                         
-# NOTION_REMOVED:                         headers = self.notion_client.headers
+                        headers = self.notion_client.headers if self.notion_client else {}
                         
                         async with aiohttp.ClientSession() as session:
                             async with session.get(url, headers=headers, timeout=10) as response:
@@ -593,8 +609,8 @@ class LifeOSAutonomousSystem:
         """Initialize LifeOS automation."""
         try:
             class LifeOSAutomation:
-# NOTION_REMOVED:                 def __init__(self, notion_client, config):
-# NOTION_REMOVED:                     self.notion_client = notion_client
+                def __init__(self, notion_client, config):
+                    self.notion_client = notion_client
                     self.config = config
                 
                 async def run_automation_cycle(self) -> Dict:
@@ -629,7 +645,7 @@ class LifeOSAutonomousSystem:
                         logger.error(f"Automation cycle error: {e}")
                         return {'error': str(e)}
             
-# NOTION_REMOVED:             self.lifeos_automation = LifeOSAutomation(self.notion_client, self.config)
+            self.lifeos_automation = LifeOSAutomation(self.notion_client, self.config)
             return True
             
         except Exception as e:
@@ -1466,7 +1482,7 @@ class LifeOSAutonomousSystem:
         finally:
             await self.shutdown()
 
-# NOTION_REMOVED:     async def _health_check_notion(self) -> bool:
+    async def _health_check_notion(self) -> bool:
         """Check if Notion connection is still healthy."""
         try:
             if not self.notion_client:
@@ -1475,11 +1491,11 @@ class LifeOSAutonomousSystem:
         except Exception:
             return False
     
-# NOTION_REMOVED:     async def _recover_notion_connection(self) -> bool:
+    async def _recover_notion_connection(self) -> bool:
         """Attempt to recover Notion connection."""
         try:
             logger.info("🔄 Attempting Notion connection recovery...")
-# NOTION_REMOVED:             success = await self._init_notion_client()
+            success = await self._init_notion_client()
             if success:
                 logger.info("✅ Notion connection recovery successful")
                 return True
@@ -1498,7 +1514,7 @@ class LifeOSAutonomousSystem:
             # 1. Health check all components
             logger.info("🔍 Checking component health...")
             
-# NOTION_REMOVED:             notion_healthy = await self._health_check_notion()
+            notion_healthy = await self._health_check_notion()
             logger.info(f"  📋 Notion: {'✅' if notion_healthy else '❌'}")
             
             # 2. Reinitialize failed components

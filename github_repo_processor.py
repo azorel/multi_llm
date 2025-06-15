@@ -24,10 +24,13 @@ if env_path.exists():
 class GitHubRepoProcessor:
     """Process GitHub repositories and import selected ones to Knowledge database."""
     
+    def __init__(self, notion_token, knowledge_db_id, github_token=None):
+        self.notion_token = notion_token
         self.knowledge_db_id = knowledge_db_id
         self.github_token = github_token or os.getenv('GITHUB_TOKEN')
         
-# NOTION_REMOVED:         self.notion_headers = {
+        self.notion_headers = {
+            'Authorization': f'Bearer {notion_token}' if notion_token else '',
             'Notion-Version': '2022-06-28',
             'Content-Type': 'application/json'
         }
@@ -456,7 +459,7 @@ async def main():
     # Configuration
 # NOTION_REMOVED:     knowledge_db_id = os.getenv('NOTION_KNOWLEDGE_DATABASE_ID', '20bec31c-9de2-814e-80db-d13d0c27d869')
     
-        return
+    return
     
     # Get GitHub username
     print("Enter GitHub username or organization name:")

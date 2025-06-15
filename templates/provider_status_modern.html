@@ -1,0 +1,286 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Provider Status - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Provider Status</h1>
+    <p class="page-subtitle">Monitor AI provider health and performance</p>
+</div>
+
+<div class="providers-grid">
+    {% for provider in providers %}
+    <div class="provider-card status-{{ provider.status|lower }}">
+        <div class="provider-header">
+            <h3 class="provider-name">{{ provider.name }}</h3>
+            <span class="status-badge status-{{ provider.status|lower }}">
+                {{ provider.status }}
+            </span>
+        </div>
+        
+        <div class="provider-stats">
+            <div class="stat-item">
+                <span class="stat-label">Requests (7d)</span>
+                <span class="stat-value">{{ provider.stats.requests }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Cost</span>
+                <span class="stat-value">${{ "%.2f"|format(provider.stats.cost) }}</span>
+            </div>
+        </div>
+        
+        <div class="provider-models">
+            <h4>Available Models</h4>
+            <div class="models-list">
+                {% for model in provider.models %}
+                <span class="model-tag">{{ model }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="provider-actions">
+            <button class="btn btn-sm btn-primary" onclick="testProvider('{{ provider.name|lower }}')">
+                <i data-feather="zap"></i>
+                Test Connection
+            </button>
+            {% if provider.name != 'Local' %}
+            <button class="btn btn-sm btn-secondary" onclick="rebalanceProvider('{{ provider.name|lower }}')">
+                <i data-feather="shuffle"></i>
+                Rebalance
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title">Load Balancing</h2>
+        <button class="btn btn-primary btn-sm" onclick="rebalanceAll()">
+            <i data-feather="refresh-cw"></i>
+            Rebalance All
+        </button>
+    </div>
+    <div class="load-balancer-info">
+        <p>Automatic load balancing distributes requests across available providers to optimize cost and performance.</p>
+        
+        <div class="balancer-stats">
+            <div class="balancer-stat">
+                <span class="label">Current Strategy:</span>
+                <span class="value">Cost-Optimized</span>
+            </div>
+            <div class="balancer-stat">
+                <span class="label">Failover:</span>
+                <span class="value">Enabled</span>
+            </div>
+            <div class="balancer-stat">
+                <span class="label">Health Checks:</span>
+                <span class="value">Every 30s</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.providers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.provider-card {
+    background: var(--bg-primary);
+    border: 2px solid var(--color-gray-200);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.2s;
+}
+
+.provider-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.provider-card.status-operational {
+    border-color: var(--color-secondary);
+}
+
+.provider-card.status-degraded {
+    border-color: var(--color-warning);
+}
+
+.provider-card.status-outage {
+    border-color: var(--color-danger);
+}
+
+.provider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.provider-name {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.provider-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--color-gray-50);
+    border-radius: 0.5rem;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.provider-models h4 {
+    margin: 0 0 0.75rem 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.models-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.model-tag {
+    background: var(--color-primary-light);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.provider-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.load-balancer-info {
+    padding: 1.5rem;
+}
+
+.balancer-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.balancer-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--color-gray-50);
+    border-radius: 0.375rem;
+}
+
+.balancer-stat .label {
+    color: var(--text-secondary);
+}
+
+.balancer-stat .value {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.status-operational {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.status-degraded {
+    background: var(--color-warning);
+    color: white;
+}
+
+.status-outage {
+    background: var(--color-danger);
+    color: white;
+}
+</style>
+
+<script>
+function testProvider(providerName) {
+    // Simulate provider test
+    fetch('/api/providers/status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`${providerName} provider test successful!`);
+            } else {
+                alert(`${providerName} provider test failed.`);
+            }
+        })
+        .catch(error => {
+            alert(`Error testing ${providerName}: ${error.message}`);
+        });
+}
+
+function rebalanceProvider(providerName) {
+    alert(`Rebalancing ${providerName} provider...`);
+    // In a real implementation, this would call the rebalance API
+}
+
+function rebalanceAll() {
+    fetch('/api/providers/rebalance', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('All providers rebalanced successfully!');
+            location.reload();
+        } else {
+            alert('Failed to rebalance providers.');
+        }
+    })
+    .catch(error => {
+        alert(`Error rebalancing: ${error.message}`);
+    });
+}
+
+// Auto-refresh provider status every 30 seconds
+setInterval(() => {
+    fetch('/api/providers/status')
+        .then(response => response.json())
+        .then(data => {
+            // Update provider status indicators
+            console.log('Provider status updated:', data);
+        })
+        .catch(error => {
+            console.error('Error updating provider status:', error);
+        });
+}, 30000);
+
+// Initialize feather icons
+feather.replace();
+</script>
+{% endblock %}

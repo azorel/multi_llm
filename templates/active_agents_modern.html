@@ -1,0 +1,327 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Active Agents - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Active Agents</h1>
+    <p class="page-subtitle">Monitor and control your autonomous agents</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i data-feather="cpu"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ agents|length }}</div>
+            <div class="stat-label">Total Agents</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i data-feather="activity"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ system_status.active_agents or 0 }}</div>
+            <div class="stat-label">Active</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i data-feather="check-circle"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ system_status.completed_tasks or 0 }}</div>
+            <div class="stat-label">Completed Tasks</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple">
+            <i data-feather="trending-up"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ "%.1f"|format(system_status.success_rate or 0) }}%</div>
+            <div class="stat-label">Success Rate</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Agent Command Center</h2>
+        <button class="btn btn-primary btn-sm">
+            <i data-feather="plus"></i>
+            Add Agent
+        </button>
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Agent Name</th>
+                    <th>Type</th>
+                    <th>Provider</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agent in agents %}
+                <tr>
+                    <td>
+                        <div class="agent-name">
+                            <i data-feather="user" class="agent-icon"></i>
+                            {{ agent.name }}
+                        </div>
+                    </td>
+                    <td>{{ agent.type.replace('_', ' ').title() }}</td>
+                    <td>
+                        <div class="provider-badges">
+                            {% for provider in agent.providers %}
+                            <span class="badge badge-{{ 'blue' if provider == 'anthropic' else 'green' if provider == 'openai' else 'purple' }}">
+                                {{ provider.title() }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ agent.status|lower }}">
+                            {{ agent.status.title() }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="executeTestTask('{{ agent.id }}', '{{ agent.type }}')">
+                                <i data-feather="play"></i>
+                                Test
+                            </button>
+                            <button class="btn btn-sm btn-info" onclick="viewAgentDetails('{{ agent.id }}')">
+                                <i data-feather="info"></i>
+                                Details
+                            </button>
+                            <span class="agent-stats" title="Tasks: {{ agent.tasks_completed }}, Cost: ${{ "%.3f"|format(agent.total_cost) }}">
+                                {{ agent.tasks_completed }} tasks
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Quick Actions Panel -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title">Quick Actions</h2>
+        <div class="card-actions">
+            <button class="btn btn-success btn-sm" onclick="processUserMessage()">
+                <i data-feather="message-circle"></i>
+                Send Message to Agents
+            </button>
+            <button class="btn btn-info btn-sm" onclick="refreshStatus()">
+                <i data-feather="refresh-cw"></i>
+                Refresh Status
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Provider Statistics -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title">LLM Provider Statistics</h2>
+    </div>
+    <div class="provider-stats">
+        {% for provider, stats in provider_stats.items() %}
+        <div class="provider-card">
+            <div class="provider-header">
+                <h3 class="provider-name">{{ provider.title() }}</h3>
+                <span class="provider-badge badge-{{ 'blue' if provider == 'anthropic' else 'green' if provider == 'openai' else 'purple' }}">
+                    {{ stats.requests or 0 }} requests
+                </span>
+            </div>
+            <div class="provider-details">
+                <div class="stat-row">
+                    <span class="stat-label">Success Rate:</span>
+                    <span class="stat-value">{{ "%.1f"|format(((stats.requests or 0) - (stats.errors or 0)) / (stats.requests or 1) * 100) }}%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Total Cost:</span>
+                    <span class="stat-value">${{ "%.3f"|format(stats.cost or 0) }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Errors:</span>
+                    <span class="stat-value {{ 'text-red' if stats.errors else 'text-green' }}">{{ stats.errors or 0 }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title">Recent Executions</h2>
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Agent</th>
+                    <th>Duration</th>
+                    <th>Cost</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.execution_date }}</td>
+                    <td>Agent #{{ result.agent_id }}</td>
+                    <td>{{ result.execution_time_ms }}ms</td>
+                    <td>${{ "%.3f"|format(result.cost or 0) }}</td>
+                    <td>
+                        <span class="status-badge status-{{ 'success' if result.success else 'error' }}">
+                            {{ 'Success' if result.success else 'Failed' }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function executeAgent(agentId) {
+    fetch('/agent-action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            agent_id: agentId,
+            action: 'execute'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function pauseAgent(agentId) {
+    fetch('/agent-action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            agent_id: agentId,
+            action: 'pause'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function resumeAgent(agentId) {
+    fetch('/agent-action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            agent_id: agentId,
+            action: 'resume'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+// Real orchestrator functions
+function executeTestTask(agentId, agentType) {
+    if (!confirm(`Execute a test task with ${agentType} agent?`)) return;
+    
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i data-feather="loader"></i> Running...';
+    button.disabled = true;
+    
+    fetch('/api/orchestrator/execute-test-task', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        
+        if (data.success) {
+            alert(`✅ Test task completed successfully!\\n\\nResult: ${data.result.result || 'Task executed'}\\nTokens: ${data.result.tokens_used || 0}\\nCost: $${data.result.cost || 0}`);
+            refreshStatus();
+        } else {
+            alert(`❌ Task failed: ${data.error}`);
+        }
+    })
+    .catch(error => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        alert(`❌ Error: ${error.message}`);
+    });
+}
+
+function viewAgentDetails(agentId) {
+    alert(`Agent Details: ${agentId}\\n\\nThis would show detailed agent information, task history, and performance metrics.`);
+}
+
+function refreshStatus() {
+    fetch('/api/orchestrator/status')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update stats (could be enhanced with real-time updates)
+            console.log('Status updated:', data.status);
+        }
+    })
+    .catch(error => console.error('Error refreshing status:', error));
+}
+
+function processUserMessage() {
+    const message = prompt('Enter a message for the agents to process:');
+    if (!message) return;
+    
+    fetch('/api/orchestrator/process-message', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: message})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`✅ Message processed successfully!\\n\\nResult: ${data.result}`);
+            refreshStatus();
+        } else {
+            alert(`❌ Processing failed: ${data.error}`);
+        }
+    })
+    .catch(error => alert(`❌ Error: ${error.message}`));
+}
+
+// Auto-refresh status every 30 seconds
+setInterval(refreshStatus, 30000);
+
+// Initialize feather icons
+feather.replace();
+</script>
+{% endblock %}

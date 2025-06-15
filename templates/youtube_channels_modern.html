@@ -1,0 +1,404 @@
+{% extends "base_modern.html" %}
+
+{% block title %}YouTube Channels - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">YouTube Channels</h1>
+    <p class="page-subtitle">Manage and process YouTube channels for content extraction</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Channels</h2>
+        <button class="btn btn-primary btn-sm" onclick="addChannel()">
+            <i data-feather="plus"></i>
+            Add Channel
+        </button>
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Channel Name</th>
+                    <th>URL</th>
+                    <th>Videos Imported</th>
+                    <th>Last Processed</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for channel in channels %}
+                <tr>
+                    <td>
+                        <div class="channel-info">
+                            <div class="channel-name">{{ channel.channel_name }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if channel.channel_url %}
+                        <a href="{{ channel.channel_url }}" target="_blank" class="channel-link">
+                            <i data-feather="external-link"></i>
+                            View Channel
+                        </a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="video-count">{{ channel.videos_imported or 0 }}</span>
+                    </td>
+                    <td>
+                        {% if channel.last_processed %}
+                        {{ channel.last_processed }}
+                        {% else %}
+                        <span class="text-muted">Never</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ channel.status|lower }}">
+                            {{ channel.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            {% if not channel.process_channel %}
+                            <button class="btn btn-sm btn-primary" onclick="processChannel({{ channel.id }})">
+                                <i data-feather="download"></i>
+                                Process
+                            </button>
+                            {% else %}
+                            <button class="btn btn-sm btn-warning" disabled>
+                                <i data-feather="loader"></i>
+                                Processing...
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-sm btn-secondary" onclick="editChannel({{ channel.id }})">
+                                <i data-feather="edit"></i>
+                                Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteChannel({{ channel.id }})">
+                                <i data-feather="trash"></i>
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        No YouTube channels added yet. Click "Add Channel" to get started.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title">Processing Status</h2>
+    </div>
+    <div class="processing-info">
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-icon">
+                    <i data-feather="youtube"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">Total Channels</div>
+                    <div class="info-value">{{ channels|length }}</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i data-feather="video"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">Videos Imported</div>
+                    <div class="info-value">{{ channels|sum(attribute='videos_imported') or 0 }}</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i data-feather="activity"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">Active Channels</div>
+                    <div class="info-value">{{ channels|selectattr('status', 'equalto', 'Active')|list|length }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="processing-notes">
+            <h4>Processing Notes:</h4>
+            <ul>
+                <li>Channel processing extracts video metadata and transcripts</li>
+                <li>Large channels may take several minutes to process</li>
+                <li>Videos are imported into the Knowledge Hub automatically</li>
+                <li>Processing respects YouTube's rate limits</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+.channel-info {
+    display: flex;
+    align-items: center;
+}
+
+.channel-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.channel-link {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.channel-link:hover {
+    text-decoration: underline;
+}
+
+.video-count {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.text-muted {
+    color: var(--text-tertiary);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.processing-info {
+    padding: 1.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--color-gray-50);
+    border-radius: 0.5rem;
+}
+
+.info-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--color-primary);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.processing-notes {
+    background: var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+}
+
+.processing-notes h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+.processing-notes ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.processing-notes li {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.status-active {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.status-inactive {
+    background: var(--color-gray-400);
+    color: white;
+}
+
+.status-processing {
+    background: var(--color-warning);
+    color: white;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+function addChannel() {
+    const channelName = prompt('Enter channel name:');
+    if (channelName) {
+        const channelUrl = prompt('Enter YouTube channel URL:');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                table: 'youtube_channels',
+                data: {
+                    channel_name: channelName,
+                    channel_url: channelUrl || '',
+                    process_channel: false,
+                    videos_imported: 0,
+                    status: 'Active'
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to add channel');
+            }
+        })
+        .catch(error => {
+            alert('Error adding channel: ' + error.message);
+        });
+    }
+}
+
+function processChannel(channelId) {
+    if (confirm('This will process the channel and import videos. Continue?')) {
+        // Update UI to show processing state
+        const button = event.target.closest('button');
+        button.disabled = true;
+        button.innerHTML = '<i data-feather="loader"></i> Processing...';
+        
+        fetch('/api/youtube/process-channel', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                channel_id: channelId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Processing completed! Imported ${data.videos_imported} videos.`);
+                location.reload();
+            } else {
+                alert('Processing failed: ' + (data.error || 'Unknown error'));
+                button.disabled = false;
+                button.innerHTML = '<i data-feather="download"></i> Process';
+            }
+        })
+        .catch(error => {
+            alert('Error processing channel: ' + error.message);
+            button.disabled = false;
+            button.innerHTML = '<i data-feather="download"></i> Process';
+        });
+    }
+}
+
+function editChannel(channelId) {
+    const newName = prompt('Enter new channel name:');
+    if (newName) {
+        fetch('/edit-item', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                table: 'youtube_channels',
+                id: channelId,
+                data: {
+                    channel_name: newName
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to update channel');
+            }
+        })
+        .catch(error => {
+            alert('Error updating channel: ' + error.message);
+        });
+    }
+}
+
+function deleteChannel(channelId) {
+    if (confirm('Are you sure you want to delete this channel?')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                table: 'youtube_channels',
+                id: channelId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete channel');
+            }
+        })
+        .catch(error => {
+            alert('Error deleting channel: ' + error.message);
+        });
+    }
+}
+
+// Initialize feather icons
+feather.replace();
+
+// Auto-refresh processing status every 10 seconds
+setInterval(() => {
+    const processingButtons = document.querySelectorAll('button:disabled');
+    if (processingButtons.length > 0) {
+        // Only reload if there are active processing operations
+        location.reload();
+    }
+}, 10000);
+</script>
+{% endblock %}

@@ -1,0 +1,776 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Server Status - LifeOS{% endblock %}
+{% block header_title %}Server Status{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🖥️ Server Health Monitor</h1>
+    <p class="page-subtitle">Monitor system performance, resource usage, and service health</p>
+</div>
+
+<!-- System Overview -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value {% if (metrics.cpu_percent|default(0)) >= 80 %}text-red-600{% elif (metrics.cpu_percent|default(0)) >= 60 %}text-yellow-600{% else %}text-green-600{% endif %}">
+            {{ cpu_usage|default(0) }}%
+        </div>
+        <div class="stat-label">CPU Usage</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value {% if memory_usage >= 80 %}text-red-600{% elif memory_usage >= 60 %}text-yellow-600{% else %}text-green-600{% endif %}">
+            {{ memory_usage|default(0) }}%
+        </div>
+        <div class="stat-label">Memory Usage</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value {% if disk_usage >= 80 %}text-red-600{% elif disk_usage >= 60 %}text-yellow-600{% else %}text-green-600{% endif %}">
+            {{ disk_usage|default(0) }}%
+        </div>
+        <div class="stat-label">Disk Usage</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value {% if uptime_days < 1 %}text-yellow-600{% else %}text-green-600{% endif %}">
+            {{ uptime_days|default(0) }}d
+        </div>
+        <div class="stat-label">Uptime</div>
+    </div>
+</div>
+
+<!-- System Alerts -->
+{% if system_alerts|default([]) %}
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">🚨 System Alerts</h3>
+        <button class="btn btn-secondary" onclick="clearAllAlerts()">
+            ✅ Clear All
+        </button>
+    </div>
+    <div class="card-content">
+        <div class="space-y-3">
+            {% for alert in system_alerts %}
+            <div class="alert alert-{% if alert.severity == 'critical' %}danger{% elif alert.severity == 'warning' %}warning{% else %}info{% endif %}">
+                <div class="flex items-center gap-3">
+                    <div class="text-2xl">
+                        {% if alert.severity == 'critical' %}🚨{% elif alert.severity == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-semibold">{{ alert.title|default('System Alert') }}</div>
+                        <div class="text-sm">{{ alert.message|default('No message') }}</div>
+                        <div class="text-xs opacity-75">{{ alert.timestamp|default('Unknown time') }}</div>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" onclick="dismissAlert({{ alert.id }})">
+                        ✕ Dismiss
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Real-time Metrics -->
+<div class="grid grid-cols-2 gap-6 mb-8">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Resource Usage</h3>
+            <button class="btn btn-secondary btn-sm" onclick="toggleAutoRefresh()">
+                <span id="autoRefreshText">🔄 Auto Refresh: ON</span>
+            </button>
+        </div>
+        <div class="card-content">
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium">CPU Usage</span>
+                        <span class="text-sm">{{ cpu_usage|default(0) }}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill {% if cpu_usage >= 80 %}bg-red-500{% elif cpu_usage >= 60 %}bg-yellow-500{% else %}bg-green-500{% endif %}" 
+                             style="width: {{ cpu_usage|default(0) }}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">{{ cpu_cores|default(1) }} cores, Load: {{ load_average|default('N/A') }}</div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium">Memory Usage</span>
+                        <span class="text-sm">{{ memory_used|default('0 GB') }} / {{ memory_total|default('0 GB') }}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill {% if memory_usage >= 80 %}bg-red-500{% elif memory_usage >= 60 %}bg-yellow-500{% else %}bg-green-500{% endif %}" 
+                             style="width: {{ memory_usage|default(0) }}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">Available: {{ memory_available|default('0 GB') }}</div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium">Disk Usage</span>
+                        <span class="text-sm">{{ disk_used|default('0 GB') }} / {{ disk_total|default('0 GB') }}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill {% if disk_usage >= 80 %}bg-red-500{% elif disk_usage >= 60 %}bg-yellow-500{% else %}bg-green-500{% endif %}" 
+                             style="width: {{ disk_usage|default(0) }}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">Free: {{ disk_free|default('0 GB') }}</div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium">Network I/O</span>
+                        <span class="text-sm">↑{{ network_tx|default('0 MB/s') }} ↓{{ network_rx|default('0 MB/s') }}</span>
+                    </div>
+                    <div class="text-xs text-gray-500">Total: ↑{{ total_tx|default('0 GB') }} ↓{{ total_rx|default('0 GB') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🔧 System Information</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Operating System:</span>
+                    <span class="font-medium">{{ os_info|default('Unknown') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Hostname:</span>
+                    <span class="font-medium">{{ hostname|default('Unknown') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Python Version:</span>
+                    <span class="font-medium">{{ python_version|default('Unknown') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Boot Time:</span>
+                    <span class="font-medium">{{ boot_time|default('Unknown') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Current Time:</span>
+                    <span class="font-medium" id="currentTime">{{ current_time|default('Unknown') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Active Processes:</span>
+                    <span class="font-medium">{{ process_count|default(0) }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Active Connections:</span>
+                    <span class="font-medium">{{ connection_count|default(0) }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Temperature:</span>
+                    <span class="font-medium {% if cpu_temp >= 80 %}text-red-600{% elif cpu_temp >= 60 %}text-yellow-600{% else %}text-green-600{% endif %}">
+                        {{ cpu_temp|default('N/A') }}°C
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Status -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">🎯 Service Status</h3>
+        <button class="btn btn-secondary" onclick="refreshServices()">
+            🔄 Refresh Services
+        </button>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-3 gap-4">
+            {% for service in services|default([]) %}
+            <div class="service-card border rounded-lg p-4 {% if service.status == 'running' %}border-green-200 bg-green-50{% elif service.status == 'stopped' %}border-red-200 bg-red-50{% else %}border-yellow-200 bg-yellow-50{% endif %}">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold">{{ service.name|default('Unknown Service') }}</h4>
+                    <span class="badge badge-{% if service.status == 'running' %}success{% elif service.status == 'stopped' %}danger{% else %}warning{% endif %}">
+                        {% if service.status == 'running' %}🟢{% elif service.status == 'stopped' %}🔴{% else %}🟡{% endif %}
+                        {{ service.status|title|default('Unknown') }}
+                    </span>
+                </div>
+                <div class="text-sm text-gray-600 mb-3">
+                    <div>Port: {{ service.port|default('N/A') }}</div>
+                    <div>PID: {{ service.pid|default('N/A') }}</div>
+                    <div>Memory: {{ service.memory_usage|default('N/A') }}</div>
+                </div>
+                <div class="flex gap-2">
+                    {% if service.status == 'running' %}
+                    <button class="btn btn-danger btn-sm" onclick="stopService('{{ service.name }}')">
+                        ⏹️ Stop
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="restartService('{{ service.name }}')">
+                        🔄 Restart
+                    </button>
+                    {% else %}
+                    <button class="btn btn-success btn-sm" onclick="startService('{{ service.name }}')">
+                        ▶️ Start
+                    </button>
+                    {% endif %}
+                    <button class="btn btn-secondary btn-sm" onclick="viewServiceLogs('{{ service.name }}')">
+                        📋 Logs
+                    </button>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-span-3 text-center py-8 text-gray-500">
+                <div class="text-4xl mb-2">🎯</div>
+                <div>No services configured</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Process Monitor -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">⚙️ Top Processes</h3>
+        <div class="flex gap-2">
+            <select class="form-input" id="sortProcesses" style="width: 150px;">
+                <option value="cpu">By CPU Usage</option>
+                <option value="memory">By Memory Usage</option>
+                <option value="name">By Name</option>
+            </select>
+            <button class="btn btn-secondary" onclick="refreshProcesses()">
+                🔄 Refresh
+            </button>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Process</th>
+                        <th>PID</th>
+                        <th>CPU %</th>
+                        <th>Memory %</th>
+                        <th>Memory (MB)</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in top_processes|default([]) %}
+                    <tr class="process-row">
+                        <td>
+                            <div>
+                                <div class="font-semibold">{{ process.name|default('Unknown') }}</div>
+                                <div class="text-xs text-gray-500">{{ (process.command|default('No command'))[:50] }}{% if (process.command|default('')|length > 50) %}...{% endif %}</div>
+                            </div>
+                        </td>
+                        <td class="text-sm">{{ process.pid|default('N/A') }}</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm">{{ process.cpu_percent|default(0) }}%</span>
+                                <div class="w-12 h-2 bg-gray-200 rounded-full">
+                                    <div class="h-2 rounded-full {% if process.cpu_percent >= 50 %}bg-red-500{% elif process.cpu_percent >= 20 %}bg-yellow-500{% else %}bg-green-500{% endif %}" 
+                                         style="width: {{ process.cpu_percent|default(0) }}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm">{{ process.memory_percent|default(0) }}%</span>
+                                <div class="w-12 h-2 bg-gray-200 rounded-full">
+                                    <div class="h-2 rounded-full {% if process.memory_percent >= 50 %}bg-red-500{% elif process.memory_percent >= 20 %}bg-yellow-500{% else %}bg-green-500{% endif %}" 
+                                         style="width: {{ process.memory_percent|default(0) }}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-sm">{{ process.memory_mb|default(0) }} MB</td>
+                        <td>
+                            <span class="badge badge-{% if process.status == 'running' %}success{% elif process.status == 'sleeping' %}info{% else %}warning{% endif %}">
+                                {{ process.status|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm" onclick="viewProcessDetails({{ process.pid }})">
+                                    👁️ Details
+                                </button>
+                                {% if process.can_kill %}
+                                <button class="btn btn-danger btn-sm" onclick="killProcess({{ process.pid }})">
+                                    ⚰️ Kill
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">⚙️</div>
+                            <div>No process data available</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- System Logs -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📋 System Logs</h3>
+        <div class="flex gap-2">
+            <select class="form-input" id="logLevel" style="width: 120px;">
+                <option value="">All Levels</option>
+                <option value="ERROR">Error</option>
+                <option value="WARNING">Warning</option>
+                <option value="INFO">Info</option>
+                <option value="DEBUG">Debug</option>
+            </select>
+            <button class="btn btn-secondary" onclick="refreshLogs()">
+                🔄 Refresh
+            </button>
+            <button class="btn btn-secondary" onclick="downloadLogs()">
+                📥 Download
+            </button>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="log-container bg-gray-900 text-green-400 p-4 rounded-lg text-sm font-mono max-h-80 overflow-y-auto">
+            {% for log in system_logs|default([]) %}
+            <div class="log-entry {% if log.level == 'ERROR' %}text-red-400{% elif log.level == 'WARNING' %}text-yellow-400{% elif log.level == 'INFO' %}text-blue-400{% else %}text-gray-400{% endif %}">
+                [{{ log.timestamp|default('Unknown') }}] {{ log.level|default('INFO') }}: {{ log.message|default('No message') }}
+            </div>
+            {% else %}
+            <div class="text-gray-500 text-center py-4">No logs available</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.space-y-3 > * + * {
+    margin-top: 0.75rem;
+}
+
+.space-y-4 > * + * {
+    margin-top: 1rem;
+}
+
+.service-card {
+    transition: all 0.2s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.alert {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.alert-warning {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+.alert-info {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+
+.log-container {
+    font-family: 'Courier New', monospace;
+}
+
+.log-entry {
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+</style>
+
+<script>
+let autoRefreshEnabled = true;
+let refreshInterval;
+
+// Auto-refresh functionality
+function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    const button = document.getElementById('autoRefreshText');
+    
+    if (autoRefreshEnabled) {
+        button.textContent = '🔄 Auto Refresh: ON';
+        startAutoRefresh();
+    } else {
+        button.textContent = '🔄 Auto Refresh: OFF';
+        clearInterval(refreshInterval);
+    }
+}
+
+function startAutoRefresh() {
+    if (autoRefreshEnabled) {
+        refreshInterval = setInterval(() => {
+            refreshSystemMetrics();
+        }, 5000); // Refresh every 5 seconds
+    }
+}
+
+function refreshSystemMetrics() {
+    fetch('/get-system-metrics')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateMetrics(data.metrics);
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing metrics:', error);
+        });
+}
+
+function updateMetrics(metrics) {
+    // Update stat cards
+    const statCards = document.querySelectorAll('.stat-value');
+    if (statCards.length >= 4) {
+        statCards[0].textContent = `${metrics.cpu_usage || 0}%`;
+        statCards[0].className = `stat-value ${getColorClass(metrics.cpu_usage)}`;
+        
+        statCards[1].textContent = `${metrics.memory_usage || 0}%`;
+        statCards[1].className = `stat-value ${getColorClass(metrics.memory_usage)}`;
+        
+        statCards[2].textContent = `${metrics.disk_usage || 0}%`;
+        statCards[2].className = `stat-value ${getColorClass(metrics.disk_usage)}`;
+        
+        statCards[3].textContent = `${metrics.uptime_days || 0}d`;
+    }
+    
+    // Update progress bars
+    const progressBars = document.querySelectorAll('.progress-fill');
+    if (progressBars.length >= 3) {
+        progressBars[0].style.width = `${metrics.cpu_usage || 0}%`;
+        progressBars[0].className = `progress-fill ${getProgressBarClass(metrics.cpu_usage)}`;
+        
+        progressBars[1].style.width = `${metrics.memory_usage || 0}%`;
+        progressBars[1].className = `progress-fill ${getProgressBarClass(metrics.memory_usage)}`;
+        
+        progressBars[2].style.width = `${metrics.disk_usage || 0}%`;
+        progressBars[2].className = `progress-fill ${getProgressBarClass(metrics.disk_usage)}`;
+    }
+    
+    // Update current time
+    const currentTimeElement = document.getElementById('currentTime');
+    if (currentTimeElement) {
+        currentTimeElement.textContent = new Date().toLocaleString();
+    }
+}
+
+function getColorClass(value) {
+    if (value >= 80) return 'text-red-600';
+    if (value >= 60) return 'text-yellow-600';
+    return 'text-green-600';
+}
+
+function getProgressBarClass(value) {
+    if (value >= 80) return 'bg-red-500';
+    if (value >= 60) return 'bg-yellow-500';
+    return 'bg-green-500';
+}
+
+// Service management
+function startService(serviceName) {
+    if (confirm(`Start ${serviceName} service?`)) {
+        fetch('/manage-service', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                service: serviceName,
+                action: 'start'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(`Failed to start ${serviceName}: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error starting service');
+        });
+    }
+}
+
+function stopService(serviceName) {
+    if (confirm(`Stop ${serviceName} service?`)) {
+        fetch('/manage-service', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                service: serviceName,
+                action: 'stop'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(`Failed to stop ${serviceName}: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error stopping service');
+        });
+    }
+}
+
+function restartService(serviceName) {
+    if (confirm(`Restart ${serviceName} service?`)) {
+        fetch('/manage-service', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                service: serviceName,
+                action: 'restart'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(`Failed to restart ${serviceName}: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error restarting service');
+        });
+    }
+}
+
+function viewServiceLogs(serviceName) {
+    fetch(`/get-service-logs?service=${serviceName}`)
+        .then(response => response.text())
+        .then(logs => {
+            alert(`${serviceName} Logs:\n\n${logs}`);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error fetching service logs');
+        });
+}
+
+function refreshServices() {
+    location.reload();
+}
+
+// Process management
+function viewProcessDetails(pid) {
+    fetch(`/get-process-details?pid=${pid}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const details = data.process;
+                alert(`Process Details (PID: ${pid})\n\n` +
+                     `Name: ${details.name}\n` +
+                     `Command: ${details.command}\n` +
+                     `CPU: ${details.cpu_percent}%\n` +
+                     `Memory: ${details.memory_percent}% (${details.memory_mb} MB)\n` +
+                     `Status: ${details.status}\n` +
+                     `Started: ${details.create_time}`);
+            } else {
+                alert('Failed to get process details');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error fetching process details');
+        });
+}
+
+function killProcess(pid) {
+    if (confirm(`Kill process ${pid}? This action cannot be undone.`)) {
+        fetch('/kill-process', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                pid: pid
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(`Failed to kill process: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error killing process');
+        });
+    }
+}
+
+function refreshProcesses() {
+    location.reload();
+}
+
+// Alert management
+function dismissAlert(alertId) {
+    fetch('/dismiss-alert', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            alert_id: alertId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to dismiss alert');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error dismissing alert');
+    });
+}
+
+function clearAllAlerts() {
+    if (confirm('Clear all system alerts?')) {
+        fetch('/clear-all-alerts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to clear alerts');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error clearing alerts');
+        });
+    }
+}
+
+// Log management
+function refreshLogs() {
+    location.reload();
+}
+
+function downloadLogs() {
+    const logLevel = document.getElementById('logLevel').value;
+    const params = logLevel ? `?level=${logLevel}` : '';
+    
+    fetch(`/download-logs${params}`)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'system_logs.txt';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error downloading logs');
+        });
+}
+
+// Filter logs by level
+document.getElementById('logLevel').addEventListener('change', function() {
+    const selectedLevel = this.value;
+    const logEntries = document.querySelectorAll('.log-entry');
+    
+    logEntries.forEach(entry => {
+        const entryText = entry.textContent;
+        if (!selectedLevel || entryText.includes(selectedLevel)) {
+            entry.style.display = 'block';
+        } else {
+            entry.style.display = 'none';
+        }
+    });
+});
+
+// Sort processes
+document.getElementById('sortProcesses').addEventListener('change', function() {
+    // This would typically trigger a server-side sort
+    // For now, just reload the page
+    location.reload();
+});
+
+// Initialize auto-refresh
+document.addEventListener('DOMContentLoaded', function() {
+    startAutoRefresh();
+    
+    // Update current time every second
+    setInterval(() => {
+        const currentTimeElement = document.getElementById('currentTime');
+        if (currentTimeElement) {
+            currentTimeElement.textContent = new Date().toLocaleString();
+        }
+    }, 1000);
+});
+
+// Cleanup interval when leaving page
+window.addEventListener('beforeunload', function() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Business Opportunities - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Business Opportunities</h1>
+    <p class="page-subtitle">Evaluate and manage potential business ventures</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Opportunities Pipeline</h2>
+        <button class="btn btn-primary btn-sm" onclick="addOpportunity()">
+            <i data-feather="plus"></i>
+            Add Opportunity
+        </button>
+    </div>
+    <div class="opportunities-grid">
+        {% for opp in opportunities %}
+        <div class="opportunity-card status-{{ opp.status|lower }}">
+            <div class="opportunity-header">
+                <h3>{{ opp.opportunity_name }}</h3>
+                <span class="status-badge status-{{ opp.status|lower }}">{{ opp.status }}</span>
+            </div>
+            <div class="opportunity-body">
+                <p>{{ opp.description }}</p>
+                <div class="opportunity-value">
+                    <strong>Potential Value:</strong> {{ opp.potential_value }}
+                </div>
+            </div>
+            <div class="opportunity-actions">
+                {% if opp.status == 'Evaluating' %}
+                <button class="btn btn-sm btn-success" onclick="approveOpportunity({{ opp.id }})">
+                    <i data-feather="check"></i>
+                    Approve
+                </button>
+                {% endif %}
+                <button class="btn btn-sm btn-secondary" onclick="editOpportunity({{ opp.id }})">
+                    <i data-feather="edit"></i>
+                    Edit
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.opportunities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.opportunity-card {
+    background: var(--bg-primary);
+    border: 2px solid var(--color-gray-200);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.2s;
+}
+
+.opportunity-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.opportunity-card.status-evaluating {
+    border-color: var(--color-warning);
+}
+
+.opportunity-card.status-approved {
+    border-color: var(--color-secondary);
+}
+
+.opportunity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.opportunity-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.opportunity-body p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.opportunity-value {
+    background: var(--color-gray-50);
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+.opportunity-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+</style>
+
+<script>
+function addOpportunity() {
+    // In a real implementation, this would open a modal form
+    const name = prompt('Opportunity name:');
+    if (name) {
+        const description = prompt('Description:');
+        const value = prompt('Potential value:');
+        
+        fetch('/add-item', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                table: 'business_opportunities',
+                data: {
+                    opportunity_name: name,
+                    description: description || '',
+                    potential_value: value || '',
+                    status: 'Evaluating'
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function approveOpportunity(id) {
+    fetch('/api/approve_business_opportunity', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            opportunity_id: id
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Opportunity approved and converted to project!');
+            location.reload();
+        }
+    });
+}
+
+function editOpportunity(id) {
+    const newName = prompt('Enter new name:');
+    if (newName) {
+        fetch('/edit-item', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                table: 'business_opportunities',
+                id: id,
+                data: {
+                    opportunity_name: newName
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+// Initialize feather icons
+feather.replace();
+</script>
+{% endblock %}

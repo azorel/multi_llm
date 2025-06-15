@@ -1,0 +1,248 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Autonomous Monitor - LifeOS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Autonomous System Monitor</h1>
+    <p class="page-subtitle">Real-time monitoring of autonomous agents and tasks</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i data-feather="briefcase"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.total_tasks or 0 }}</div>
+            <div class="stat-label">Total Tasks</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i data-feather="check-circle"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.completed_tasks or 0 }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange">
+            <i data-feather="clock"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.in_progress_tasks or 0 }}</div>
+            <div class="stat-label">In Progress</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i data-feather="users"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">{{ workers|length }}</div>
+            <div class="stat-label">Workers</div>
+        </div>
+    </div>
+</div>
+
+<div class="grid-layout">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Active Tasks</h2>
+            <button class="btn btn-primary btn-sm" onclick="createTask()">
+                <i data-feather="plus"></i>
+                New Task
+            </button>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Worker</th>
+                        <th>Manager</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in active_tasks %}
+                    <tr>
+                        <td>{{ task.title }}</td>
+                        <td>{{ task.worker_name or 'Unassigned' }}</td>
+                        <td>{{ task.manager_name or 'None' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ task.status }}">
+                                {{ task.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ task.completion_percentage or 0 }}%"></div>
+                            </div>
+                            <span class="progress-text">{{ task.completion_percentage or 0 }}%</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="side-panels">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Workers</h3>
+            </div>
+            <div class="worker-list">
+                {% for worker in workers %}
+                <div class="worker-item">
+                    <div class="worker-info">
+                        <div class="worker-name">{{ worker.name }}</div>
+                        <div class="worker-role">{{ worker.role }}</div>
+                    </div>
+                    <span class="status-badge status-{{ worker.status|lower }}">
+                        {{ worker.status }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="card-title">Project Managers</h3>
+            </div>
+            <div class="manager-list">
+                {% for manager in managers %}
+                <div class="manager-item">
+                    <div class="manager-info">
+                        <div class="manager-name">{{ manager.name }}</div>
+                        <div class="manager-dept">{{ manager.department }}</div>
+                    </div>
+                    <span class="status-badge status-{{ manager.status|lower }}">
+                        {{ manager.status }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.progress-bar {
+    display: inline-block;
+    width: 100px;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-right: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.worker-list, .manager-list {
+    padding: 0.5rem;
+}
+
+.worker-item, .manager-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.worker-item:last-child, .manager-item:last-child {
+    border-bottom: none;
+}
+
+.worker-name, .manager-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.worker-role, .manager-dept {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.status-pending {
+    background: var(--color-gray-200);
+    color: var(--color-gray-700);
+}
+
+.status-in_progress, .status-running {
+    background: var(--color-warning);
+    color: white;
+}
+
+.status-completed, .status-available, .status-active {
+    background: var(--color-secondary);
+    color: white;
+}
+
+@media (max-width: 1024px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .side-panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+}
+</style>
+
+<script>
+function createTask() {
+    const title = prompt('Enter task title:');
+    if (title) {
+        fetch('/create-task', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: title,
+                description: 'Created from autonomous monitor',
+                priority: 'medium'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+// Auto-refresh every 10 seconds
+setInterval(() => {
+    location.reload();
+}, 10000);
+
+// Initialize feather icons
+feather.replace();
+</script>
+{% endblock %}

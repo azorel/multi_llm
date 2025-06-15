@@ -1,0 +1,471 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Business Agents - LifeOS{% endblock %}
+{% block header_title %}Business Agents{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🤖 Business Agents</h1>
+    <p class="page-subtitle">Manage AI agents dedicated to business operations and automation</p>
+    <button class="btn btn-primary" onclick="showCreateAgentModal()">
+        ➕ Deploy New Agent
+    </button>
+</div>
+
+<!-- Agent Statistics -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ agents|length|default(0) }}</div>
+        <div class="stat-label">Total Agents</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ agents|selectattr('status', 'equalto', 'active')|list|length|default(0) }}</div>
+        <div class="stat-label">Active Agents</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ agents|selectattr('tasks_completed')|map(attribute='tasks_completed')|sum|default(0) }}</div>
+        <div class="stat-label">Tasks Completed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ "%.1f"|format((agents|selectattr('success_rate')|map(attribute='success_rate')|sum / (agents|selectattr('success_rate')|list|length or 1))|default(0)) }}%</div>
+        <div class="stat-label">Success Rate</div>
+    </div>
+</div>
+
+<!-- Agent Categories -->
+<div class="grid grid-cols-3 gap-6 mb-8">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">💼 Sales Agents</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                {% for agent in agents|selectattr('category', 'equalto', 'sales')|default([]) %}
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">{{ agent.name|default('Unknown Agent') }}</p>
+                        <p class="text-sm text-gray-600">{{ agent.description|default('No description') }}</p>
+                    </div>
+                    <span class="badge badge-{% if agent.status == 'active' %}success{% else %}secondary{% endif %}">
+                        {{ agent.status|default('inactive')|title }}
+                    </span>
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-sm">No sales agents deployed</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📢 Marketing Agents</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                {% for agent in agents|selectattr('category', 'equalto', 'marketing')|default([]) %}
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">{{ agent.name|default('Unknown Agent') }}</p>
+                        <p class="text-sm text-gray-600">{{ agent.description|default('No description') }}</p>
+                    </div>
+                    <span class="badge badge-{% if agent.status == 'active' %}success{% else %}secondary{% endif %}">
+                        {{ agent.status|default('inactive')|title }}
+                    </span>
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-sm">No marketing agents deployed</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">⚙️ Operations Agents</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                {% for agent in agents|selectattr('category', 'equalto', 'operations')|default([]) %}
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">{{ agent.name|default('Unknown Agent') }}</p>
+                        <p class="text-sm text-gray-600">{{ agent.description|default('No description') }}</p>
+                    </div>
+                    <span class="badge badge-{% if agent.status == 'active' %}success{% else %}secondary{% endif %}">
+                        {{ agent.status|default('inactive')|title }}
+                    </span>
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-sm">No operations agents deployed</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agents List -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">All Business Agents</h3>
+        <div class="flex gap-2">
+            <input type="text" 
+                   placeholder="Search agents..." 
+                   class="form-input"
+                   id="searchAgents"
+                   style="width: 200px;">
+            <select class="form-input" id="filterCategory" style="width: 150px;">
+                <option value="">All Categories</option>
+                <option value="sales">Sales</option>
+                <option value="marketing">Marketing</option>
+                <option value="operations">Operations</option>
+                <option value="analytics">Analytics</option>
+                <option value="support">Support</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Agent</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Performance</th>
+                        <th>Last Active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agent in agents|default([]) %}
+                    <tr class="agent-row hover:bg-gray-50">
+                        <td>
+                            <div class="flex items-center">
+                                <div class="text-2xl mr-3">🤖</div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ agent.name|default('Unknown Agent') }}</div>
+                                    <div class="text-sm text-gray-500">{{ agent.description|default('No description') }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-info">
+                                {% if agent.category == 'sales' %}💼{% elif agent.category == 'marketing' %}📢{% elif agent.category == 'operations' %}⚙️{% elif agent.category == 'analytics' %}📊{% elif agent.category == 'support' %}🆘{% else %}🔧{% endif %}
+                                {{ agent.category|default('general')|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-{% if agent.status == 'active' %}success{% elif agent.status == 'idle' %}warning{% else %}danger{% endif %}">
+                                {% if agent.status == 'active' %}🟢{% elif agent.status == 'idle' %}🟡{% else %}🔴{% endif %}
+                                {{ agent.status|default('inactive')|title }}
+                            </span>
+                        </td>
+                        <td class="text-sm">
+                            <div class="flex items-center">
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium">{{ agent.tasks_completed|default(0) }} tasks</div>
+                                    <div class="text-xs text-gray-500">{{ agent.success_rate|default(0) }}% success</div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="w-16 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ agent.success_rate|default(0) }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-sm text-gray-500">
+                            {{ agent.last_active|default('Never') }}
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm" onclick="viewAgent({{ agent.id }})">
+                                    👁️ View
+                                </button>
+                                <button class="btn btn-{% if agent.status == 'active' %}warning{% else %}success{% endif %} btn-sm" onclick="{% if agent.status == 'active' %}pauseAgent({{ agent.id }}){% else %}activateAgent({{ agent.id }}){% endif %}">
+                                    {% if agent.status == 'active' %}⏸️ Pause{% else %}▶️ Start{% endif %}
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="configureAgent({{ agent.id }})">
+                                    ⚙️ Config
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteAgent({{ agent.id }})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-12 text-gray-500">
+                            <div class="text-6xl mb-4">🤖</div>
+                            <h3 class="text-lg font-medium mb-2">No business agents deployed</h3>
+                            <p class="text-sm mb-4">Deploy your first business agent to automate operations</p>
+                            <button class="btn btn-primary" onclick="showCreateAgentModal()">
+                                ➕ Deploy First Agent
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Create Agent Modal -->
+<div id="createAgentModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Deploy New Business Agent</h3>
+            <button class="modal-close" onclick="closeCreateAgentModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="createAgentForm">
+                <div class="space-y-4">
+                    <div class="form-group">
+                        <label class="form-label">Agent Name</label>
+                        <input type="text" id="agentName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="agentCategory" class="form-input" required>
+                            <option value="">Select category</option>
+                            <option value="sales">💼 Sales</option>
+                            <option value="marketing">📢 Marketing</option>
+                            <option value="operations">⚙️ Operations</option>
+                            <option value="analytics">📊 Analytics</option>
+                            <option value="support">🆘 Support</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="agentDescription" rows="3" class="form-input"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Model</label>
+                        <select id="agentModel" class="form-input">
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            <option value="claude-3-opus">Claude 3 Opus</option>
+                            <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeCreateAgentModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary flex-1">
+                        Deploy Agent
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.space-y-3 > * + * {
+    margin-top: 0.75rem;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+</style>
+
+<script>
+function showCreateAgentModal() {
+    document.getElementById('createAgentModal').style.display = 'flex';
+}
+
+function closeCreateAgentModal() {
+    document.getElementById('createAgentModal').style.display = 'none';
+    document.getElementById('createAgentForm').reset();
+}
+
+document.getElementById('createAgentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('agentName').value;
+    const category = document.getElementById('agentCategory').value;
+    const description = document.getElementById('agentDescription').value;
+    const model = document.getElementById('agentModel').value;
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'business_agents',
+            data: {
+                name: name,
+                category: category,
+                description: description,
+                model: model,
+                status: 'idle',
+                tasks_completed: 0,
+                success_rate: 0,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeCreateAgentModal();
+            location.reload();
+        } else {
+            alert('Failed to create agent');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error creating agent');
+    });
+});
+
+function viewAgent(agentId) {
+    alert('Agent details view would be implemented here');
+}
+
+function activateAgent(agentId) {
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'business_agents',
+            id: agentId,
+            data: { status: 'active' }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to activate agent');
+        }
+    });
+}
+
+function pauseAgent(agentId) {
+    fetch('/edit-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'business_agents',
+            id: agentId,
+            data: { status: 'idle' }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to pause agent');
+        }
+    });
+}
+
+function configureAgent(agentId) {
+    alert('Agent configuration would be implemented here');
+}
+
+function deleteAgent(agentId) {
+    if (confirm('Are you sure you want to delete this agent?')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'business_agents',
+                id: agentId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete agent');
+            }
+        });
+    }
+}
+
+// Search and filter functionality
+document.getElementById('searchAgents').addEventListener('input', filterAgents);
+document.getElementById('filterCategory').addEventListener('change', filterAgents);
+
+function filterAgents() {
+    const searchTerm = document.getElementById('searchAgents').value.toLowerCase();
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const rows = document.querySelectorAll('.agent-row');
+    
+    rows.forEach(row => {
+        const name = row.querySelector('.text-sm.font-medium').textContent.toLowerCase();
+        const description = row.querySelector('.text-sm.text-gray-500').textContent.toLowerCase();
+        const category = row.querySelector('.badge-info').textContent.toLowerCase();
+        
+        const matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+        const matchesCategory = !categoryFilter || category.includes(categoryFilter);
+        
+        row.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
+    });
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('createAgentModal');
+    if (event.target === modal) {
+        closeCreateAgentModal();
+    }
+}
+</script>
+{% endblock %}

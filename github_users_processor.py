@@ -23,11 +23,14 @@ if env_path.exists():
 class GitHubUsersProcessor:
     """Process GitHub users from database with checkbox workflow."""
     
+    def __init__(self, notion_token, github_users_db_id, knowledge_db_id, github_token):
+        self.notion_token = notion_token
         self.github_users_db_id = github_users_db_id
         self.knowledge_db_id = knowledge_db_id
         self.github_token = github_token
         
-# NOTION_REMOVED:         self.notion_headers = {
+        self.notion_headers = {
+            'Authorization': f'Bearer {notion_token}' if notion_token else '',
             'Notion-Version': '2022-06-28',
             'Content-Type': 'application/json'
         }

@@ -1,0 +1,604 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Cost Tracking - LifeOS{% endblock %}
+{% block header_title %}Cost Tracking{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">💰 Cost Tracking</h1>
+    <p class="page-subtitle">Monitor and analyze AI service costs, usage, and budget performance</p>
+</div>
+
+<!-- Cost Overview -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">${{ current_month_cost|default(0) }}</div>
+        <div class="stat-label">This Month</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">${{ today_cost|default(0) }}</div>
+        <div class="stat-label">Today</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ "%.1f"|format(((current_month_cost|default(0)) / (monthly_budget|default(1)) * 100)) }}%</div>
+        <div class="stat-label">Budget Used</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">${{ projected_month_cost|default(0) }}</div>
+        <div class="stat-label">Projected</div>
+    </div>
+</div>
+
+<!-- Budget Alerts -->
+{% if budget_alerts|default([]) %}
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">⚠️ Budget Alerts</h3>
+    </div>
+    <div class="card-content">
+        <div class="space-y-3">
+            {% for alert in budget_alerts %}
+            <div class="alert alert-{% if alert.level == 'critical' %}danger{% elif alert.level == 'warning' %}warning{% else %}info{% endif %}">
+                <div class="flex items-center gap-3">
+                    <div class="text-2xl">
+                        {% if alert.level == 'critical' %}🚨{% elif alert.level == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-semibold">{{ alert.title|default('Budget Alert') }}</div>
+                        <div class="text-sm">{{ alert.message|default('No message') }}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold">${{ alert.amount|default(0) }}</div>
+                        <div class="text-sm">{{ alert.percentage|default(0) }}% of budget</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Cost Breakdown -->
+<div class="grid grid-cols-2 gap-6 mb-8">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Cost by Service</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-3">
+                {% for service in service_costs|default([]) %}
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm">
+                            {% if service.name == 'openai' %}🤖{% elif service.name == 'anthropic' %}🧠{% elif service.name == 'google' %}💎{% else %}⚙️{% endif %}
+                        </div>
+                        <div>
+                            <div class="font-semibold">{{ service.name|title|default('Unknown Service') }}</div>
+                            <div class="text-sm text-gray-500">{{ service.usage_count|default(0) }} requests</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold">${{ service.cost|default(0) }}</div>
+                        <div class="text-sm text-gray-500">{{ service.percentage|default(0) }}%</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-gray-500">
+                    No service cost data available
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📈 Daily Trend</h3>
+        </div>
+        <div class="card-content">
+            <div class="space-y-2">
+                {% for day in daily_costs|default([]) %}
+                <div class="flex items-center justify-between">
+                    <div class="text-sm">{{ day.date|default('Unknown date') }}</div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-20 h-2 bg-gray-200 rounded-full">
+                            <div class="h-2 bg-blue-500 rounded-full" style="width: {{ (day.cost / max_daily_cost * 100)|default(0) }}%"></div>
+                        </div>
+                        <div class="text-sm font-semibold w-12 text-right">${{ day.cost|default(0) }}</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-gray-500">
+                    No daily cost data available
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Budget Management -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">💳 Budget Management</h3>
+    </div>
+    <div class="card-content">
+        <form id="budgetForm">
+            <div class="grid grid-cols-4 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Monthly Budget</label>
+                    <input type="number" 
+                           class="form-input" 
+                           id="monthlyBudget" 
+                           value="{{ monthly_budget|default(100) }}"
+                           step="0.01"
+                           min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alert Threshold (%)</label>
+                    <input type="number" 
+                           class="form-input" 
+                           id="alertThreshold" 
+                           value="{{ alert_threshold|default(80) }}"
+                           min="1"
+                           max="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Daily Limit</label>
+                    <input type="number" 
+                           class="form-input" 
+                           id="dailyLimit" 
+                           value="{{ daily_limit|default(10) }}"
+                           step="0.01"
+                           min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Action</label>
+                    <button type="submit" class="btn btn-primary w-full">
+                        💾 Update Budget
+                    </button>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" id="enableAlerts" class="form-checkbox" {% if alerts_enabled %}checked{% endif %}>
+                        <span class="text-sm">📧 Email alerts when threshold is reached</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" id="autoStop" class="form-checkbox" {% if auto_stop_enabled %}checked{% endif %}>
+                        <span class="text-sm">⏹️ Auto-stop services when budget exceeded</span>
+                    </label>
+                </div>
+            </div>
+        </form>
+        <div id="budgetResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Add Cost Entry -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">➕ Add Cost Entry</h3>
+    </div>
+    <div class="card-content">
+        <form id="costForm">
+            <div class="grid grid-cols-5 gap-4 mb-4">
+                <div class="form-group">
+                    <label class="form-label">Service</label>
+                    <select class="form-input" id="service" required>
+                        <option value="">Select service</option>
+                        <option value="openai">🤖 OpenAI</option>
+                        <option value="anthropic">🧠 Anthropic</option>
+                        <option value="google">💎 Google AI</option>
+                        <option value="azure">☁️ Azure OpenAI</option>
+                        <option value="aws">🔶 AWS Bedrock</option>
+                        <option value="custom">⚙️ Custom</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Model</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="model" 
+                           placeholder="gpt-4, claude-3-opus, etc."
+                           required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cost ($)</label>
+                    <input type="number" 
+                           class="form-input" 
+                           id="cost" 
+                           step="0.0001"
+                           min="0"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tokens Used</label>
+                    <input type="number" 
+                           class="form-input" 
+                           id="tokens" 
+                           min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Action</label>
+                    <button type="submit" class="btn btn-primary w-full">
+                        💾 Add Entry
+                        <span id="costLoader" class="loading" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description (Optional)</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="description" 
+                       placeholder="Brief description of the usage">
+            </div>
+        </form>
+        <div id="costResult" class="mt-4"></div>
+    </div>
+</div>
+
+<!-- Cost History -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📋 Cost History</h3>
+        <div class="flex gap-2">
+            <select class="form-input" id="filterService" style="width: 150px;">
+                <option value="">All Services</option>
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+                <option value="google">Google AI</option>
+                <option value="azure">Azure OpenAI</option>
+                <option value="aws">AWS Bedrock</option>
+                <option value="custom">Custom</option>
+            </select>
+            <input type="date" class="form-input" id="filterDate" style="width: 150px;">
+            <button class="btn btn-secondary" onclick="exportCosts()">
+                📤 Export
+            </button>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Service</th>
+                        <th>Model</th>
+                        <th>Usage</th>
+                        <th>Cost</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in cost_entries|default([]) %}
+                    <tr class="cost-row">
+                        <td class="text-sm">{{ entry.created_at|default('Unknown date') }}</td>
+                        <td>
+                            <span class="badge badge-info">
+                                {% if entry.service == 'openai' %}🤖{% elif entry.service == 'anthropic' %}🧠{% elif entry.service == 'google' %}💎{% elif entry.service == 'azure' %}☁️{% elif entry.service == 'aws' %}🔶{% else %}⚙️{% endif %}
+                                {{ entry.service|title|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td class="text-sm">{{ entry.model|default('N/A') }}</td>
+                        <td class="text-sm">
+                            {% if entry.tokens %}
+                            {{ entry.tokens }} tokens
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        <td class="font-semibold">${{ entry.cost|default(0) }}</td>
+                        <td class="text-sm">{{ entry.description|default('No description') }}</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm" onclick="editCostEntry({{ entry.id }})">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteCostEntry({{ entry.id }})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">💰</div>
+                            <div>No cost entries yet</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.alert {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.alert-warning {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+.alert-info {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+
+.space-y-3 > * + * {
+    margin-top: 0.75rem;
+}
+
+.space-y-2 > * + * {
+    margin-top: 0.5rem;
+}
+
+.form-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    accent-color: var(--color-primary);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+</style>
+
+<script>
+// Update budget
+document.getElementById('budgetForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const monthlyBudget = document.getElementById('monthlyBudget').value;
+    const alertThreshold = document.getElementById('alertThreshold').value;
+    const dailyLimit = document.getElementById('dailyLimit').value;
+    const enableAlerts = document.getElementById('enableAlerts').checked;
+    const autoStop = document.getElementById('autoStop').checked;
+    
+    if (!monthlyBudget || !alertThreshold || !dailyLimit) {
+        showResult('budgetResult', 'All budget fields are required', 'error');
+        return;
+    }
+    
+    fetch('/update-budget-settings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            monthly_budget: parseFloat(monthlyBudget),
+            alert_threshold: parseInt(alertThreshold),
+            daily_limit: parseFloat(dailyLimit),
+            enable_alerts: enableAlerts,
+            auto_stop: autoStop
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showResult('budgetResult', '✅ Budget settings updated successfully!', 'success');
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('budgetResult', '❌ Failed to update budget settings', 'error');
+        }
+    })
+    .catch(error => {
+        showResult('budgetResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+});
+
+// Add cost entry
+document.getElementById('costForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const service = document.getElementById('service').value;
+    const model = document.getElementById('model').value.trim();
+    const cost = document.getElementById('cost').value;
+    const tokens = document.getElementById('tokens').value;
+    const description = document.getElementById('description').value.trim();
+    const loader = document.getElementById('costLoader');
+    
+    if (!service || !model || !cost) {
+        showResult('costResult', 'Service, model, and cost are required', 'error');
+        return;
+    }
+    
+    loader.style.display = 'inline-block';
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'cost_entries',
+            data: {
+                service: service,
+                model: model,
+                cost: parseFloat(cost),
+                tokens: tokens ? parseInt(tokens) : null,
+                description: description,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loader.style.display = 'none';
+        
+        if (data.success) {
+            showResult('costResult', '✅ Cost entry added successfully!', 'success');
+            document.getElementById('costForm').reset();
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showResult('costResult', '❌ Failed to add cost entry', 'error');
+        }
+    })
+    .catch(error => {
+        loader.style.display = 'none';
+        showResult('costResult', '❌ Connection error. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+});
+
+function editCostEntry(entryId) {
+    // This would open an edit modal - simplified for now
+    alert('Edit cost entry functionality would be implemented here');
+}
+
+function deleteCostEntry(entryId) {
+    if (confirm('Are you sure you want to delete this cost entry? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'cost_entries',
+                id: entryId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete cost entry');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting cost entry');
+        });
+    }
+}
+
+function exportCosts() {
+    const service = document.getElementById('filterService').value;
+    const date = document.getElementById('filterDate').value;
+    
+    const params = new URLSearchParams();
+    if (service) params.append('service', service);
+    if (date) params.append('date', date);
+    
+    fetch(`/export-costs?${params.toString()}`)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cost_report.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error exporting costs');
+        });
+}
+
+function showResult(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<div class="result-${type}">${message}</div>`;
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Filter functionality
+document.getElementById('filterService').addEventListener('change', filterCosts);
+document.getElementById('filterDate').addEventListener('change', filterCosts);
+
+function filterCosts() {
+    const serviceFilter = document.getElementById('filterService').value.toLowerCase();
+    const dateFilter = document.getElementById('filterDate').value;
+    const rows = document.querySelectorAll('.cost-row');
+    
+    rows.forEach(row => {
+        const service = row.cells[1].textContent.toLowerCase();
+        const date = row.cells[0].textContent;
+        
+        const matchesService = !serviceFilter || service.includes(serviceFilter);
+        const matchesDate = !dateFilter || date.includes(dateFilter);
+        
+        row.style.display = (matchesService && matchesDate) ? '' : 'none';
+    });
+}
+
+// Auto-refresh cost data every 5 minutes
+setInterval(() => {
+    // Only refresh if we're on the cost tracking page
+    if (window.location.pathname.includes('cost')) {
+        fetch('/get-cost-summary')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the stat cards
+                    const statCards = document.querySelectorAll('.stat-value');
+                    if (statCards.length >= 4) {
+                        statCards[0].textContent = `$${data.current_month_cost || 0}`;
+                        statCards[1].textContent = `$${data.today_cost || 0}`;
+                        statCards[2].textContent = `${((data.current_month_cost || 0) / (data.monthly_budget || 1) * 100).toFixed(1)}%`;
+                        statCards[3].textContent = `$${data.projected_month_cost || 0}`;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error refreshing cost data:', error);
+            });
+    }
+}, 300000); // 5 minutes
+
+// Initialize with current date in filter
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('filterDate').value = today;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,935 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Workflow Templates - LifeOS{% endblock %}
+{% block header_title %}Workflow Templates{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🔄 Workflow Templates</h1>
+    <p class="page-subtitle">Create, manage, and execute automated workflows and templates</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-4 mb-8">
+    <div class="stat-card">
+        <div class="stat-value">{{ workflows|length|default(0) }}</div>
+        <div class="stat-label">Total Workflows</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ workflows|selectattr('is_active', 'equalto', true)|list|length|default(0) }}</div>
+        <div class="stat-label">Active Workflows</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ executions|selectattr('status', 'equalto', 'running')|list|length|default(0) }}</div>
+        <div class="stat-label">Running Now</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ executions|selectattr('created_at')|list|length|default(0) }}</div>
+        <div class="stat-label">Today's Executions</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">⚡ Quick Actions</h3>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-4 gap-4">
+            <button class="btn btn-primary btn-lg" onclick="showCreateWorkflowModal()">
+                ➕ Create Workflow
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="importWorkflow()">
+                📥 Import Template
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="showTemplateGallery()">
+                🎨 Template Gallery
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="exportWorkflows()">
+                📤 Export All
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Active Workflows -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">▶️ Active Workflows</h3>
+        <button class="btn btn-secondary" onclick="refreshActiveWorkflows()">
+            🔄 Refresh
+        </button>
+    </div>
+    <div class="card-content">
+        <div id="activeWorkflowsList">
+            {% for execution in executions|selectattr('status', 'equalto', 'running')|default([]) %}
+            <div class="workflow-execution border border-blue-200 bg-blue-50 rounded-lg p-4 mb-4">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h4 class="font-semibold">{{ execution.workflow_name|default('Unknown Workflow') }}</h4>
+                            <span class="badge badge-info">Running</span>
+                            <span class="text-sm text-gray-600">Step {{ execution.current_step|default(1) }}/{{ execution.total_steps|default(1) }}</span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-2">{{ execution.current_action|default('Processing...') }}</p>
+                        <div class="text-xs text-gray-500">
+                            Started: {{ execution.started_at|default('Unknown time') }} | 
+                            Estimated completion: {{ execution.estimated_completion|default('Unknown') }}
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary btn-sm" onclick="pauseExecution({{ execution.id }})">
+                            ⏸️ Pause
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="stopExecution({{ execution.id }})">
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ execution.progress_percentage|default(0) }}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Progress: {{ execution.progress_percentage|default(0) }}% complete
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-500">
+                <div class="text-4xl mb-2">⏸️</div>
+                <div>No workflows currently running</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Workflow Templates -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h3 class="card-title">📋 Workflow Templates</h3>
+        <div class="flex gap-2">
+            <input type="text" 
+                   class="form-input" 
+                   id="searchWorkflows" 
+                   placeholder="Search workflows..."
+                   style="width: 200px;">
+            <select class="form-input" id="filterCategory" style="width: 150px;">
+                <option value="">All Categories</option>
+                <option value="automation">Automation</option>
+                <option value="data_processing">Data Processing</option>
+                <option value="communication">Communication</option>
+                <option value="reporting">Reporting</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-2 gap-6">
+            {% for workflow in workflows|default([]) %}
+            <div class="workflow-card card hover:shadow-lg transition-shadow">
+                <div class="card-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-lg mb-1">{{ workflow.name|default('Unnamed Workflow') }}</h4>
+                            <p class="text-sm text-gray-600 mb-2">{{ workflow.description|default('No description') }}</p>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="badge badge-info">
+                                    {% if workflow.category == 'automation' %}🤖{% elif workflow.category == 'data_processing' %}📊{% elif workflow.category == 'communication' %}📞{% elif workflow.category == 'reporting' %}📄{% elif workflow.category == 'maintenance' %}🔧{% else %}⚙️{% endif %}
+                                    {{ workflow.category|replace('_', ' ')|title|default('Custom') }}
+                                </span>
+                                <span class="badge badge-{% if workflow.is_active %}success{% else %}danger{% endif %}">
+                                    {% if workflow.is_active %}✅ Active{% else %}❌ Inactive{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <button class="btn btn-primary btn-sm" onclick="executeWorkflow({{ workflow.id }})">
+                                ▶️ Run
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="editWorkflow({{ workflow.id }})">
+                                ✏️ Edit
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-stats text-xs text-gray-500 mb-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>📝 {{ workflow.step_count|default(0) }} steps</div>
+                            <div>⏱️ ~{{ workflow.estimated_duration|default('N/A') }}</div>
+                            <div>🔄 {{ workflow.execution_count|default(0) }} runs</div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-preview">
+                        <div class="text-xs text-gray-500 mb-2">Workflow Steps:</div>
+                        <div class="flex items-center gap-1 overflow-x-auto pb-2">
+                            {% for step in (workflow.steps|default([])|list)[:5] %}
+                            <div class="step-preview flex-shrink-0 bg-gray-100 px-2 py-1 rounded text-xs">
+                                {{ step.name|default('Step')|truncate(10) }}
+                            </div>
+                            {% if not loop.last %}
+                            <div class="text-gray-400">→</div>
+                            {% endif %}
+                            {% endfor %}
+                            {% if (workflow.steps|default([])|length > 5) %}
+                            <div class="text-gray-400">...</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
+                        <div class="text-xs text-gray-500">
+                            Last run: {{ workflow.last_execution|default('Never') }}
+                        </div>
+                        <div class="flex gap-1">
+                            <button class="btn btn-secondary btn-sm" onclick="duplicateWorkflow({{ workflow.id }})">
+                                📋 Copy
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="exportWorkflow({{ workflow.id }})">
+                                📤 Export
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteWorkflow({{ workflow.id }})">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-span-2 text-center py-12 text-gray-500">
+                <div class="text-6xl mb-4">🔄</div>
+                <h3 class="text-xl font-semibold mb-2">No workflow templates yet</h3>
+                <p class="mb-4">Create your first workflow to automate repetitive tasks</p>
+                <button class="btn btn-primary" onclick="showCreateWorkflowModal()">
+                    ➕ Create First Workflow
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Execution History -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📊 Execution History</h3>
+        <select class="form-input" id="filterStatus" style="width: 150px;">
+            <option value="">All Statuses</option>
+            <option value="completed">Completed</option>
+            <option value="failed">Failed</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
+    </div>
+    <div class="card-content">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Workflow</th>
+                        <th>Started</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for execution in executions|selectattr('status', 'in', ['completed', 'failed', 'cancelled'])|default([]) %}
+                    <tr class="execution-row">
+                        <td>
+                            <div>
+                                <div class="font-semibold">{{ execution.workflow_name|default('Unknown Workflow') }}</div>
+                                <div class="text-sm text-gray-500">ID: {{ execution.id }}</div>
+                            </div>
+                        </td>
+                        <td class="text-sm">{{ execution.started_at|default('Unknown') }}</td>
+                        <td class="text-sm">{{ execution.duration|default('N/A') }}</td>
+                        <td>
+                            <span class="badge badge-{% if execution.status == 'completed' %}success{% elif execution.status == 'failed' %}danger{% else %}warning{% endif %}">
+                                {% if execution.status == 'completed' %}✅{% elif execution.status == 'failed' %}❌{% else %}⏸️{% endif %}
+                                {{ execution.status|title|default('Unknown') }}
+                            </span>
+                        </td>
+                        <td class="text-sm">{{ execution.result_summary|default('No summary') }}</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm" onclick="viewExecutionDetails({{ execution.id }})">
+                                    👁️ Details
+                                </button>
+                                {% if execution.status == 'completed' %}
+                                <button class="btn btn-primary btn-sm" onclick="rerunExecution({{ execution.id }})">
+                                    🔄 Rerun
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">📊</div>
+                            <div>No execution history yet</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Create Workflow Modal -->
+<div id="createWorkflowModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+            <h3 class="modal-title">➕ Create New Workflow</h3>
+            <button class="modal-close" onclick="closeCreateWorkflowModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="createWorkflowForm">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Workflow Name</label>
+                        <input type="text" id="workflowName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="workflowCategory" class="form-input">
+                            <option value="automation">🤖 Automation</option>
+                            <option value="data_processing">📊 Data Processing</option>
+                            <option value="communication">📞 Communication</option>
+                            <option value="reporting">📄 Reporting</option>
+                            <option value="maintenance">🔧 Maintenance</option>
+                            <option value="custom">⚙️ Custom</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="workflowDescription" class="form-input" rows="3" placeholder="Describe what this workflow does..."></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-3">Workflow Steps</h4>
+                    <div id="workflowSteps">
+                        <div class="step-item border border-gray-200 rounded-lg p-4 mb-3" data-step="1">
+                            <div class="flex justify-between items-start mb-3">
+                                <h5 class="font-semibold">Step 1</h5>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeStep(1)">
+                                    🗑️ Remove
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="form-group">
+                                    <label class="form-label">Step Name</label>
+                                    <input type="text" class="form-input step-name" placeholder="Step name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Action Type</label>
+                                    <select class="form-input step-action">
+                                        <option value="api_call">🌐 API Call</option>
+                                        <option value="script">📜 Run Script</option>
+                                        <option value="email">📧 Send Email</option>
+                                        <option value="webhook">🔗 Webhook</option>
+                                        <option value="delay">⏰ Delay</option>
+                                        <option value="condition">❓ Condition</option>
+                                        <option value="custom">⚙️ Custom</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Action Details</label>
+                                <textarea class="form-input step-details" rows="2" placeholder="Action configuration..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addStep()">
+                        ➕ Add Step
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Trigger Type</label>
+                        <select id="triggerType" class="form-input">
+                            <option value="manual">👤 Manual</option>
+                            <option value="schedule">📅 Scheduled</option>
+                            <option value="webhook">🔗 Webhook</option>
+                            <option value="file_watch">📁 File Watch</option>
+                            <option value="event">⚡ Event</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Options</label>
+                        <div class="flex items-center gap-4 mt-2">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="isActive" class="form-checkbox" checked>
+                                <span class="text-sm">✅ Active</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="allowParallel" class="form-checkbox">
+                                <span class="text-sm">🔄 Allow Parallel</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" class="btn btn-secondary flex-1" onclick="closeCreateWorkflowModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-1">Create Workflow</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.workflow-card {
+    transition: all 0.2s ease;
+}
+
+.workflow-card:hover {
+    transform: translateY(-2px);
+}
+
+.workflow-execution {
+    transition: all 0.2s ease;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.step-preview {
+    white-space: nowrap;
+}
+
+.step-item {
+    position: relative;
+}
+
+.form-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    accent-color: var(--color-primary);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--text-tertiary);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.result-success {
+    padding: var(--space-4);
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: var(--font-size-sm);
+}
+
+.result-error {
+    padding: var(--space-4);
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius-md);
+    color: #991b1b;
+    font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+    .grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+let stepCounter = 1;
+
+function showCreateWorkflowModal() {
+    document.getElementById('createWorkflowModal').style.display = 'flex';
+}
+
+function closeCreateWorkflowModal() {
+    document.getElementById('createWorkflowModal').style.display = 'none';
+    document.getElementById('createWorkflowForm').reset();
+    // Reset steps
+    document.getElementById('workflowSteps').innerHTML = '';
+    stepCounter = 0;
+    addStep(); // Add initial step
+}
+
+function addStep() {
+    stepCounter++;
+    const stepsContainer = document.getElementById('workflowSteps');
+    
+    const stepHtml = `
+        <div class="step-item border border-gray-200 rounded-lg p-4 mb-3" data-step="${stepCounter}">
+            <div class="flex justify-between items-start mb-3">
+                <h5 class="font-semibold">Step ${stepCounter}</h5>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeStep(${stepCounter})">
+                    🗑️ Remove
+                </button>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Step Name</label>
+                    <input type="text" class="form-input step-name" placeholder="Step name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Action Type</label>
+                    <select class="form-input step-action">
+                        <option value="api_call">🌐 API Call</option>
+                        <option value="script">📜 Run Script</option>
+                        <option value="email">📧 Send Email</option>
+                        <option value="webhook">🔗 Webhook</option>
+                        <option value="delay">⏰ Delay</option>
+                        <option value="condition">❓ Condition</option>
+                        <option value="custom">⚙️ Custom</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Action Details</label>
+                <textarea class="form-input step-details" rows="2" placeholder="Action configuration..."></textarea>
+            </div>
+        </div>
+    `;
+    
+    stepsContainer.insertAdjacentHTML('beforeend', stepHtml);
+}
+
+function removeStep(stepNumber) {
+    const stepElement = document.querySelector(`[data-step="${stepNumber}"]`);
+    if (stepElement) {
+        stepElement.remove();
+    }
+    
+    // Renumber remaining steps
+    const remainingSteps = document.querySelectorAll('.step-item');
+    remainingSteps.forEach((step, index) => {
+        const newNumber = index + 1;
+        step.dataset.step = newNumber;
+        step.querySelector('h5').textContent = `Step ${newNumber}`;
+        step.querySelector('.btn-danger').setAttribute('onclick', `removeStep(${newNumber})`);
+    });
+    
+    stepCounter = remainingSteps.length;
+}
+
+// Create workflow
+document.getElementById('createWorkflowForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('workflowName').value.trim();
+    const category = document.getElementById('workflowCategory').value;
+    const description = document.getElementById('workflowDescription').value.trim();
+    const triggerType = document.getElementById('triggerType').value;
+    const isActive = document.getElementById('isActive').checked;
+    const allowParallel = document.getElementById('allowParallel').checked;
+    
+    // Collect steps
+    const steps = [];
+    document.querySelectorAll('.step-item').forEach((stepElement, index) => {
+        const stepName = stepElement.querySelector('.step-name').value.trim();
+        const stepAction = stepElement.querySelector('.step-action').value;
+        const stepDetails = stepElement.querySelector('.step-details').value.trim();
+        
+        if (stepName && stepAction) {
+            steps.push({
+                order: index + 1,
+                name: stepName,
+                action_type: stepAction,
+                action_details: stepDetails
+            });
+        }
+    });
+    
+    if (!name || steps.length === 0) {
+        alert('Workflow name and at least one step are required');
+        return;
+    }
+    
+    fetch('/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            table: 'workflow_templates',
+            data: {
+                name: name,
+                category: category,
+                description: description,
+                trigger_type: triggerType,
+                is_active: isActive,
+                allow_parallel: allowParallel,
+                steps: steps,
+                step_count: steps.length,
+                execution_count: 0,
+                created_at: new Date().toISOString()
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeCreateWorkflowModal();
+            location.reload();
+        } else {
+            alert('Failed to create workflow');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error creating workflow');
+    });
+});
+
+function executeWorkflow(workflowId) {
+    if (confirm('Execute this workflow?')) {
+        fetch('/execute-workflow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                workflow_id: workflowId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✅ Workflow started successfully!');
+                location.reload();
+            } else {
+                alert(`❌ Failed to start workflow: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error executing workflow');
+        });
+    }
+}
+
+function editWorkflow(workflowId) {
+    // This would open an edit modal - simplified for now
+    alert('Edit workflow functionality would be implemented here');
+}
+
+function duplicateWorkflow(workflowId) {
+    if (confirm('Create a copy of this workflow?')) {
+        fetch('/duplicate-workflow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                workflow_id: workflowId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to duplicate workflow');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error duplicating workflow');
+        });
+    }
+}
+
+function exportWorkflow(workflowId) {
+    fetch(`/export-workflow?id=${workflowId}`)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `workflow_${workflowId}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error exporting workflow');
+        });
+}
+
+function deleteWorkflow(workflowId) {
+    if (confirm('Are you sure you want to delete this workflow? This action cannot be undone.')) {
+        fetch('/delete-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                table: 'workflow_templates',
+                id: workflowId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to delete workflow');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting workflow');
+        });
+    }
+}
+
+function pauseExecution(executionId) {
+    fetch('/pause-execution', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            execution_id: executionId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to pause execution');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error pausing execution');
+    });
+}
+
+function stopExecution(executionId) {
+    if (confirm('Stop this workflow execution?')) {
+        fetch('/stop-execution', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                execution_id: executionId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to stop execution');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error stopping execution');
+        });
+    }
+}
+
+function viewExecutionDetails(executionId) {
+    // This would open a details modal - simplified for now
+    alert('Execution details functionality would be implemented here');
+}
+
+function rerunExecution(executionId) {
+    if (confirm('Rerun this workflow execution?')) {
+        fetch('/rerun-execution', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                execution_id: executionId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✅ Workflow restarted!');
+                location.reload();
+            } else {
+                alert('Failed to rerun execution');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rerunning execution');
+        });
+    }
+}
+
+function refreshActiveWorkflows() {
+    location.reload();
+}
+
+function importWorkflow() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('workflow_file', file);
+            
+            fetch('/import-workflow', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Workflow imported successfully!');
+                    location.reload();
+                } else {
+                    alert(`❌ Failed to import workflow: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error importing workflow');
+            });
+        }
+    };
+    input.click();
+}
+
+function showTemplateGallery() {
+    alert('Template gallery functionality would be implemented here');
+}
+
+function exportWorkflows() {
+    fetch('/export-all-workflows')
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'all_workflows.zip';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error exporting workflows');
+        });
+}
+
+// Search and filter functionality
+document.getElementById('searchWorkflows').addEventListener('input', filterWorkflows);
+document.getElementById('filterCategory').addEventListener('change', filterWorkflows);
+document.getElementById('filterStatus').addEventListener('change', filterExecutions);
+
+function filterWorkflows() {
+    const searchTerm = document.getElementById('searchWorkflows').value.toLowerCase();
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const workflows = document.querySelectorAll('.workflow-card');
+    
+    workflows.forEach(workflow => {
+        const name = workflow.querySelector('h4').textContent.toLowerCase();
+        const description = workflow.querySelector('p').textContent.toLowerCase();
+        const category = workflow.querySelector('.badge').textContent.toLowerCase();
+        
+        const matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+        const matchesCategory = !categoryFilter || category.includes(categoryFilter.replace('_', ' '));
+        
+        workflow.style.display = (matchesSearch && matchesCategory) ? 'block' : 'none';
+    });
+}
+
+function filterExecutions() {
+    const statusFilter = document.getElementById('filterStatus').value;
+    const rows = document.querySelectorAll('.execution-row');
+    
+    rows.forEach(row => {
+        const status = row.querySelector('.badge').textContent.toLowerCase();
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        
+        row.style.display = matchesStatus ? '' : 'none';
+    });
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const createModal = document.getElementById('createWorkflowModal');
+    
+    if (event.target === createModal) {
+        closeCreateWorkflowModal();
+    }
+}
+
+// Initialize with one step
+document.addEventListener('DOMContentLoaded', function() {
+    addStep();
+});
+</script>
+{% endblock %}
