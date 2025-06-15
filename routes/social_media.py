@@ -33,7 +33,12 @@ def allowed_file(filename):
 
 @social_media_bp.route('/social-media')
 def dashboard():
-    """Main social media dashboard"""
+    """Main social media dashboard - redirect to main dashboard"""
+    return redirect('/')
+
+@social_media_bp.route('/social-media/dashboard')
+def social_dashboard():
+    """Actual social media dashboard functionality"""
     try:
         # Get system stats
         stats = get_social_media_stats()

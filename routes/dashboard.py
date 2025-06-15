@@ -37,7 +37,7 @@ def index():
 @dashboard_bp.route('/unified-dashboard')
 def unified_dashboard():
     """Main unified dashboard page."""
-    return redirect(url_for('dashboard.modern_dashboard'))
+    return render_template('unified_dashboard_modern.html')
 
 @dashboard_bp.route('/modern-dashboard')
 def modern_dashboard():

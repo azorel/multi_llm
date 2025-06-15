@@ -107,7 +107,7 @@ logger.info("✅ All blueprints registered")
 
 def main():
     """Run the web server."""
-    port = int(os.environ.get('PORT', 8080))
+    port = int(os.environ.get('PORT', 8081))  # Main route port for centralized dashboard
     debug = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     
     logger.info(f"🚀 Starting web server on port {port}")
