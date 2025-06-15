@@ -289,23 +289,30 @@ Respond with a JSON object containing your analysis.
         detected_brands = analysis.get('detected_brands', [])
         location = analysis.get('location_context', 'Southern BC')
         
-        # Base hashtags for each content type
-        vanlife_hashtags = ['#vanlife', '#nomadlife', '#roadtrip', '#homeiswhereyouparkit', '#vanlifestyle']
-        rc_hashtags = ['#rctrucks', '#rccrawler', '#scalerc', '#trailtherapy', '#radiocontrol']
-        location_hashtags = ['#southernbc', '#bcoutdoors', '#bctrails', '#explorebc']
+        # Base hashtags for each content type (Instagram optimized)
+        vanlife_hashtags = ['#vanlife', '#nomadlife', '#roadtrip', '#homeiswhereyouparkit', '#vanlifestyle', '#vanlifeadventure']
+        rc_hashtags = ['#rctrucks', '#rccrawler', '#scalerc', '#trailtherapy', '#radiocontrol', '#rclife']
+        location_hashtags = ['#southernbc', '#bcoutdoors', '#bctrails', '#explorebc', '#beautifulbc']
         general_hashtags = ['#adventure', '#outdoors', '#explore', '#nature', '#traillife']
+        
+        # Instagram-specific high-engagement hashtags
+        instagram_vanlife = ['#vanlifelife', '#homeonwheels', '#digitalnomad', '#roadtriplife', '#vanlifeexplorers']
+        instagram_rc = ['#rcaddict', '#scalecrawler', '#rcbashing', '#remotecontrol', '#rchobbies']
+        instagram_general = ['#wanderlust', '#getoutside', '#adventuretime', '#exploremore', '#naturelover']
         
         # Get high-performing hashtags from database
         high_performance_tags = self._get_trending_hashtags(content_type)
         
-        # Combine based on content type
+        # Combine based on content type (Instagram optimized with 15-20 hashtags)
         if content_type == 'vanlife':
-            hashtags = vanlife_hashtags[:3] + location_hashtags[:2] + general_hashtags[:2]
+            hashtags = (vanlife_hashtags[:4] + instagram_vanlife[:3] + 
+                       location_hashtags[:3] + instagram_general[:2] + general_hashtags[:2])
         elif content_type == 'rc_truck':
-            hashtags = rc_hashtags[:3] + location_hashtags[:2] + general_hashtags[:2]
+            hashtags = (rc_hashtags[:4] + instagram_rc[:3] + 
+                       location_hashtags[:3] + instagram_general[:2] + general_hashtags[:2])
         else:
-            hashtags = (vanlife_hashtags[:2] + rc_hashtags[:2] + 
-                       location_hashtags[:2] + general_hashtags[:1])
+            hashtags = (vanlife_hashtags[:2] + rc_hashtags[:2] + instagram_vanlife[:2] + 
+                       instagram_rc[:2] + location_hashtags[:3] + instagram_general[:2] + general_hashtags[:1])
         
         # Add brand-specific hashtags
         for brand in detected_brands:
@@ -317,10 +324,28 @@ Respond with a JSON object containing your analysis.
         # Add high-performing hashtags
         hashtags.extend(high_performance_tags[:3])
         
-        # Remove duplicates and limit to 15 hashtags
-        unique_hashtags = list(dict.fromkeys(hashtags))[:15]
+        # Remove duplicates and optimize for Instagram (limit to 20 hashtags)
+        unique_hashtags = list(dict.fromkeys(hashtags))[:20]
+        
+        # Add Instagram-specific trending hashtags based on current trends
+        if len(unique_hashtags) < 20:
+            trending_instagram = self._get_instagram_trending_hashtags(content_type)
+            for tag in trending_instagram:
+                if tag not in unique_hashtags and len(unique_hashtags) < 20:
+                    unique_hashtags.append(tag)
         
         return unique_hashtags
+    
+    def _get_instagram_trending_hashtags(self, content_type: str) -> List[str]:
+        """Get Instagram-specific trending hashtags"""
+        instagram_trending = {
+            'vanlife': ['#vanlifecommunity', '#roadtripcanada', '#bcvanlife', '#outdoorliving', '#tinyhome'],
+            'rc_truck': ['#rcworld', '#scalecrawling', '#rchobby', '#rcfun', '#remotecontrolcar'],
+            'trail_exploration': ['#trailrunning', '#hikingadventures', '#mountainlife', '#wilderness', '#naturetherapy'],
+            'mixed': ['#adventurelife', '#outdooradventure', '#explorecanada', '#weekendwarrior', '#getlost']
+        }
+        
+        return instagram_trending.get(content_type, instagram_trending['mixed'])[:3]
     
     def _get_trending_hashtags(self, content_type: str) -> List[str]:
         """Get trending hashtags from database"""
@@ -380,6 +405,87 @@ Respond with a JSON object containing your analysis.
             })
         
         return recommendations
+    
+    def optimize_for_instagram(self, analysis_result: Dict[str, Any]) -> Dict[str, Any]:
+        """Optimize content specifically for Instagram posting"""
+        try:
+            content_type = analysis_result.get('content_type', 'mixed')
+            
+            # Instagram-specific caption optimization
+            original_caption = analysis_result.get('caption', '')
+            instagram_caption = self._optimize_instagram_caption(original_caption, content_type)
+            
+            # Instagram hashtag optimization (separate from general hashtags)
+            instagram_hashtags = self._optimize_instagram_hashtags(analysis_result.get('analysis', {}))
+            
+            # Instagram posting recommendations
+            posting_recs = self._get_posting_recommendations(analysis_result.get('analysis', {}))
+            instagram_recs = posting_recs.get('instagram_specific', {})
+            
+            return {
+                'instagram_caption': instagram_caption,
+                'instagram_hashtags': instagram_hashtags,
+                'story_suggestions': instagram_recs.get('story_ideas', []),
+                'reel_suggestions': instagram_recs.get('reel_ideas', []),
+                'optimal_aspect_ratio': instagram_recs.get('optimal_aspect_ratio', '4:5'),
+                'posting_times': posting_recs.get('optimal_times', []),
+                'engagement_strategy': instagram_recs.get('post_style', 'Authentic storytelling'),
+                'content_optimization': {
+                    'use_carousel': content_type == 'mixed',
+                    'add_story_highlight': True,
+                    'create_reel_version': content_type in ['rc_truck', 'trail_exploration'],
+                    'optimize_for_explore': True
+                }
+            }
+            
+        except Exception as e:
+            print(f"Error optimizing for Instagram: {e}")
+            return {}
+    
+    def _optimize_instagram_caption(self, original_caption: str, content_type: str) -> str:
+        """Optimize caption specifically for Instagram engagement"""
+        # Instagram performs better with line breaks and emojis
+        if content_type == 'vanlife':
+            instagram_caption = f"{original_caption} 🚐\n\n"
+            instagram_caption += "What's your favorite vanlife destination? 👇\n\n"
+            instagram_caption += "#VanLifeAdventure #ExploreMore"
+        elif content_type == 'rc_truck':
+            instagram_caption = f"{original_caption} 🏔️\n\n"
+            instagram_caption += "What's your favorite RC trail challenge? 🤔\n\n"
+            instagram_caption += "#RCLife #TrailTherapy"
+        else:
+            instagram_caption = f"{original_caption} 🌲\n\n"
+            instagram_caption += "Adventure awaits! Where are you exploring next? 🗺️\n\n"
+            instagram_caption += "#AdventureLife #GetOutside"
+        
+        return instagram_caption
+    
+    def _optimize_instagram_hashtags(self, analysis: Dict[str, Any]) -> List[str]:
+        """Create Instagram-optimized hashtag strategy"""
+        content_type = analysis.get('content_type', 'mixed')
+        
+        # Instagram algorithm prefers mix of popular and niche hashtags
+        popular_tags = []  # 1M+ posts
+        medium_tags = []   # 100K-1M posts  
+        niche_tags = []    # 10K-100K posts
+        
+        if content_type == 'vanlife':
+            popular_tags = ['#vanlife', '#roadtrip', '#adventure']
+            medium_tags = ['#vanlifeadventure', '#nomadlife', '#homeonwheels', '#vanlifestyle']
+            niche_tags = ['#bcvanlife', '#vanlifecommunity', '#roadtripcanada', '#vanlifeexplorers']
+        elif content_type == 'rc_truck':
+            popular_tags = ['#rc', '#adventure', '#outdoors']
+            medium_tags = ['#rctrucks', '#rccrawler', '#radiocontrol', '#rclife']
+            niche_tags = ['#scalecrawler', '#rcaddict', '#trailtherapy', '#rcworld', '#axialracing']
+        
+        # Instagram strategy: 3-5 popular, 5-7 medium, 7-10 niche hashtags
+        instagram_hashtags = popular_tags[:3] + medium_tags[:6] + niche_tags[:8]
+        
+        # Add location-based hashtags
+        location_tags = ['#southernbc', '#bcoutdoors', '#explorebc', '#beautifulbc']
+        instagram_hashtags.extend(location_tags[:3])
+        
+        return instagram_hashtags[:20]  # Instagram limit
     
     def save_analysis_to_db(self, file_path: str, analysis_result: Dict[str, Any]) -> int:
         """Save content analysis to database"""

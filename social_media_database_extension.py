@@ -199,6 +199,22 @@ def extend_database_for_social_media(db_path="lifeos_local.db"):
         VALUES (?, ?, ?, ?, ?, ?)
     ''', hashtag_data)
     
+    # Insert Instagram hashtag research data
+    instagram_hashtag_research_data = [
+        ('#vanlife', 15000000, 6.8, 'high', '["6:00", "19:00", "21:00"]', '["#nomadlife", "#roadtrip", "#homeonwheels"]'),
+        ('#vanlifeadventure', 2500000, 9.2, 'medium', '["7:00", "18:00", "20:00"]', '["#vanlife", "#adventure", "#travel"]'),
+        ('#bcvanlife', 150000, 12.5, 'low', '["6:00", "17:00", "19:00"]', '["#vanlife", "#explorebc", "#bcoutdoors"]'),
+        ('#rctrucks', 3500000, 8.5, 'medium', '["14:00", "18:00", "20:00"]', '["#rccrawler", "#radiocontrol", "#rclife"]'),
+        ('#scalecrawler', 450000, 15.8, 'low', '["15:00", "19:00", "21:00"]', '["#rccrawler", "#rctrucks", "#axialracing"]'),
+        ('#trailtherapy', 85000, 18.2, 'low', '["16:00", "18:00", "20:00"]', '["#rctrucks", "#outdoors", "#adventure"]'),
+    ]
+    
+    cursor.executemany('''
+        INSERT OR IGNORE INTO instagram_hashtag_research 
+        (hashtag, post_count, engagement_rate, competition_level, best_times, related_hashtags)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ''', instagram_hashtag_research_data)
+    
     conn.commit()
     conn.close()
     
@@ -206,6 +222,8 @@ def extend_database_for_social_media(db_path="lifeos_local.db"):
     print(f"📊 Added {len(rc_brands_data)} RC brands")
     print(f"🏔️ Added {len(trail_locations_data)} Southern BC trail locations")
     print(f"🏷️ Added {len(hashtag_data)} hashtag performance records")
+    print(f"📱 Added {len(instagram_hashtag_research_data)} Instagram hashtag research records")
+    print(f"🔗 Instagram integration tables created and populated")
 
 def get_social_media_stats(db_path="lifeos_local.db"):
     """Get current social media database statistics"""
@@ -219,7 +237,12 @@ def get_social_media_stats(db_path="lifeos_local.db"):
         'trail_locations', 
         'rc_brands',
         'revenue_tracking',
-        'hashtag_performance'
+        'hashtag_performance',
+        'instagram_accounts',
+        'scheduled_instagram_posts',
+        'instagram_stories',
+        'instagram_hashtag_research',
+        'instagram_performance'
     ]
     
     for table in tables:

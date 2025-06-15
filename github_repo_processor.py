@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GitHub Repository Processor for Knowledge Database Import"""
+"""GitHub Repository Processor for Knowledge Database Import with Perplexity Integration"""
 
 import os
 import asyncio
@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional
+from perplexity_research_agent import PerplexityResearchAgent, ResearchQuery
 
 # Load environment
 env_path = Path('.env')
@@ -22,12 +23,13 @@ if env_path.exists():
                 os.environ[key] = value
 
 class GitHubRepoProcessor:
-    """Process GitHub repositories and import selected ones to Knowledge database."""
+    """Process GitHub repositories and import selected ones to Knowledge database with Perplexity insights."""
     
     def __init__(self, notion_token, knowledge_db_id, github_token=None):
         self.notion_token = notion_token
         self.knowledge_db_id = knowledge_db_id
         self.github_token = github_token or os.getenv('GITHUB_TOKEN')
+        self.perplexity_agent = None
         
         self.notion_headers = {
             'Authorization': f'Bearer {notion_token}' if notion_token else '',
@@ -450,6 +452,126 @@ class GitHubRepoProcessor:
             'assistant_prompt': assistant_prompt,
             'notes': notes
         }
+    
+    async def initialize_perplexity_agent(self):
+        """Initialize Perplexity research agent"""
+        if not self.perplexity_agent:
+            try:
+                self.perplexity_agent = PerplexityResearchAgent()
+                print("🔍 Perplexity research agent initialized for code analysis")
+            except Exception as e:
+                print(f"⚠️ Could not initialize Perplexity agent: {e}")
+    
+    async def get_perplexity_code_insights(self, repo_name: str, language: str, description: str) -> Dict[str, Any]:
+        """Get Perplexity insights about code technologies and best practices"""
+        if not self.perplexity_agent:
+            await self.initialize_perplexity_agent()
+        
+        if not self.perplexity_agent:
+            return {"success": False, "insights": "Perplexity agent not available"}
+        
+        try:
+            # Create research query for code analysis
+            query = ResearchQuery(
+                id=f"code_analysis_{repo_name}_{int(datetime.now().timestamp())}",
+                query=f"current best practices and recent developments for {language} programming, including frameworks, tools, and architecture patterns for projects like {description}",
+                context=f"Code analysis for GitHub repository {repo_name}",
+                research_type="technical",
+                time_filter="month",
+                include_related_questions=True
+            )
+            
+            async with self.perplexity_agent:
+                result = await self.perplexity_agent.research(query)
+            
+            if result.success:
+                return {
+                    "success": True,
+                    "insights": result.content,
+                    "related_questions": result.related_questions,
+                    "sources": result.sources,
+                    "cost": result.cost,
+                    "tokens_used": result.tokens_used
+                }
+            else:
+                return {"success": False, "error": result.error}
+                
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+    
+    async def get_technology_trends(self, technology: str) -> Dict[str, Any]:
+        """Get current trends and developments for a specific technology"""
+        if not self.perplexity_agent:
+            await self.initialize_perplexity_agent()
+        
+        if not self.perplexity_agent:
+            return {"success": False, "trends": "Perplexity agent not available"}
+        
+        try:
+            async with self.perplexity_agent:
+                result = await self.perplexity_agent.trending_topics_analysis(technology)
+            
+            if result.success:
+                return {
+                    "success": True,
+                    "trends": result.content,
+                    "related_questions": result.related_questions,
+                    "cost": result.cost,
+                    "tokens_used": result.tokens_used
+                }
+            else:
+                return {"success": False, "error": result.error}
+                
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+    
+    async def analyze_repository_with_perplexity(self, repo: Dict[str, Any]) -> Dict[str, Any]:
+        """Enhanced repository analysis with Perplexity insights"""
+        # Get basic analysis first
+        basic_analysis = await self.analyze_repository(repo)
+        
+        if not basic_analysis:
+            return None
+        
+        # Get Perplexity insights
+        language = basic_analysis.get('language', 'Unknown')
+        description = basic_analysis.get('description', basic_analysis['name'])
+        
+        # Get code insights and trends in parallel
+        insights_task = self.get_perplexity_code_insights(
+            basic_analysis['name'], 
+            language, 
+            description
+        )
+        trends_task = self.get_technology_trends(language)
+        
+        try:
+            insights_result, trends_result = await asyncio.gather(
+                insights_task, trends_task, return_exceptions=True
+            )
+            
+            # Add insights to analysis
+            if isinstance(insights_result, dict) and insights_result.get("success"):
+                basic_analysis["perplexity_insights"] = insights_result["insights"]
+                basic_analysis["code_questions"] = insights_result.get("related_questions", [])
+                basic_analysis["research_sources"] = insights_result.get("sources", [])
+                
+            if isinstance(trends_result, dict) and trends_result.get("success"):
+                basic_analysis["technology_trends"] = trends_result["trends"]
+                basic_analysis["trend_questions"] = trends_result.get("related_questions", [])
+                
+            # Enhanced summary with Perplexity data
+            if "perplexity_insights" in basic_analysis:
+                # Update AI summary with insights
+                insights_preview = basic_analysis["perplexity_insights"][:200] + "..."
+                basic_analysis["ai_summary_enhanced"] = f"{basic_analysis.get('ai_summary', '')} Current insights: {insights_preview}"
+                
+            print(f"✅ Enhanced analysis completed for {basic_analysis['name']} with Perplexity insights")
+            return basic_analysis
+            
+        except Exception as e:
+            print(f"⚠️ Perplexity enhancement failed for {basic_analysis['name']}: {e}")
+            return basic_analysis
 
 async def main():
     """Main function to process GitHub repositories."""

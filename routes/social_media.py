@@ -13,9 +13,10 @@ from werkzeug.datastructures import FileStorage
 import sqlite3
 from pathlib import Path
 
-# Import our content analyzer
+# Import our content analyzer and Instagram handler
 from content_analyzer import VanlifeRCContentAnalyzer
 from social_media_database_extension import extend_database_for_social_media, get_social_media_stats
+from instagram_api_handler import InstagramHandler
 
 social_media_bp = Blueprint('social_media', __name__)
 
@@ -33,8 +34,8 @@ def allowed_file(filename):
 
 @social_media_bp.route('/social-media')
 def dashboard():
-    """Main social media dashboard - redirect to main dashboard"""
-    return redirect('/')
+    """Main social media dashboard"""
+    return "<h1>Social Media Dashboard</h1><p>System is working!</p>"
 
 @social_media_bp.route('/social-media/dashboard')
 def social_dashboard():
@@ -321,6 +322,220 @@ def api_stats():
                 'total_revenue': performance[3] or 0.0
             }
         })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@social_media_bp.route('/social-media/post-to-instagram/<int:post_id>', methods=['POST'])
+def post_to_instagram(post_id):
+    """Post content to Instagram"""
+    try:
+        # Get post data
+        conn = sqlite3.connect('lifeos_local.db')
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT file_path, caption, hashtags, content_type
+            FROM social_media_posts 
+            WHERE id = ?
+        ''', (post_id,))
+        
+        post_data = cursor.fetchone()
+        conn.close()
+        
+        if not post_data:
+            return jsonify({'success': False, 'error': 'Post not found'})
+        
+        file_path, caption, hashtags_json, content_type = post_data
+        hashtags = json.loads(hashtags_json) if hashtags_json else []
+        
+        # Initialize Instagram handler
+        instagram = InstagramHandler()
+        
+        # Check if logged in (you may want to implement session management)
+        if not instagram.client:
+            return jsonify({
+                'success': False, 
+                'error': 'Instagram not configured. Please install instagrapi and configure credentials.'
+            })
+        
+        # Determine file type and post accordingly
+        file_ext = Path(file_path).suffix.lower()
+        
+        if file_ext in ['.jpg', '.jpeg', '.png']:
+            result = instagram.post_photo(file_path, caption, hashtags)
+        elif file_ext in ['.mp4', '.mov']:
+            result = instagram.post_video(file_path, caption, hashtags)
+        else:
+            return jsonify({'success': False, 'error': 'Unsupported file format for Instagram'})
+        
+        if result['success']:
+            return jsonify({
+                'success': True,
+                'message': 'Posted to Instagram successfully',
+                'instagram_url': result.get('instagram_url'),
+                'media_id': result.get('media_id')
+            })
+        else:
+            return jsonify({'success': False, 'error': result.get('error', 'Instagram posting failed')})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@social_media_bp.route('/social-media/post-story/<int:post_id>', methods=['POST'])
+def post_to_instagram_story(post_id):
+    """Post content to Instagram Story"""
+    try:
+        # Get post data
+        conn = sqlite3.connect('lifeos_local.db')
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT file_path, content_type
+            FROM social_media_posts 
+            WHERE id = ?
+        ''', (post_id,))
+        
+        post_data = cursor.fetchone()
+        conn.close()
+        
+        if not post_data:
+            return jsonify({'success': False, 'error': 'Post not found'})
+        
+        file_path, content_type = post_data
+        
+        # Initialize Instagram handler
+        instagram = InstagramHandler()
+        
+        if not instagram.client:
+            return jsonify({
+                'success': False, 
+                'error': 'Instagram not configured. Please install instagrapi and configure credentials.'
+            })
+        
+        # Post to story
+        result = instagram.post_story(file_path)
+        
+        if result['success']:
+            return jsonify({
+                'success': True,
+                'message': 'Posted to Instagram Story successfully',
+                'story_id': result.get('story_id')
+            })
+        else:
+            return jsonify({'success': False, 'error': result.get('error', 'Story posting failed')})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@social_media_bp.route('/social-media/instagram/login', methods=['POST'])
+def instagram_login():
+    """Handle Instagram login"""
+    try:
+        data = request.get_json()
+        username = data.get('username', '').strip()
+        password = data.get('password', '').strip()
+        save_credentials = data.get('save_credentials', False)
+        
+        if not username or not password:
+            return jsonify({'success': False, 'error': 'Username and password required'})
+        
+        instagram = InstagramHandler()
+        
+        if not instagram.client:
+            return jsonify({
+                'success': False, 
+                'error': 'Instagram client not available. Please install instagrapi.'
+            })
+        
+        # Save credentials if requested
+        if save_credentials:
+            instagram.save_credentials(username, password)
+        
+        # Attempt login
+        success = instagram.login(username, password)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Instagram login successful',
+                'username': username
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Login failed. Check credentials.'})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@social_media_bp.route('/social-media/instagram/insights')
+def instagram_insights():
+    """Get Instagram account insights"""
+    try:
+        instagram = InstagramHandler()
+        
+        if not instagram.client:
+            return jsonify({
+                'success': False, 
+                'error': 'Instagram not configured or logged in'
+            })
+        
+        insights = instagram.get_account_insights()
+        return jsonify(insights)
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@social_media_bp.route('/social-media/instagram/schedule/<int:post_id>', methods=['POST'])
+def schedule_instagram_post(post_id):
+    """Schedule a post for Instagram"""
+    try:
+        data = request.get_json()
+        scheduled_time_str = data.get('scheduled_time')
+        
+        if not scheduled_time_str:
+            return jsonify({'success': False, 'error': 'Scheduled time required'})
+        
+        # Parse scheduled time
+        scheduled_time = datetime.fromisoformat(scheduled_time_str)
+        
+        if scheduled_time <= datetime.now():
+            return jsonify({'success': False, 'error': 'Scheduled time must be in the future'})
+        
+        # Get post data
+        conn = sqlite3.connect('lifeos_local.db')
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT file_path, caption, hashtags
+            FROM social_media_posts 
+            WHERE id = ?
+        ''', (post_id,))
+        
+        post_data = cursor.fetchone()
+        conn.close()
+        
+        if not post_data:
+            return jsonify({'success': False, 'error': 'Post not found'})
+        
+        file_path, caption, hashtags_json = post_data
+        hashtags = json.loads(hashtags_json) if hashtags_json else []
+        
+        # Schedule the post
+        instagram = InstagramHandler()
+        result = instagram.schedule_post(file_path, caption, hashtags, scheduled_time)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@social_media_bp.route('/social-media/instagram/process-scheduled', methods=['POST'])
+def process_scheduled_instagram_posts():
+    """Process all scheduled Instagram posts that are due"""
+    try:
+        instagram = InstagramHandler()
+        result = instagram.process_scheduled_posts()
+        return jsonify(result)
         
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})

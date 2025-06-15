@@ -5,6 +5,7 @@ Provides web interface and API for the TDD system
 """
 
 from flask import Blueprint, render_template, request, jsonify
+import asyncio
 import logging
 from datetime import datetime
 
@@ -88,7 +89,7 @@ def get_cycle_status(cycle_id):
         return jsonify({'success': False, 'error': str(e)})
 
 @tdd_bp.route('/api/tdd/cycles/<int:cycle_id>/generate-tests', methods=['POST'])
-def generate_tests(cycle_id):
+async def generate_tests(cycle_id):
     """Generate tests for a cycle from specification"""
     if not tdd_available:
         return jsonify({'success': False, 'error': 'TDD system not available'})
@@ -100,7 +101,7 @@ def generate_tests(cycle_id):
         if not specification:
             return jsonify({'success': False, 'error': 'Specification is required'})
         
-        result = tdd_system.generate_test_from_specification(cycle_id, specification)
+        result = await tdd_system.generate_test_from_specification(cycle_id, specification)
         return jsonify(result)
         
     except Exception as e:
@@ -121,33 +122,33 @@ def run_tests(cycle_id):
         return jsonify({'success': False, 'error': str(e)})
 
 @tdd_bp.route('/api/tdd/test-cases/<int:test_case_id>/implement', methods=['POST'])
-def implement_test(test_case_id):
+async def implement_test(test_case_id):
     """Generate implementation for a failing test"""
     if not tdd_available:
         return jsonify({'success': False, 'error': 'TDD system not available'})
     
     try:
-        result = tdd_system.implement_failing_test(test_case_id)
+        result = await tdd_system.implement_failing_test(test_case_id)
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error implementing test: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
 @tdd_bp.route('/api/tdd/implementations/<int:implementation_id>/refactor', methods=['POST'])
-def refactor_implementation(implementation_id):
+async def refactor_implementation(implementation_id):
     """Refactor an implementation"""
     if not tdd_available:
         return jsonify({'success': False, 'error': 'TDD system not available'})
     
     try:
-        result = tdd_system.refactor_code(implementation_id)
+        result = await tdd_system.refactor_code(implementation_id)
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error refactoring implementation: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
 @tdd_bp.route('/api/tdd/cycles/<int:cycle_id>/complete', methods=['POST'])
-def complete_full_cycle(cycle_id):
+async def complete_full_cycle(cycle_id):
     """Complete a full TDD cycle (Red-Green-Refactor)"""
     if not tdd_available:
         return jsonify({'success': False, 'error': 'TDD system not available'})
@@ -159,7 +160,7 @@ def complete_full_cycle(cycle_id):
         if not specification:
             return jsonify({'success': False, 'error': 'Specification is required'})
         
-        result = tdd_system.complete_tdd_cycle(cycle_id, specification)
+        result = await tdd_system.complete_tdd_cycle(cycle_id, specification)
         return jsonify(result)
         
     except Exception as e:

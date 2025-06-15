@@ -22,6 +22,9 @@ import subprocess
 import time
 import concurrent.futures
 import random
+import requests
+import aiohttp
+import asyncio
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -60,6 +63,10 @@ class AgentType(Enum):
     ERROR_DIAGNOSTICIAN = "error_diagnostician"
     TEMPLATE_FIXER = "template_fixer"
     WEB_TESTER = "web_tester"
+    SOCIAL_MEDIA_RESEARCHER = "social_media_researcher"
+    TREND_ANALYST = "trend_analyst"
+    VANLIFE_SPECIALIST = "vanlife_specialist"
+    RC_TRUCK_SPECIALIST = "rc_truck_specialist"
 
 @dataclass
 class Task:
@@ -93,18 +100,39 @@ class Task:
             self.metadata = {}
 
 class ProviderLoadBalancer:
-    """Enhanced load balancer for Claude + Gemini optimization"""
+    """Enhanced load balancer for Claude + Gemini + Perplexity optimization"""
     
     def __init__(self):
-        # Claude + Gemini only configuration
+        # Claude + Gemini + Perplexity configuration
         self.providers = {
-            "anthropic": {"weight": 0.5, "requests": 0, "errors": 0, "cost": 0.0, "response_times": []},
-            "gemini": {"weight": 0.5, "requests": 0, "errors": 0, "cost": 0.0, "response_times": []}
+            "anthropic": {"weight": 0.35, "requests": 0, "errors": 0, "cost": 0.0, "response_times": []},
+            "gemini": {"weight": 0.35, "requests": 0, "errors": 0, "cost": 0.0, "response_times": []},
+            "perplexity": {"weight": 0.3, "requests": 0, "errors": 0, "cost": 0.0, "response_times": []}
         }
         self.current_index = 0
         
-    def get_next_provider(self) -> str:
-        """Get next provider based on enhanced weighted selection"""
+        # Social media and research specialization weights
+        self.specialization_weights = {
+            "research": {"anthropic": 0.2, "gemini": 0.2, "perplexity": 0.6},
+            "social_media": {"anthropic": 0.3, "gemini": 0.3, "perplexity": 0.4},
+            "trending_analysis": {"anthropic": 0.15, "gemini": 0.25, "perplexity": 0.6},
+            "real_time_info": {"anthropic": 0.1, "gemini": 0.2, "perplexity": 0.7},
+            "competitor_analysis": {"anthropic": 0.25, "gemini": 0.25, "perplexity": 0.5},
+            "market_research": {"anthropic": 0.2, "gemini": 0.3, "perplexity": 0.5}
+        }
+        
+    def get_next_provider(self, task_type: str = None) -> str:
+        """Get next provider based on enhanced weighted selection and task specialization"""
+        # Use specialization weights if task type is specified
+        if task_type and task_type in self.specialization_weights:
+            weights = self.specialization_weights[task_type]
+            r = random.random()
+            cumulative = 0
+            for provider, weight in weights.items():
+                cumulative += weight
+                if r <= cumulative and provider in self.providers:
+                    return provider
+        
         # Calculate availability scores
         available_providers = []
         for name, data in self.providers.items():
@@ -177,7 +205,7 @@ class ProviderLoadBalancer:
         return optimal_provider
 
 class EnhancedRealAgent:
-    """Enhanced real agent with Claude + Gemini specialization"""
+    """Enhanced real agent with Claude + Gemini + Perplexity specialization"""
     
     def __init__(self, agent_id: str, name: str, agent_type: AgentType, load_balancer: ProviderLoadBalancer = None):
         self.agent_id = agent_id
@@ -194,12 +222,12 @@ class EnhancedRealAgent:
         self.provider_clients = {}
         self.provider_preferences = {}
         
-        # Initialize LLM clients (Claude + Gemini only)
+        # Initialize LLM clients (Claude + Gemini + Perplexity)
         self._init_all_llm_clients()
         self._setup_agent_specialization()
     
     def _init_all_llm_clients(self):
-        """Initialize Claude and Gemini clients only"""
+        """Initialize Claude, Gemini, and Perplexity clients"""
         # Initialize Anthropic (Claude)
         try:
             if os.getenv("ANTHROPIC_API_KEY"):
@@ -219,35 +247,60 @@ class EnhancedRealAgent:
         except Exception as e:
             logger.warning(f"Failed to initialize Gemini client for {self.name}: {e}")
             
+        # Initialize Perplexity
+        try:
+            if os.getenv("PERPLEXITY_API_KEY"):
+                self.provider_clients["perplexity"] = {
+                    "api_key": os.getenv("PERPLEXITY_API_KEY"),
+                    "base_url": "https://api.perplexity.ai"
+                }
+                logger.info(f"Perplexity client initialized for {self.name}")
+        except Exception as e:
+            logger.warning(f"Failed to initialize Perplexity client for {self.name}: {e}")
+            
         if not self.provider_clients:
             logger.error(f"No LLM clients could be initialized for {self.name}")
     
     def _setup_agent_specialization(self):
         """Setup provider preferences based on agent type"""
-        # Define agent-specific provider preferences
+        # Define agent-specific provider preferences with enhanced Perplexity integration
         preferences = {
-            AgentType.CODE_DEVELOPER: {"anthropic": 0.7, "gemini": 0.3},
-            AgentType.SYSTEM_ANALYST: {"anthropic": 0.4, "gemini": 0.6},
-            AgentType.CONTENT_PROCESSOR: {"anthropic": 0.5, "gemini": 0.5},
-            AgentType.DATABASE_SPECIALIST: {"anthropic": 0.6, "gemini": 0.4},
-            AgentType.API_INTEGRATOR: {"anthropic": 0.7, "gemini": 0.3},
-            AgentType.ERROR_DIAGNOSTICIAN: {"anthropic": 0.8, "gemini": 0.2},
-            AgentType.TEMPLATE_FIXER: {"anthropic": 0.6, "gemini": 0.4},
-            AgentType.WEB_TESTER: {"anthropic": 0.5, "gemini": 0.5}
+            AgentType.CODE_DEVELOPER: {"anthropic": 0.6, "gemini": 0.3, "perplexity": 0.1},
+            AgentType.SYSTEM_ANALYST: {"anthropic": 0.3, "gemini": 0.4, "perplexity": 0.3},
+            AgentType.CONTENT_PROCESSOR: {"anthropic": 0.25, "gemini": 0.25, "perplexity": 0.5},
+            AgentType.DATABASE_SPECIALIST: {"anthropic": 0.5, "gemini": 0.3, "perplexity": 0.2},
+            AgentType.API_INTEGRATOR: {"anthropic": 0.6, "gemini": 0.2, "perplexity": 0.2},
+            AgentType.ERROR_DIAGNOSTICIAN: {"anthropic": 0.7, "gemini": 0.2, "perplexity": 0.1},
+            AgentType.TEMPLATE_FIXER: {"anthropic": 0.5, "gemini": 0.3, "perplexity": 0.2},
+            AgentType.WEB_TESTER: {"anthropic": 0.3, "gemini": 0.3, "perplexity": 0.4}
         }
         
-        self.provider_preferences = preferences.get(self.agent_type, {"anthropic": 0.5, "gemini": 0.5})
+        self.provider_preferences = preferences.get(self.agent_type, {"anthropic": 0.4, "gemini": 0.4, "perplexity": 0.2})
     
     def get_preferred_provider_for_task(self, task_type: str) -> str:
         """Get preferred provider based on task type and learning"""
-        # Task-specific preferences
+        # Enhanced task-specific preferences with social media focus
         task_preferences = {
             "code_generation": "anthropic",
             "data_analysis": "gemini",
             "text_processing": "gemini",
             "debugging": "anthropic",
             "optimization": "anthropic",
-            "research": "gemini"
+            "research": "perplexity",
+            "web_search": "perplexity",
+            "trend_analysis": "perplexity",
+            "content_research": "perplexity",
+            "real_time_info": "perplexity",
+            "social_media_trends": "perplexity",
+            "hashtag_research": "perplexity",
+            "competitor_analysis": "perplexity",
+            "market_analysis": "perplexity",
+            "vanlife_trends": "perplexity",
+            "rc_truck_research": "perplexity",
+            "trail_conditions": "perplexity",
+            "influencer_analysis": "perplexity",
+            "posting_optimization": "perplexity",
+            "content_trending": "perplexity"
         }
         
         # Check learned preferences first
@@ -283,6 +336,8 @@ class EnhancedRealAgent:
             return int(base_tokens * 1.1)  # Claude uses slightly more tokens
         elif provider == "gemini":
             return int(base_tokens * 0.9)   # Gemini typically uses fewer tokens
+        elif provider == "perplexity":
+            return int(base_tokens * 1.0)   # Perplexity standard token usage
         
         return base_tokens
     
@@ -317,7 +372,7 @@ class EnhancedRealAgent:
             
             # Fallback to load balancer if preferred provider unavailable
             if preferred_provider not in self.provider_clients:
-                preferred_provider = self.load_balancer.get_next_provider()
+                preferred_provider = self.load_balancer.get_next_provider(task_type)
             
             # Execute with primary provider
             try:
@@ -393,6 +448,30 @@ class EnhancedRealAgent:
             return "optimization"
         elif any(keyword in description_lower for keyword in ["research", "find", "search", "investigate"]):
             return "research"
+        elif any(keyword in description_lower for keyword in ["web search", "online", "internet", "browse"]):
+            return "web_search"
+        elif any(keyword in description_lower for keyword in ["trend", "trending", "popular", "current"]):
+            return "trend_analysis"
+        elif any(keyword in description_lower for keyword in ["real-time", "live", "current", "now"]):
+            return "real_time_info"
+        elif any(keyword in description_lower for keyword in ["content research", "topic research", "background"]):
+            return "content_research"
+        elif any(keyword in description_lower for keyword in ["social media", "instagram", "tiktok", "youtube", "facebook"]):
+            return "social_media_trends"
+        elif any(keyword in description_lower for keyword in ["hashtag", "#", "tags", "trending tags"]):
+            return "hashtag_research"
+        elif any(keyword in description_lower for keyword in ["competitor", "competition", "rivals", "market share"]):
+            return "competitor_analysis"
+        elif any(keyword in description_lower for keyword in ["vanlife", "van life", "nomad", "rv life"]):
+            return "vanlife_trends"
+        elif any(keyword in description_lower for keyword in ["rc truck", "remote control", "crawler", "scx24"]):
+            return "rc_truck_research"
+        elif any(keyword in description_lower for keyword in ["trail", "trails", "offroad", "hiking"]):
+            return "trail_conditions"
+        elif any(keyword in description_lower for keyword in ["influencer", "content creator", "followers"]):
+            return "influencer_analysis"
+        elif any(keyword in description_lower for keyword in ["posting time", "engagement", "optimal posting"]):
+            return "posting_optimization"
         else:
             return "general"
     
@@ -409,6 +488,8 @@ class EnhancedRealAgent:
             return await self._execute_with_claude(task, estimated_tokens)
         elif provider == "gemini":
             return await self._execute_with_gemini(task, estimated_tokens)
+        elif provider == "perplexity":
+            return await self._execute_with_perplexity(task, estimated_tokens)
         else:
             raise ValueError(f"Unknown provider: {provider}")
     
@@ -418,7 +499,7 @@ class EnhancedRealAgent:
         
         try:
             response = client.messages.create(
-                model="claude-3-sonnet-20241022",
+                model="claude-3-5-sonnet-20241022",
                 max_tokens=4000,
                 temperature=0.7,
                 messages=[
@@ -512,12 +593,104 @@ Focus on delivering high-quality, production-ready results.
         except Exception as e:
             raise Exception(f"Gemini execution error: {str(e)}")
     
+    async def _execute_with_perplexity(self, task: Task, estimated_tokens: int) -> Dict[str, Any]:
+        """Execute task with Perplexity API"""
+        client_config = self.provider_clients["perplexity"]
+        
+        try:
+            # Prepare the request payload
+            payload = {
+                "model": "llama-3.1-sonar-large-128k-online",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": f"You are {self.name}, a {self.agent_type.value.replace('_', ' ').title()}. You have access to real-time web search and up-to-date information. Use this capability to provide the most current and accurate information."
+                    },
+                    {
+                        "role": "user", 
+                        "content": f"""
+Task: {task.name}
+Description: {task.description}
+
+Please provide a comprehensive solution with:
+1. Current, up-to-date information (use web search when relevant)
+2. Clear reasoning and analysis
+3. Implementation details if applicable
+4. Verification steps
+5. Any recent trends or developments related to this task
+
+Focus on delivering high-quality, current, and production-ready results.
+"""
+                    }
+                ],
+                "max_tokens": 4000,
+                "temperature": 0.7,
+                "top_p": 0.9,
+                "search_domain_filter": ["perplexity.ai"],
+                "return_images": False,
+                "return_related_questions": False,
+                "search_recency_filter": "month",
+                "top_k": 0,
+                "stream": False,
+                "presence_penalty": 0,
+                "frequency_penalty": 1
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {client_config['api_key']}",
+                "Content-Type": "application/json"
+            }
+            
+            # Make async HTTP request
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"{client_config['base_url']}/chat/completions",
+                    json=payload,
+                    headers=headers,
+                    timeout=aiohttp.ClientTimeout(total=60)
+                ) as response:
+                    if response.status != 200:
+                        error_text = await response.text()
+                        raise Exception(f"Perplexity API error: {response.status} - {error_text}")
+                    
+                    result = await response.json()
+            
+            # Extract result
+            if "choices" not in result or not result["choices"]:
+                raise Exception("Invalid response from Perplexity API")
+            
+            result_text = result["choices"][0]["message"]["content"]
+            
+            # Get token usage if available
+            tokens_used = result.get("usage", {}).get("total_tokens", estimated_tokens)
+            cost = self._estimate_cost("perplexity", tokens_used)
+            
+            self.tasks_completed += 1
+            self.total_tokens_used += tokens_used
+            self.total_cost += cost
+            
+            return {
+                "success": True,
+                "result": result_text,
+                "provider": "perplexity",
+                "tokens_used": tokens_used,
+                "cost": cost,
+                "agent": self.name,
+                "task_id": task.id,
+                "has_web_search": True,
+                "search_info": result.get("search_results", [])
+            }
+            
+        except Exception as e:
+            raise Exception(f"Perplexity execution error: {str(e)}")
+    
     def _estimate_cost(self, provider: str, tokens: int) -> float:
         """Estimate cost based on provider and tokens"""
         # Rough cost estimates (per 1000 tokens)
         costs = {
-            "anthropic": 0.01,  # Claude Sonnet
-            "gemini": 0.0005    # Gemini 1.5 Pro
+            "anthropic": 0.01,     # Claude Sonnet
+            "gemini": 0.0005,     # Gemini 1.5 Pro
+            "perplexity": 0.001   # Perplexity API
         }
         
         return (tokens / 1000) * costs.get(provider, 0.01)
@@ -538,7 +711,7 @@ class EnhancedRealAgentOrchestrator:
         # Create enhanced agent team
         self._create_enhanced_agents()
         
-        logger.info("Enhanced Real Agent Orchestrator initialized with Claude + Gemini optimization")
+        logger.info("Enhanced Real Agent Orchestrator initialized with Claude + Gemini + Perplexity optimization")
     
     def _init_database(self):
         """Initialize enhanced database schema"""
@@ -895,9 +1068,10 @@ class EnhancedRealAgentOrchestrator:
 enhanced_orchestrator = EnhancedRealAgentOrchestrator()
 
 if __name__ == "__main__":
-    print("🚀 Enhanced Real Agent Orchestrator - Claude + Gemini Optimized")
+    print("🚀 Enhanced Real Agent Orchestrator - Claude + Gemini + Perplexity Optimized")
     print(f"✅ {len(enhanced_orchestrator.agents)} agents initialized")
-    print("🎯 Ready for advanced multi-agent coordination")
+    print("🎯 Ready for advanced multi-agent coordination with real-time web search")
+    print("📡 Perplexity integration enabled for research and trending topics")
     
     # Example usage
     import asyncio

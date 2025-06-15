@@ -9,6 +9,7 @@ import sys
 import ast
 import subprocess
 import logging
+import traceback
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
@@ -133,14 +134,18 @@ class TDDSystem:
             logger.error(f"Error creating TDD cycle: {e}")
             return -1
     
-    def generate_test_from_specification(self, cycle_id: int, spec: str) -> Dict[str, Any]:
+    async def generate_test_from_specification(self, cycle_id: int, spec: str) -> Dict[str, Any]:
         """Generate test code from a specification using AI"""
         try:
-            # Import the real orchestrator for AI assistance
-            from real_agent_orchestrator import real_orchestrator, AgentType, TaskPriority
+            # Import the enhanced orchestrator for AI assistance
+            try:
+                from enhanced_orchestrator_claude_gemini import enhanced_orchestrator, AgentType, TaskPriority
+            except ImportError as ie:
+                logger.error(f"Failed to import enhanced orchestrator: {ie}")
+                return {'success': False, 'error': f'Orchestrator import failed: {ie}'}
             
             # Create a task for the Code Developer agent to generate tests
-            task_id = real_orchestrator.add_task(
+            task_id = enhanced_orchestrator.add_task(
                 name=f"Generate TDD Tests - Cycle {cycle_id}",
                 description=f"""
 Generate comprehensive pytest test cases for the following specification:
@@ -162,13 +167,12 @@ The tests should be designed to FAIL initially (Red phase) and guide the impleme
             )
             
             # Get the task and agent
-            task = next(t for t in real_orchestrator.task_queue if t.id == task_id)
-            agent = next(a for a in real_orchestrator.agents.values() 
+            task = next(t for t in enhanced_orchestrator.task_queue if t.id == task_id)
+            agent = next(a for a in enhanced_orchestrator.agents.values() 
                         if a.agent_type == AgentType.CODE_DEVELOPER)
             
-            # Execute the task synchronously
-            import asyncio
-            result = asyncio.run(agent.execute_task(task))
+            # Execute the task with proper async handling
+            result = await agent.execute_task(task)
             
             if result['success']:
                 test_code = result.get('result', '')
@@ -203,6 +207,7 @@ The tests should be designed to FAIL initially (Red phase) and guide the impleme
                 
         except Exception as e:
             logger.error(f"Error generating test from specification: {e}")
+            logger.error(f"Full traceback: {traceback.format_exc()}")
             return {'success': False, 'error': str(e)}
     
     def run_tests(self, cycle_id: int) -> Dict[str, Any]:
@@ -233,15 +238,26 @@ The tests should be designed to FAIL initially (Red phase) and guide the impleme
                 test_file = self.test_dir / f"test_cycle_{cycle_id}_{test_case['id']}.py"
                 
                 if test_file.exists():
-                    # Run pytest on this specific test file if available, otherwise use python directly
+                    # Set PYTHONPATH to include src directory for imports
+                    env = os.environ.copy()
+                    current_dir = os.getcwd()
+                    src_dir = os.path.join(current_dir, 'src')
+                    env['PYTHONPATH'] = src_dir + ':' + env.get('PYTHONPATH', '')
+                    
+                    # Ensure we use the correct python3 executable path
+                    python_exec = subprocess.run(['which', 'python3'], capture_output=True, text=True).stdout.strip()
+                    if not python_exec:
+                        python_exec = 'python3'  # Fallback
+                    
+                    # Run pytest on this specific test file if available, otherwise use python3 directly
                     if pytest_available:
-                        cmd = ['python', '-m', 'pytest', str(test_file), '-v', '--tb=short']
+                        cmd = [python_exec, '-m', 'pytest', str(test_file), '-v', '--tb=short']
                     else:
-                        # Fallback to running Python directly (limited functionality)
-                        cmd = ['python', str(test_file)]
+                        # Fallback to running Python3 directly (limited functionality)
+                        cmd = [python_exec, str(test_file)]
                     
                     try:
-                        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30, env=env)
                         
                         test_result = {
                             'test_case_id': test_case['id'],
@@ -312,7 +328,7 @@ The tests should be designed to FAIL initially (Red phase) and guide the impleme
             logger.error(f"Error running tests: {e}")
             return {'success': False, 'error': str(e)}
     
-    def implement_failing_test(self, test_case_id: int) -> Dict[str, Any]:
+    async def implement_failing_test(self, test_case_id: int) -> Dict[str, Any]:
         """Generate implementation code to make a failing test pass"""
         try:
             # Get test case details
@@ -323,11 +339,15 @@ The tests should be designed to FAIL initially (Red phase) and guide the impleme
             cycle_id = test_case['cycle_id']
             test_code = test_case['test_code']
             
-            # Import the real orchestrator for AI assistance
-            from real_agent_orchestrator import real_orchestrator, AgentType, TaskPriority
+            # Import the enhanced orchestrator for AI assistance
+            try:
+                from enhanced_orchestrator_claude_gemini import enhanced_orchestrator, AgentType, TaskPriority
+            except ImportError as ie:
+                logger.error(f"Failed to import enhanced orchestrator: {ie}")
+                return {'success': False, 'error': f'Orchestrator import failed: {ie}'}
             
             # Create a task for the Code Developer agent to implement the code
-            task_id = real_orchestrator.add_task(
+            task_id = enhanced_orchestrator.add_task(
                 name=f"Implement Code for Test {test_case_id}",
                 description=f"""
 Analyze the following failing test and implement the minimal code needed to make it pass:
@@ -350,13 +370,12 @@ Focus on making the test pass, not on perfect implementation (that comes in Refa
             )
             
             # Get the task and agent
-            task = next(t for t in real_orchestrator.task_queue if t.id == task_id)
-            agent = next(a for a in real_orchestrator.agents.values() 
+            task = next(t for t in enhanced_orchestrator.task_queue if t.id == task_id)
+            agent = next(a for a in enhanced_orchestrator.agents.values() 
                         if a.agent_type == AgentType.CODE_DEVELOPER)
             
-            # Execute the task synchronously
-            import asyncio
-            result = asyncio.run(agent.execute_task(task))
+            # Execute the task with proper async handling
+            result = await agent.execute_task(task)
             
             if result['success']:
                 implementation_code = result.get('result', '')
@@ -393,9 +412,10 @@ Focus on making the test pass, not on perfect implementation (that comes in Refa
                 
         except Exception as e:
             logger.error(f"Error implementing failing test: {e}")
+            logger.error(f"Full traceback: {traceback.format_exc()}")
             return {'success': False, 'error': str(e)}
     
-    def refactor_code(self, implementation_id: int) -> Dict[str, Any]:
+    async def refactor_code(self, implementation_id: int) -> Dict[str, Any]:
         """Refactor implementation code while keeping tests passing"""
         try:
             # Get implementation details
@@ -410,11 +430,15 @@ Focus on making the test pass, not on perfect implementation (that comes in Refa
             test_case = self.db.get_record('test_cases', test_case_id)
             test_code = test_case['test_code'] if test_case else ""
             
-            # Import the real orchestrator for AI assistance
-            from real_agent_orchestrator import real_orchestrator, AgentType, TaskPriority
+            # Import the enhanced orchestrator for AI assistance
+            try:
+                from enhanced_orchestrator_claude_gemini import enhanced_orchestrator, AgentType, TaskPriority
+            except ImportError as ie:
+                logger.error(f"Failed to import enhanced orchestrator: {ie}")
+                return {'success': False, 'error': f'Orchestrator import failed: {ie}'}
             
             # Create a task for refactoring
-            task_id = real_orchestrator.add_task(
+            task_id = enhanced_orchestrator.add_task(
                 name=f"Refactor Implementation {implementation_id}",
                 description=f"""
 Refactor the following code while ensuring all tests continue to pass:
@@ -441,13 +465,12 @@ The refactored code should be functionally equivalent but better structured.
             )
             
             # Get the task and agent
-            task = next(t for t in real_orchestrator.task_queue if t.id == task_id)
-            agent = next(a for a in real_orchestrator.agents.values() 
+            task = next(t for t in enhanced_orchestrator.task_queue if t.id == task_id)
+            agent = next(a for a in enhanced_orchestrator.agents.values() 
                         if a.agent_type == AgentType.CODE_DEVELOPER)
             
-            # Execute the task synchronously
-            import asyncio
-            result = asyncio.run(agent.execute_task(task))
+            # Execute the task with proper async handling
+            result = await agent.execute_task(task)
             
             if result['success']:
                 refactored_code = result.get('result', '')
@@ -487,7 +510,7 @@ The refactored code should be functionally equivalent but better structured.
             logger.error(f"Error refactoring code: {e}")
             return {'success': False, 'error': str(e)}
     
-    def complete_tdd_cycle(self, cycle_id: int, specification: str) -> Dict[str, Any]:
+    async def complete_tdd_cycle(self, cycle_id: int, specification: str) -> Dict[str, Any]:
         """Complete a full TDD cycle: Red -> Green -> Refactor"""
         try:
             results = {
@@ -500,7 +523,7 @@ The refactored code should be functionally equivalent but better structured.
             
             # RED Phase: Generate failing tests
             logger.info(f"🔴 RED Phase: Generating tests for cycle {cycle_id}")
-            test_result = self.generate_test_from_specification(cycle_id, specification)
+            test_result = await self.generate_test_from_specification(cycle_id, specification)
             results['phases']['red'] = test_result
             
             if not test_result['success']:
@@ -521,7 +544,7 @@ The refactored code should be functionally equivalent but better structured.
                 logger.info(f"🟢 GREEN Phase: Implementing code for cycle {cycle_id}")
                 
                 test_case_id = test_result['test_case_id']
-                impl_result = self.implement_failing_test(test_case_id)
+                impl_result = await self.implement_failing_test(test_case_id)
                 results['phases']['green'] = impl_result
                 
                 if impl_result['success']:
@@ -539,7 +562,7 @@ The refactored code should be functionally equivalent but better structured.
                         logger.info(f"🔵 REFACTOR Phase: Refactoring code for cycle {cycle_id}")
                         
                         implementation_id = impl_result['implementation_id']
-                        refactor_result = self.refactor_code(implementation_id)
+                        refactor_result = await self.refactor_code(implementation_id)
                         results['phases']['refactor'] = refactor_result
                         
                         if refactor_result['success']:
